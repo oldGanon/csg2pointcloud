@@ -28,7 +28,7 @@ string SplatFragShader =
     "out vec4 Out;"
     "void main(){"
         "Out.xyz = vec3(dot(normalize(Normal), normalize(vec3(0.5,1,1))));"
-        "if (Normal.z < 0) discard;"
+        // "if (Normal.z < 0) discard;"
         "Out.xyz = mix(vec3(0.8,0.5,0.35),vec3(1,0.878,0.741),Out.xyz);"
     "}\0";
 

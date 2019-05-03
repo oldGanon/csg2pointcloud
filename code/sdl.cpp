@@ -606,14 +606,19 @@ int SDL_main(int argc, char **argv)
     {
         sdf SDF = { };
 
-        SDF_Add(&SDF, SDF_Sphere(Vec3(-0.45f,0,0), 0.5f));
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.45f,0,0), 0.5f), 0.25f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.45f,0,0.5f), 0.1f), 0.25f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.45f,0,0.5f), 0.1f), 0.25f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.45f,0,0.6f), 0.025f), 0.1f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.45f,0,0.6f), 0.025f), 0.1f);
+        SDF_Add(&SDF, SDF_Cuboid(Vec3( 0.0f,0.0,0.0f), Vec3(0.5f,0.1f,0.1f)));
+        SDF_Add(&SDF, SDF_Cuboid(Vec3( 0.0f,0.0,0.0f), Vec3(0.1f,0.5f,0.1f)));
+        SDF_AddSmooth(&SDF, SDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Vec3(0.5f,0.1f,0.1f)), 0.1f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.5f,0,0), 0.25f), 0.1f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0,0), 0.25f), 0.1f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.8f,0,0), 0.1f), 0.1f);
+        SDF_SubSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0,0.25), 0.1f), 0.1f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.95f,0,0), 0.025f), 0.05f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.95f,0,0), 0.025f), 0.05f);
 
         SDF_Gen(&SDF);
+
+        Api_PrintF("Splat Count: %llu!", SPLATCOUNT);
 
         OpenGL_LoadSplats();
     }

@@ -6,15 +6,32 @@ struct sdf_shape_sphere
     f32 Radius;
 };
 
+struct sdf_shape_ellipsoid
+{
+    vec3 HalfDim;
+};
+
 struct sdf_shape_cube
 {
-    f32 Radius;
+    f32 HalfDim;
+};
+
+struct sdf_shape_cuboid
+{
+    vec3 HalfDim;
 };
 
 enum sdf_shape_type
 {
     SDF_SHAPE_SPHERE,
+    SDF_SHAPE_ELLIPSOID,
     SDF_SHAPE_CUBE,
+    SDF_SHAPE_CUBOID,
+    SDF_SHAPE_CUBOID_ROUND,
+    SDF_SHAPE_TORUS,
+    SDF_SHAPE_CYLINDER,
+    SDF_SHAPE_CONE,
+
 };
 
 struct sdf_shape
@@ -22,7 +39,9 @@ struct sdf_shape
     union
     {
         sdf_shape_sphere Sphere;
+        sdf_shape_ellipsoid Ellipsoid;
         sdf_shape_cube Cube;
+        sdf_shape_cuboid Cuboid;
     };
 
     vec3 Position;
@@ -69,13 +88,35 @@ SDF_Sphere(vec3 Pos, f32 Radius)
 }
 
 static sdf_shape
-SDF_Cube(vec3 Pos, f32 Radius)
+SDF_Ellipsoid(vec3 Pos, vec3 HalfDim)
 {
-    sdf_shape_cube Cube = { Radius };
+    sdf_shape_ellipsoid Ellipsoid = { HalfDim };
+    sdf_shape Shape;
+    Shape.Ellipsoid = Ellipsoid;
+    Shape.Position = Pos;
+    Shape.Type = SDF_SHAPE_ELLIPSOID;
+    return Shape;
+}
+
+static sdf_shape
+SDF_Cube(vec3 Pos, f32 HalfDim)
+{
+    sdf_shape_cube Cube = { HalfDim };
     sdf_shape Shape;
     Shape.Cube = Cube;
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_CUBE;
+    return Shape;
+}
+
+static sdf_shape
+SDF_Cuboid(vec3 Pos, vec3 HalfDim)
+{
+    sdf_shape_cuboid Cuboid = { HalfDim };
+    sdf_shape Shape;
+    Shape.Cuboid = Cuboid;
+    Shape.Position = Pos;
+    Shape.Type = SDF_SHAPE_CUBOID;
     return Shape;
 }
 
@@ -129,18 +170,18 @@ SDF_Sub(FLOAT D1, FLOAT D2)
 
 template <typename FLOAT>
 static FLOAT
-SDF_AddSmooth(FLOAT D1, FLOAT D2, FLOAT K)
+SDF_AddSmooth(FLOAT A, FLOAT B, FLOAT R)
 {
-    FLOAT H = Clamp(0.5f + 0.5f * (D2 - D1) / K, 0.0f, 1.0f);
-    return Lerp(D2, D1, H) - K * H * (1.0f - H);
+    FLOAT E = Max(R-Abs(A-B),0);
+    return Min(A,B)-E*E*0.25f/R;
 }
 
 template <typename FLOAT>
 static FLOAT
-SDF_SubSmooth(FLOAT D1, FLOAT D2, FLOAT K)
+SDF_SubSmooth(FLOAT A, FLOAT B, FLOAT R)
 {
-    FLOAT H = Clamp(0.5f - 0.5f * (D2 + D1) / K, 0.0f, 1.0f);
-    return Lerp(D2, -D1, H) + K * H * (1.0f - H);
+    FLOAT E = Max(R-Abs(A+B),0);
+    return Max(A,-B)+E*E*0.25f/R;
 }
 
 template <typename FLOAT>
@@ -179,7 +220,6 @@ SDF_SphereMax(const sdf_shape_sphere Sphere, FLOAT X, FLOAT Y, FLOAT Z)
     FLOAT A = Min(Min(X,Y),Z);
     FLOAT B = Max(Max(Min(X,Y),Min(X,Z)),Min(Y,Z));
     FLOAT C = Max(Max(X,Y),Z);
-
     FLOAT BPC = B+C;
     FLOAT BMC = B-C;
     FLOAT N = 2.0f*R*R-BMC*BMC;
@@ -198,10 +238,20 @@ template <typename FLOAT>
 static FLOAT
 SDF_CubeMax(const sdf_shape_cube Cube, FLOAT X, FLOAT Y, FLOAT Z)
 {
-    FLOAT R = Cube.Radius;
-    X = Abs(X) - R;
-    Y = Abs(Y) - R;
-    Z = Abs(Z) - R;
+    FLOAT D = Cube.HalfDim;
+    X = Abs(X) - D;
+    Y = Abs(Y) - D;
+    Z = Abs(Z) - D;
+    return Max(Max(X, Y), Z);
+}
+
+template <typename FLOAT>
+static FLOAT
+SDF_CuboidMax(const sdf_shape_cuboid Cuboid, FLOAT X, FLOAT Y, FLOAT Z)
+{
+    X = Abs(X) - Cuboid.HalfDim.x;
+    Y = Abs(Y) - Cuboid.HalfDim.y;
+    Z = Abs(Z) - Cuboid.HalfDim.z;
     return Max(Max(X, Y), Z);
 }
 
@@ -216,6 +266,7 @@ SDF_EvalMax(const sdf_shape Shape, FLOAT X, FLOAT Y, FLOAT Z)
     {
         case SDF_SHAPE_SPHERE: return SDF_SphereMax(Shape.Sphere, X, Y, Z);
         case SDF_SHAPE_CUBE:   return SDF_CubeMax(Shape.Cube, X, Y, Z);
+        case SDF_SHAPE_CUBOID: return SDF_CuboidMax(Shape.Cuboid, X, Y, Z);
         default:               return INFINITY;
     }
 }
@@ -245,8 +296,15 @@ SDF_Sphere(const sdf_shape_sphere Sphere, vec P)
 static f32
 SDF_Cube(const sdf_shape_cube Cube, vec P)
 {
-    vec Dist = Vec_Abs(P) - Vec_Set1(Cube.Radius);
-    return Vec_Length(Vec_Max(Dist,0.0)) + Min(Vec_HMax(Dist),0.0);
+    vec D = Vec_Abs(P) - Vec_Set1(Cube.HalfDim);
+    return Vec_Length(Vec_Max(D,0.0)) + Min(Vec_HMax(D),0.0);
+}
+
+static f32
+SDF_Cuboid(const sdf_shape_cuboid Cuboid, vec P)
+{
+    vec D = Vec_Abs(P) - Vec3_Load(Cuboid.HalfDim);
+    return Vec_Length(Vec_Max(D,0.0)) + Min(Vec_HMax(D),0.0);
 }
 
 static f32
@@ -257,6 +315,7 @@ SDF_EvalShape(const sdf_shape Shape, vec P)
     {
         case SDF_SHAPE_SPHERE: return SDF_Sphere(Shape.Sphere, P);
         case SDF_SHAPE_CUBE:   return SDF_Cube(Shape.Cube, P);
+        case SDF_SHAPE_CUBOID: return SDF_Cuboid(Shape.Cuboid, P);
         default: return INFINITY;
     }
 }
@@ -291,7 +350,7 @@ struct splat
     vec3 Normal;
 };
 
-splat SPLATS[10000000];
+splat SPLATS[40000000];
 u64 SPLATCOUNT;
 
 static void
@@ -325,7 +384,7 @@ SDF_Gen8(const sdf *SDF, vec3 P, f32 Dim, u32 Depth)
         {
             f32 D = SDF_Eval(SDF, Q);
             vec3 Normal = SDF_Normal(SDF, Q);
-            // Q -= Normal * D;
+            Q -= Normal * D;
             SPLATS[SPLATCOUNT].Position = Q;
             SPLATS[SPLATCOUNT].Normal = Normal;
             ++SPLATCOUNT;

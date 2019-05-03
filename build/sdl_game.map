@@ -1,24 +1,24 @@
  sdl_msvc
 
- Timestamp is 5ccc5c61 (Fri May  3 17:21:05 2019)
+ Timestamp is 5ccc7d13 (Fri May  3 19:40:35 2019)
 
  Preferred load address is 0000000140000000
 
  Start         Length     Name                   Class
  0001:00000000 00000300H .text                   CODE
- 0001:00000300 0000610aH .text$mn                CODE
+ 0001:00000300 0000649aH .text$mn                CODE
  0002:00000000 000001e0H .idata$5                DATA
- 0002:000001e0 000018e4H .rdata                  DATA
- 0002:00001ac4 00000198H .rdata$zzzdbg           DATA
- 0002:00001c5c 000004f4H .xdata                  DATA
- 0002:00002150 00000048H .edata                  DATA
- 0002:00002198 0000003cH .idata$2                DATA
- 0002:000021d4 00000014H .idata$3                DATA
- 0002:000021e8 000001e0H .idata$4                DATA
- 0002:000023c8 00000494H .idata$6                DATA
+ 0002:000001e0 000018c4H .rdata                  DATA
+ 0002:00001aa4 00000198H .rdata$zzzdbg           DATA
+ 0002:00001c3c 00000484H .xdata                  DATA
+ 0002:000020c0 00000048H .edata                  DATA
+ 0002:00002108 0000003cH .idata$2                DATA
+ 0002:00002144 00000014H .idata$3                DATA
+ 0002:00002158 000001e0H .idata$4                DATA
+ 0002:00002338 00000494H .idata$6                DATA
  0003:00000000 000001d0H .data                   DATA
- 0003:000001d0 0e4e2eb0H .bss                    DATA
- 0004:00000000 00000348H .pdata                  DATA
+ 0003:000001d0 393882b0H .bss                    DATA
+ 0004:00000000 00000300H .pdata                  DATA
  0005:00000000 000000c0H .rsrc$01                DATA
  0005:000000c0 00000300H .rsrc$02                DATA
 
@@ -27,74 +27,74 @@
  0000:00000000       __guard_flags              0000000000000000     <absolute>
  0000:00000000       __guard_iat_table          0000000000000000     <absolute>
  0000:00000000       __guard_iat_count          0000000000000000     <absolute>
- 0000:00000000       __dynamic_value_reloc_table 0000000000000000     <absolute>
  0000:00000000       __guard_fids_count         0000000000000000     <absolute>
- 0000:00000000       __guard_longjmp_table      0000000000000000     <absolute>
+ 0000:00000000       __dynamic_value_reloc_table 0000000000000000     <absolute>
  0000:00000000       ___safe_se_handler_table   0000000000000000     <absolute>
- 0000:00000000       __guard_longjmp_count      0000000000000000     <absolute>
  0000:00000000       ___safe_se_handler_count   0000000000000000     <absolute>
+ 0000:00000000       __guard_longjmp_table      0000000000000000     <absolute>
+ 0000:00000000       __guard_longjmp_count      0000000000000000     <absolute>
  0000:00000000       __guard_fids_table         0000000000000000     <absolute>
  0000:00000000       __ImageBase                0000000140000000     <linker-defined>
  0001:000002f0       WinMain                    00000001400012f0 f   SDL2main:SDL_windows_main.obj
- 0001:00000a90       ?Api_Talloc@@YAPEAX_K@Z    0000000140001a90 f i main.obj
- 0001:00000b20       ?Api_Ualloc@@YAPEAX_K@Z    0000000140001b20 f i main.obj
- 0001:00000c00       ?Cos@@YAMM@Z               0000000140001c00 f i main.obj
- 0001:00000cd0       ?File_ReadEntireFile@@YAPEAXUstring@@PEA_K@Z 0000000140001cd0 f i main.obj
- 0001:00001ca0       ?Mat4_InfinitePerspective@@YA?AUmat4@@MMM@Z 0000000140002ca0 f i main.obj
- 0001:00001dd0       ?Mat4_Mul@@YA?AUmat4@@U1@0@Z 0000000140002dd0 f i main.obj
- 0001:00002dd0       ?Sin@@YAMM@Z               0000000140003dd0 f i main.obj
- 0001:00002f60       ?WinMainCRTStartup@@YAXXZ  0000000140003f60 f   main.obj
- 0001:00002f90       ?Zone_Free@@YAXPEAUmemory_zone@@PEBX@Z 0000000140003f90 f i main.obj
- 0001:00003060       ?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 0000000140004060 f i main.obj
- 0001:00003eb0       SDL_main                   0000000140004eb0 f   main.obj
- 0001:00004770       memcpy                     0000000140005770 f   main.obj
- 0001:000047a0       memset                     00000001400057a0 f   main.obj
- 0001:000047d0       stbsp_vsprintfcb           00000001400057d0 f   main.obj
- 0001:000062fc       SDL_malloc                 00000001400072fc f   SDL2:SDL2.dll
- 0001:00006302       SDL_free                   0000000140007302 f   SDL2:SDL2.dll
- 0001:00006308       SDL_ReportAssertion        0000000140007308 f   SDL2:SDL2.dll
- 0001:0000630e       SDL_GetError               000000014000730e f   SDL2:SDL2.dll
- 0001:00006314       SDL_CreateSemaphore        0000000140007314 f   SDL2:SDL2.dll
- 0001:0000631a       SDL_SemWait                000000014000731a f   SDL2:SDL2.dll
- 0001:00006320       SDL_SetThreadPriority      0000000140007320 f   SDL2:SDL2.dll
- 0001:00006326       SDL_TLSCreate              0000000140007326 f   SDL2:SDL2.dll
- 0001:0000632c       SDL_TLSGet                 000000014000732c f   SDL2:SDL2.dll
- 0001:00006332       SDL_TLSSet                 0000000140007332 f   SDL2:SDL2.dll
- 0001:00006338       SDL_RWFromFile             0000000140007338 f   SDL2:SDL2.dll
- 0001:0000633e       SDL_OpenAudioDevice        000000014000733e f   SDL2:SDL2.dll
- 0001:00006344       SDL_PauseAudioDevice       0000000140007344 f   SDL2:SDL2.dll
- 0001:0000634a       SDL_CloseAudioDevice       000000014000734a f   SDL2:SDL2.dll
- 0001:00006350       SDL_GetCurrentDisplayMode  0000000140007350 f   SDL2:SDL2.dll
- 0001:00006356       SDL_GetWindowDisplayIndex  0000000140007356 f   SDL2:SDL2.dll
- 0001:0000635c       SDL_SetWindowDisplayMode   000000014000735c f   SDL2:SDL2.dll
- 0001:00006362       SDL_CreateWindow           0000000140007362 f   SDL2:SDL2.dll
- 0001:00006368       SDL_GetWindowFlags         0000000140007368 f   SDL2:SDL2.dll
- 0001:0000636e       SDL_SetWindowMinimumSize   000000014000736e f   SDL2:SDL2.dll
- 0001:00006374       SDL_ShowWindow             0000000140007374 f   SDL2:SDL2.dll
- 0001:0000637a       SDL_RaiseWindow            000000014000737a f   SDL2:SDL2.dll
- 0001:00006380       SDL_SetWindowFullscreen    0000000140007380 f   SDL2:SDL2.dll
- 0001:00006386       SDL_GL_GetProcAddress      0000000140007386 f   SDL2:SDL2.dll
- 0001:0000638c       SDL_GL_UnloadLibrary       000000014000738c f   SDL2:SDL2.dll
- 0001:00006392       SDL_GL_SetAttribute        0000000140007392 f   SDL2:SDL2.dll
- 0001:00006398       SDL_GL_CreateContext       0000000140007398 f   SDL2:SDL2.dll
- 0001:0000639e       SDL_GL_SwapWindow          000000014000739e f   SDL2:SDL2.dll
- 0001:000063a4       SDL_GL_DeleteContext       00000001400073a4 f   SDL2:SDL2.dll
- 0001:000063aa       SDL_StopTextInput          00000001400073aa f   SDL2:SDL2.dll
- 0001:000063b0       SDL_GameControllerAddMapping 00000001400073b0 f   SDL2:SDL2.dll
- 0001:000063b6       SDL_GameControllerOpen     00000001400073b6 f   SDL2:SDL2.dll
- 0001:000063bc       SDL_GameControllerEventState 00000001400073bc f   SDL2:SDL2.dll
- 0001:000063c2       SDL_GameControllerClose    00000001400073c2 f   SDL2:SDL2.dll
- 0001:000063c8       SDL_PollEvent              00000001400073c8 f   SDL2:SDL2.dll
- 0001:000063ce       SDL_LogMessage             00000001400073ce f   SDL2:SDL2.dll
- 0001:000063d4       SDL_ShowSimpleMessageBox   00000001400073d4 f   SDL2:SDL2.dll
- 0001:000063da       SDL_GetPerformanceCounter  00000001400073da f   SDL2:SDL2.dll
- 0001:000063e0       SDL_GetPerformanceFrequency 00000001400073e0 f   SDL2:SDL2.dll
- 0001:000063e6       SDL_Init                   00000001400073e6 f   SDL2:SDL2.dll
- 0001:000063ec       SDL_Quit                   00000001400073ec f   SDL2:SDL2.dll
- 0001:000063f2       SDL_isspace                00000001400073f2 f   SDL2:SDL2.dll
- 0001:000063f8       SDL_SetMainReady           00000001400073f8 f   SDL2:SDL2.dll
- 0001:000063fe       SDL_iconv_string           00000001400073fe f   SDL2:SDL2.dll
- 0001:00006404       SDL_wcslen                 0000000140007404 f   SDL2:SDL2.dll
+ 0001:00000a80       ?Api_Talloc@@YAPEAX_K@Z    0000000140001a80 f i main.obj
+ 0001:00000b10       ?Api_Ualloc@@YAPEAX_K@Z    0000000140001b10 f i main.obj
+ 0001:00000bf0       ?Cos@@YAMM@Z               0000000140001bf0 f i main.obj
+ 0001:00000cc0       ?File_ReadEntireFile@@YAPEAXUstring@@PEA_K@Z 0000000140001cc0 f i main.obj
+ 0001:00001c90       ?Mat4_InfinitePerspective@@YA?AUmat4@@MMM@Z 0000000140002c90 f i main.obj
+ 0001:00001dc0       ?Mat4_Mul@@YA?AUmat4@@U1@0@Z 0000000140002dc0 f i main.obj
+ 0001:00002ef0       ?Sin@@YAMM@Z               0000000140003ef0 f i main.obj
+ 0001:00003080       ?WinMainCRTStartup@@YAXXZ  0000000140004080 f   main.obj
+ 0001:000030b0       ?Zone_Free@@YAXPEAUmemory_zone@@PEBX@Z 00000001400040b0 f i main.obj
+ 0001:00003180       ?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 0000000140004180 f i main.obj
+ 0001:00003fd0       SDL_main                   0000000140004fd0 f   main.obj
+ 0001:00004b00       memcpy                     0000000140005b00 f   main.obj
+ 0001:00004b30       memset                     0000000140005b30 f   main.obj
+ 0001:00004b60       stbsp_vsprintfcb           0000000140005b60 f   main.obj
+ 0001:0000668c       SDL_malloc                 000000014000768c f   SDL2:SDL2.dll
+ 0001:00006692       SDL_free                   0000000140007692 f   SDL2:SDL2.dll
+ 0001:00006698       SDL_ReportAssertion        0000000140007698 f   SDL2:SDL2.dll
+ 0001:0000669e       SDL_GetError               000000014000769e f   SDL2:SDL2.dll
+ 0001:000066a4       SDL_CreateSemaphore        00000001400076a4 f   SDL2:SDL2.dll
+ 0001:000066aa       SDL_SemWait                00000001400076aa f   SDL2:SDL2.dll
+ 0001:000066b0       SDL_SetThreadPriority      00000001400076b0 f   SDL2:SDL2.dll
+ 0001:000066b6       SDL_TLSCreate              00000001400076b6 f   SDL2:SDL2.dll
+ 0001:000066bc       SDL_TLSGet                 00000001400076bc f   SDL2:SDL2.dll
+ 0001:000066c2       SDL_TLSSet                 00000001400076c2 f   SDL2:SDL2.dll
+ 0001:000066c8       SDL_RWFromFile             00000001400076c8 f   SDL2:SDL2.dll
+ 0001:000066ce       SDL_OpenAudioDevice        00000001400076ce f   SDL2:SDL2.dll
+ 0001:000066d4       SDL_PauseAudioDevice       00000001400076d4 f   SDL2:SDL2.dll
+ 0001:000066da       SDL_CloseAudioDevice       00000001400076da f   SDL2:SDL2.dll
+ 0001:000066e0       SDL_GetCurrentDisplayMode  00000001400076e0 f   SDL2:SDL2.dll
+ 0001:000066e6       SDL_GetWindowDisplayIndex  00000001400076e6 f   SDL2:SDL2.dll
+ 0001:000066ec       SDL_SetWindowDisplayMode   00000001400076ec f   SDL2:SDL2.dll
+ 0001:000066f2       SDL_CreateWindow           00000001400076f2 f   SDL2:SDL2.dll
+ 0001:000066f8       SDL_GetWindowFlags         00000001400076f8 f   SDL2:SDL2.dll
+ 0001:000066fe       SDL_SetWindowMinimumSize   00000001400076fe f   SDL2:SDL2.dll
+ 0001:00006704       SDL_ShowWindow             0000000140007704 f   SDL2:SDL2.dll
+ 0001:0000670a       SDL_RaiseWindow            000000014000770a f   SDL2:SDL2.dll
+ 0001:00006710       SDL_SetWindowFullscreen    0000000140007710 f   SDL2:SDL2.dll
+ 0001:00006716       SDL_GL_GetProcAddress      0000000140007716 f   SDL2:SDL2.dll
+ 0001:0000671c       SDL_GL_UnloadLibrary       000000014000771c f   SDL2:SDL2.dll
+ 0001:00006722       SDL_GL_SetAttribute        0000000140007722 f   SDL2:SDL2.dll
+ 0001:00006728       SDL_GL_CreateContext       0000000140007728 f   SDL2:SDL2.dll
+ 0001:0000672e       SDL_GL_SwapWindow          000000014000772e f   SDL2:SDL2.dll
+ 0001:00006734       SDL_GL_DeleteContext       0000000140007734 f   SDL2:SDL2.dll
+ 0001:0000673a       SDL_StopTextInput          000000014000773a f   SDL2:SDL2.dll
+ 0001:00006740       SDL_GameControllerAddMapping 0000000140007740 f   SDL2:SDL2.dll
+ 0001:00006746       SDL_GameControllerOpen     0000000140007746 f   SDL2:SDL2.dll
+ 0001:0000674c       SDL_GameControllerEventState 000000014000774c f   SDL2:SDL2.dll
+ 0001:00006752       SDL_GameControllerClose    0000000140007752 f   SDL2:SDL2.dll
+ 0001:00006758       SDL_PollEvent              0000000140007758 f   SDL2:SDL2.dll
+ 0001:0000675e       SDL_LogMessage             000000014000775e f   SDL2:SDL2.dll
+ 0001:00006764       SDL_ShowSimpleMessageBox   0000000140007764 f   SDL2:SDL2.dll
+ 0001:0000676a       SDL_GetPerformanceCounter  000000014000776a f   SDL2:SDL2.dll
+ 0001:00006770       SDL_GetPerformanceFrequency 0000000140007770 f   SDL2:SDL2.dll
+ 0001:00006776       SDL_Init                   0000000140007776 f   SDL2:SDL2.dll
+ 0001:0000677c       SDL_Quit                   000000014000777c f   SDL2:SDL2.dll
+ 0001:00006782       SDL_isspace                0000000140007782 f   SDL2:SDL2.dll
+ 0001:00006788       SDL_SetMainReady           0000000140007788 f   SDL2:SDL2.dll
+ 0001:0000678e       SDL_iconv_string           000000014000778e f   SDL2:SDL2.dll
+ 0001:00006794       SDL_wcslen                 0000000140007794 f   SDL2:SDL2.dll
  0002:00000000       __imp_ExitProcess          0000000140008000     kernel32:KERNEL32.dll
  0002:00000008       __imp_CreateThread         0000000140008008     kernel32:KERNEL32.dll
  0002:00000010       __imp_GetModuleHandleA     0000000140008010     kernel32:KERNEL32.dll
@@ -157,289 +157,293 @@
  0002:000001d8       \177SDL2_NULL_THUNK_DATA   00000001400081d8     SDL2:SDL2.dll
  0002:00000b70       ??_C@_0HJ@IDCJMGHC@?$CDversion?5460?6in?5vec2?5P?$DLout?5vec2?5@ 0000000140008b70     main.obj
  0002:00000bf0       ??_C@_0IP@IOBIPBJI@?$CDversion?5460?6in?5vec3?5P?$DLin?5vec3?5N@ 0000000140008bf0     main.obj
- 0002:00000c80       ??_C@_0NB@IFMFHCO@?$CDversion?5460?6in?5vec3?5Normal?$DLout?5@ 0000000140008c80     main.obj
- 0002:00000d54       ??_C@_04MLLLIHIP@null?$AA@ 0000000140008d54     main.obj
- 0002:00000d5c       ??_C@_05FOLKAOND@_KMGT?$AA@ 0000000140008d5c     main.obj
- 0002:00000d64       ??_C@_05JPHLCBNH@_kMGT?$AA@ 0000000140008d64     main.obj
- 0002:00000d6c       ??_C@_03ICJPMMHB@NaN?$AA@  0000000140008d6c     main.obj
- 0002:00000d70       ??_C@_03EJEJBNFP@Inf?$AA@  0000000140008d70     main.obj
- 0002:00000d74       ??_C@_03HMFOOINA@r?$CLb?$AA@ 0000000140008d74     main.obj
- 0002:00000d78       ??_C@_0N@JAEIBBBF@glTexImage3D?$AA@ 0000000140008d78     main.obj
- 0002:00000d88       ??_C@_0BA@NGGKPOPN@glTexSubImage3D?$AA@ 0000000140008d88     main.obj
- 0002:00000d98       ??_C@_0N@LAOHBIBA@glGenBuffers?$AA@ 0000000140008d98     main.obj
- 0002:00000da8       ??_C@_0N@BONEPPLO@glBindBuffer?$AA@ 0000000140008da8     main.obj
- 0002:00000db8       ??_C@_0BA@DMNLADIO@glDeleteBuffers?$AA@ 0000000140008db8     main.obj
- 0002:00000dc8       ??_C@_0N@JHHJMABP@glBufferData?$AA@ 0000000140008dc8     main.obj
- 0002:00000dd8       ??_C@_0BA@FLKLHNKP@glCreateProgram?$AA@ 0000000140008dd8     main.obj
- 0002:00000de8       ??_C@_0P@HGHBNC@glCreateShader?$AA@ 0000000140008de8     main.obj
- 0002:00000df8       ??_C@_0P@HHCDONAG@glDeleteShader?$AA@ 0000000140008df8     main.obj
- 0002:00000e08       ??_C@_0P@DFHCPFMO@glShaderSource?$AA@ 0000000140008e08     main.obj
- 0002:00000e18       ??_C@_0BA@DGIEGONF@glCompileShader?$AA@ 0000000140008e18     main.obj
- 0002:00000e28       ??_C@_0O@JBDFPDMG@glGetShaderiv?$AA@ 0000000140008e28     main.obj
- 0002:00000e38       ??_C@_0P@LDMLEABL@glAttachShader?$AA@ 0000000140008e38     main.obj
- 0002:00000e48       ??_C@_0BD@GIABBCMO@glGetShaderInfoLog?$AA@ 0000000140008e48     main.obj
- 0002:00000e60       ??_C@_0P@DJFJFCJL@glDetachShader?$AA@ 0000000140008e60     main.obj
- 0002:00000e70       ??_C@_0O@PIOEEBPO@glLinkProgram?$AA@ 0000000140008e70     main.obj
- 0002:00000e80       ??_C@_0P@FMMDFLCO@glGetProgramiv?$AA@ 0000000140008e80     main.obj
- 0002:00000e90       ??_C@_0N@ICBDHBI@glUseProgram?$AA@ 0000000140008e90     main.obj
- 0002:00000ea0       ??_C@_0BE@DHGHAJFL@glGetProgramInfoLog?$AA@ 0000000140008ea0     main.obj
- 0002:00000eb8       ??_C@_0BA@NKGCDOPO@glDeleteProgram?$AA@ 0000000140008eb8     main.obj
- 0002:00000ec8       ??_C@_0BK@EHBAHNHE@glEnableVertexAttribArray?$AA@ 0000000140008ec8     main.obj
- 0002:00000ee8       ??_C@_0BL@NKHLOFFF@glDisableVertexAttribArray?$AA@ 0000000140008ee8     main.obj
- 0002:00000f08       ??_C@_0BG@JPNNNPKG@glVertexAttribPointer?$AA@ 0000000140008f08     main.obj
- 0002:00000f20       ??_C@_0BF@KIOPGICP@glGetUniformLocation?$AA@ 0000000140008f20     main.obj
- 0002:00000f38       ??_C@_0BA@KOBBIKOF@glActiveTexture?$AA@ 0000000140008f38     main.obj
- 0002:00000f48       ??_C@_0BA@GAJMDBBN@glBufferSubData?$AA@ 0000000140008f48     main.obj
- 0002:00000f58       ??_C@_0BF@MHKEFIHM@glBindAttribLocation?$AA@ 0000000140008f58     main.obj
- 0002:00000f70       ??_C@_0BE@LLLCIIOO@glBlendFuncSeparate?$AA@ 0000000140008f70     main.obj
- 0002:00000f88       ??_C@_0M@MLICAPOF@glUniform1f?$AA@ 0000000140008f88     main.obj
- 0002:00000f98       ??_C@_0M@MJMELBLM@glUniform2f?$AA@ 0000000140008f98     main.obj
- 0002:00000fa8       ??_C@_0M@MIAGNLIL@glUniform3f?$AA@ 0000000140008fa8     main.obj
- 0002:00000fb8       ??_C@_0M@MNEJMNAO@glUniform4f?$AA@ 0000000140008fb8     main.obj
- 0002:00000fc8       ??_C@_0M@EMBKBDCK@glUniform1i?$AA@ 0000000140008fc8     main.obj
- 0002:00000fd8       ??_C@_0M@EOFMKNHD@glUniform2i?$AA@ 0000000140008fd8     main.obj
- 0002:00000fe8       ??_C@_0M@EPJOMHEE@glUniform3i?$AA@ 0000000140008fe8     main.obj
- 0002:00000ff8       ??_C@_0M@EKNBNBMB@glUniform4i?$AA@ 0000000140008ff8     main.obj
- 0002:00001008       ??_C@_0N@KJMOEKII@glUniform1fv?$AA@ 0000000140009008     main.obj
- 0002:00001018       ??_C@_0N@LLHLOFGG@glUniform2fv?$AA@ 0000000140009018     main.obj
- 0002:00001028       ??_C@_0N@DMHICAD@glUniform3fv?$AA@ 0000000140009028     main.obj
- 0002:00001038       ??_C@_0N@LACHKCFL@glUniform2iv?$AA@ 0000000140009038     main.obj
- 0002:00001048       ??_C@_0BD@LNHCBEKP@glUniformMatrix4fv?$AA@ 0000000140009048     main.obj
- 0002:00001060       ??_C@_0BB@MIJLCBCJ@glVertexAttrib2f?$AA@ 0000000140009060     main.obj
- 0002:00001078       ??_C@_0BB@MJFJELBO@glVertexAttrib3f?$AA@ 0000000140009078     main.obj
- 0002:00001090       ??_C@_0BB@MMBGFNJL@glVertexAttrib4f?$AA@ 0000000140009090     main.obj
- 0002:000010a8       ??_C@_0BC@IDKDLKFI@glVertexAttrib3fv?$AA@ 00000001400090a8     main.obj
- 0002:000010c0       ??_C@_0BC@FAPEBGID@glGenFramebuffers?$AA@ 00000001400090c0     main.obj
- 0002:000010d8       ??_C@_0BC@CJMIBNO@glBindFramebuffer?$AA@ 00000001400090d8     main.obj
- 0002:000010f0       ??_C@_0BH@JCIFGDEF@glFramebufferTexture2D?$AA@ 00000001400090f0     main.obj
- 0002:00001108       ??_C@_0BJ@GIOLHEAD@glCheckFramebufferStatus?$AA@ 0000000140009108     main.obj
- 0002:00001128       ??_C@_0BD@MIGEDNGJ@glGenRenderbuffers?$AA@ 0000000140009128     main.obj
- 0002:00001140       ??_C@_0BD@EPOPJGFA@glBindRenderbuffer?$AA@ 0000000140009140     main.obj
- 0002:00001158       ??_C@_0BG@EOIILGMJ@glRenderbufferStorage?$AA@ 0000000140009158     main.obj
- 0002:00001170       ??_C@_0BK@OJDINAOA@glFramebufferRenderbuffer?$AA@ 0000000140009170     main.obj
- 0002:00001190       ??_C@_0BB@BHNIMGDM@glGenerateMipmap?$AA@ 0000000140009190     main.obj
- 0002:000011a8       ??_C@_0BH@NLOEHKCD@glVertexAttribIPointer?$AA@ 00000001400091a8     main.obj
- 0002:000011c0       ??_C@_0BB@EOHJGBIO@glMapBufferRange?$AA@ 00000001400091c0     main.obj
- 0002:000011d8       ??_C@_0BC@LHBAHFAN@glBindVertexArray?$AA@ 00000001400091d8     main.obj
- 0002:000011f0       ??_C@_0BC@EPJLBJBJ@glGenVertexArrays?$AA@ 00000001400091f0     main.obj
- 0002:00001208       ??_C@_0BC@OANBDDEP@glBlitFramebuffer?$AA@ 0000000140009208     main.obj
- 0002:00001220       ??_C@_0CB@HNONLGJE@glRenderbufferStorageMultisample@ 0000000140009220     main.obj
- 0002:00001248       ??_C@_0BE@EPKABDOG@glCopyBufferSubData?$AA@ 0000000140009248     main.obj
- 0002:00001260       ??_C@_0BI@FHDFLFA@glTexImage2DMultisample?$AA@ 0000000140009260     main.obj
- 0002:00001278       ??_C@_0M@EFGFPFLP@glFenceSync?$AA@ 0000000140009278     main.obj
- 0002:00001288       ??_C@_0BB@KDMPGJAC@glClientWaitSync?$AA@ 0000000140009288     main.obj
- 0002:000012a0       ??_C@_0N@PIFDNDFG@glDeleteSync?$AA@ 00000001400092a0     main.obj
- 0002:000012b0       ??_C@_0BA@COBILMHM@glBufferStorage?$AA@ 00000001400092b0     main.obj
- 0002:000012c0       ??_C@_0O@FMBMCDIL@glClearDepthf?$AA@ 00000001400092c0     main.obj
- 0002:000012d0       ??_C@_0O@JDFJDNND@glDepthRangef?$AA@ 00000001400092d0     main.obj
- 0002:000012e0       ??_C@_06EIGKMFKH@?$CBError?$AA@ 00000001400092e0     main.obj
- 0002:000012e8       ??_C@_0BJ@GGCBKOKN@Opengl?5Error?5Code?3?50x?$CFX?6?$AA@ 00000001400092e8     main.obj
- 0002:00001310       ??_C@_0EC@POIPJAJA@c?3?2users?2jan?2documents?2programmi@ 0000000140009310     main.obj
- 0002:00001358       ??_C@_0BC@BONDAABK@OpenGL_CheckError?$AA@ 0000000140009358     main.obj
- 0002:0000136c       ??_C@_01EJNLAFE@P?$AA@     000000014000936c     main.obj
- 0002:00001370       ??_C@_01NANMIPIL@N?$AA@    0000000140009370     main.obj
- 0002:00001378       ??_C@_0BL@CDHBILIN@?4?4?1code?1gfx?1gl?1shader?4frag?$AA@ 0000000140009378     main.obj
- 0002:00001398       ??_C@_0O@NJEFBEPD@WorldToCamera?$AA@ 0000000140009398     main.obj
- 0002:000013a8       ??_C@_0BH@CDKFHNBN@Arena?9?$DOMarkerCount?5?$DO?50?$AA@ 00000001400093a8     main.obj
- 0002:000013c0       ??_C@_0DI@PCLBOLIN@c?3?2users?2jan?2documents?2programmi@ 00000001400093c0     main.obj
- 0002:000013f8       ??_C@_0L@JLBNKHFA@Api_Ualloc?$AA@ 00000001400093f8     main.obj
- 0002:00001408       ??_C@_0L@DNGKKMOE@Api_Talloc?$AA@ 0000000140009408     main.obj
- 0002:00001418       ??_C@_0BA@HOIIBJKB@Platform?5Error?$CB?$AA@ 0000000140009418     main.obj
- 0002:00001428       ??_C@_09MBKONHHH@GAME_NAME?$AA@ 0000000140009428     main.obj
- 0002:00001438       ??_C@_0BI@CHOFMLOL@Couldn?8t?5create?5Window?$CB?$AA@ 0000000140009438     main.obj
- 0002:00001450       ??_C@_0CA@IIOPKFKC@Couldn?8t?5create?5OpenGL?5Context?$CB?$AA@ 0000000140009450     main.obj
- 0002:00001470       ??_C@_0CA@JOFMNFJI@Couldn?8t?5load?5OpenGL?5functions?$CB?$AA@ 0000000140009470     main.obj
- 0002:00001490       ??_C@_0BO@PIJLAGIO@Couldn?8t?5set?5up?5OpenGL?5state?$CB?$AA@ 0000000140009490     main.obj
- 0002:000014b0       ??_C@_0CE@HILKMMOL@RDTSC?5is?5not?5supported?5on?5this?5C@ 00000001400094b0     main.obj
- 0002:000014d8       ??_C@_0CC@KKIJLOKD@SSE?5is?5not?5supported?5on?5this?5CPU@ 00000001400094d8     main.obj
- 0002:00001500       ??_C@_0CD@EHEOJDBD@SSE2?5is?5not?5supported?5on?5this?5CP@ 0000000140009500     main.obj
- 0002:00001528       ??_C@_0CD@LGJEJGLJ@SSE3?5is?5not?5supported?5on?5this?5CP@ 0000000140009528     main.obj
- 0002:00001550       ??_C@_0CE@GDJMOPAL@SSSE3?5is?5not?5supported?5on?5this?5C@ 0000000140009550     main.obj
- 0002:00001578       ??_C@_0CE@PDPCINCH@SSE41?5is?5not?5supported?5on?5this?5C@ 0000000140009578     main.obj
- 0002:000015a0       ??_C@_0CE@DKONIFJI@SSE42?5is?5not?5supported?5on?5this?5C@ 00000001400095a0     main.obj
- 0002:000015c8       ??_C@_0CC@ELDPEIIF@FMA?5is?5not?5supported?5on?5this?5CPU@ 00000001400095c8     main.obj
- 0002:000015f0       ??_C@_0BJ@CPDINALG@Couldn?8t?5initialize?5SDL?$CB?$AA@ 00000001400095f0     main.obj
- 0002:00001610       ??_C@_0BG@LKIEBDKK@Missing?5CPU?5features?$CB?$AA@ 0000000140009610     main.obj
- 0002:00001628       ??_C@_0BM@LEAFLOGK@Couldn?8t?5open?5audio?5device?$CB?$AA@ 0000000140009628     main.obj
- 0002:00001648       ??_C@_0BI@NOJDKJLN@Couldn?8t?5create?5window?$CB?$AA@ 0000000140009648     main.obj
- 0002:00001660       ??_C@_0BF@DCLIFGLH@gamecontrollerdb?4txt?$AA@ 0000000140009660     main.obj
- 0002:00001678       ??_C@_0BF@NPCOFCEC@Startup?5Time?3?5?$CF?42fs?$CB?$AA@ 0000000140009678     main.obj
- 0002:00001690       __real@39ca57b0            0000000140009690     main.obj
- 0002:00001694       __real@3be0cb6c            0000000140009694     main.obj
- 0002:00001698       __real@3c8efa2e            0000000140009698     main.obj
- 0002:0000169c       __real@3ccccccd            000000014000969c     main.obj
- 0002:000016a0       __real@3d99fbc8            00000001400096a0     main.obj
- 0002:000016a4       __real@3dcccccd            00000001400096a4     main.obj
- 0002:000016a8       __real@3e800000            00000001400096a8     main.obj
- 0002:000016ac       __real@3ea2f983            00000001400096ac     main.obj
- 0002:000016b0       __real@3ee66666            00000001400096b0     main.obj
- 0002:000016b4       __real@3f000000            00000001400096b4     main.obj
- 0002:000016b8       __real@3f06273c            00000001400096b8     main.obj
- 0002:000016bc       __real@3f100000            00000001400096bc     main.obj
- 0002:000016c0       __real@3f19999a            00000001400096c0     main.obj
- 0002:000016c4       __real@3f800000            00000001400096c4     main.obj
- 0002:000016c8       __real@3fc00000            00000001400096c8     main.obj
- 0002:000016cc       __real@40000000            00000001400096cc     main.obj
- 0002:000016d0       __real@4001abf1            00000001400096d0     main.obj
- 0002:000016d4       __real@40400000            00000001400096d4     main.obj
- 0002:000016d8       __real@40490fdb            00000001400096d8     main.obj
- 0002:000016e0       __real@408f400000000000    00000001400096e0     main.obj
- 0002:000016e8       __real@4090000000000000    00000001400096e8     main.obj
- 0002:000016f0       __real@42340000            00000001400096f0     main.obj
- 0002:000016f4       __real@5f800000            00000001400096f4     main.obj
- 0002:000016f8       __real@7f800000            00000001400096f8     main.obj
- 0002:000016fc       __real@bee66666            00000001400096fc     main.obj
- 0002:00001700       __real@c0000000            0000000140009700     main.obj
- 0002:00001710       __xmm@0000000000000000000000003f800000 0000000140009710     main.obj
- 0002:00001720       __xmm@000000000000000000000000ffffffff 0000000140009720     main.obj
- 0002:00001730       __xmm@00000000000000003f80000000000000 0000000140009730     main.obj
- 0002:00001740       __xmm@0000000038d1b71738d1b71738d1b717 0000000140009740     main.obj
- 0002:00001750       __xmm@0000000038d1b717b8d1b717b8d1b717 0000000140009750     main.obj
- 0002:00001760       __xmm@000000003f8000000000000000000000 0000000140009760     main.obj
- 0002:00001770       __xmm@000000003f8000003f8000003f800000 0000000140009770     main.obj
- 0002:00001780       __xmm@000000003f800000bf800000bf800000 0000000140009780     main.obj
- 0002:00001790       __xmm@000000004000000040000000c0000000 0000000140009790     main.obj
- 0002:000017a0       __xmm@0000000040000000c000000040000000 00000001400097a0     main.obj
- 0002:000017b0       __xmm@0000000040000000c0000000c0000000 00000001400097b0     main.obj
- 0002:000017c0       __xmm@00000000b8d1b71738d1b717b8d1b717 00000001400097c0     main.obj
- 0002:000017d0       __xmm@00000000b8d1b717b8d1b71738d1b717 00000001400097d0     main.obj
- 0002:000017e0       __xmm@00000000bf8000003f800000bf800000 00000001400097e0     main.obj
- 0002:000017f0       __xmm@00000000bf800000bf8000003f800000 00000001400097f0     main.obj
- 0002:00001800       __xmm@00000000c00000004000000040000000 0000000140009800     main.obj
- 0002:00001810       __xmm@00000000c000000040000000c0000000 0000000140009810     main.obj
- 0002:00001820       __xmm@00000000c0000000c000000040000000 0000000140009820     main.obj
- 0002:00001830       __xmm@3f800000000000000000000000000000 0000000140009830     main.obj
- 0002:00001840       __xmm@7fffffff7fffffff7fffffff7fffffff 0000000140009840     main.obj
- 0002:00001850       __xmm@80000000000000008000000000000000 0000000140009850     main.obj
- 0002:00001860       __xmm@80000000800000008000000080000000 0000000140009860     main.obj
- 0002:00001870       __xmm@bf800000000000000000000000000000 0000000140009870     main.obj
- 0002:00001880       __xmm@bf800000bf8000000000000000000000 0000000140009880     main.obj
- 0002:000018a0       __ymm@00000000000000003f800000000000000000000000000000000000003f800000 00000001400098a0     main.obj
+ 0002:00000c80       ??_C@_0LH@FPFPFDBN@?$CDversion?5460?6in?5vec3?5Normal?$DLout?5@ 0000000140008c80     main.obj
+ 0002:00000d38       ??_C@_04MLLLIHIP@null?$AA@ 0000000140008d38     main.obj
+ 0002:00000d40       ??_C@_05FOLKAOND@_KMGT?$AA@ 0000000140008d40     main.obj
+ 0002:00000d48       ??_C@_05JPHLCBNH@_kMGT?$AA@ 0000000140008d48     main.obj
+ 0002:00000d50       ??_C@_03ICJPMMHB@NaN?$AA@  0000000140008d50     main.obj
+ 0002:00000d54       ??_C@_03EJEJBNFP@Inf?$AA@  0000000140008d54     main.obj
+ 0002:00000d58       ??_C@_03HMFOOINA@r?$CLb?$AA@ 0000000140008d58     main.obj
+ 0002:00000d60       ??_C@_0N@JAEIBBBF@glTexImage3D?$AA@ 0000000140008d60     main.obj
+ 0002:00000d70       ??_C@_0BA@NGGKPOPN@glTexSubImage3D?$AA@ 0000000140008d70     main.obj
+ 0002:00000d80       ??_C@_0N@LAOHBIBA@glGenBuffers?$AA@ 0000000140008d80     main.obj
+ 0002:00000d90       ??_C@_0N@BONEPPLO@glBindBuffer?$AA@ 0000000140008d90     main.obj
+ 0002:00000da0       ??_C@_0BA@DMNLADIO@glDeleteBuffers?$AA@ 0000000140008da0     main.obj
+ 0002:00000db0       ??_C@_0N@JHHJMABP@glBufferData?$AA@ 0000000140008db0     main.obj
+ 0002:00000dc0       ??_C@_0BA@FLKLHNKP@glCreateProgram?$AA@ 0000000140008dc0     main.obj
+ 0002:00000dd0       ??_C@_0P@HGHBNC@glCreateShader?$AA@ 0000000140008dd0     main.obj
+ 0002:00000de0       ??_C@_0P@HHCDONAG@glDeleteShader?$AA@ 0000000140008de0     main.obj
+ 0002:00000df0       ??_C@_0P@DFHCPFMO@glShaderSource?$AA@ 0000000140008df0     main.obj
+ 0002:00000e00       ??_C@_0BA@DGIEGONF@glCompileShader?$AA@ 0000000140008e00     main.obj
+ 0002:00000e10       ??_C@_0O@JBDFPDMG@glGetShaderiv?$AA@ 0000000140008e10     main.obj
+ 0002:00000e20       ??_C@_0P@LDMLEABL@glAttachShader?$AA@ 0000000140008e20     main.obj
+ 0002:00000e30       ??_C@_0BD@GIABBCMO@glGetShaderInfoLog?$AA@ 0000000140008e30     main.obj
+ 0002:00000e48       ??_C@_0P@DJFJFCJL@glDetachShader?$AA@ 0000000140008e48     main.obj
+ 0002:00000e58       ??_C@_0O@PIOEEBPO@glLinkProgram?$AA@ 0000000140008e58     main.obj
+ 0002:00000e68       ??_C@_0P@FMMDFLCO@glGetProgramiv?$AA@ 0000000140008e68     main.obj
+ 0002:00000e78       ??_C@_0N@ICBDHBI@glUseProgram?$AA@ 0000000140008e78     main.obj
+ 0002:00000e88       ??_C@_0BE@DHGHAJFL@glGetProgramInfoLog?$AA@ 0000000140008e88     main.obj
+ 0002:00000ea0       ??_C@_0BA@NKGCDOPO@glDeleteProgram?$AA@ 0000000140008ea0     main.obj
+ 0002:00000eb0       ??_C@_0BK@EHBAHNHE@glEnableVertexAttribArray?$AA@ 0000000140008eb0     main.obj
+ 0002:00000ed0       ??_C@_0BL@NKHLOFFF@glDisableVertexAttribArray?$AA@ 0000000140008ed0     main.obj
+ 0002:00000ef0       ??_C@_0BG@JPNNNPKG@glVertexAttribPointer?$AA@ 0000000140008ef0     main.obj
+ 0002:00000f08       ??_C@_0BF@KIOPGICP@glGetUniformLocation?$AA@ 0000000140008f08     main.obj
+ 0002:00000f20       ??_C@_0BA@KOBBIKOF@glActiveTexture?$AA@ 0000000140008f20     main.obj
+ 0002:00000f30       ??_C@_0BA@GAJMDBBN@glBufferSubData?$AA@ 0000000140008f30     main.obj
+ 0002:00000f40       ??_C@_0BF@MHKEFIHM@glBindAttribLocation?$AA@ 0000000140008f40     main.obj
+ 0002:00000f58       ??_C@_0BE@LLLCIIOO@glBlendFuncSeparate?$AA@ 0000000140008f58     main.obj
+ 0002:00000f70       ??_C@_0M@MLICAPOF@glUniform1f?$AA@ 0000000140008f70     main.obj
+ 0002:00000f80       ??_C@_0M@MJMELBLM@glUniform2f?$AA@ 0000000140008f80     main.obj
+ 0002:00000f90       ??_C@_0M@MIAGNLIL@glUniform3f?$AA@ 0000000140008f90     main.obj
+ 0002:00000fa0       ??_C@_0M@MNEJMNAO@glUniform4f?$AA@ 0000000140008fa0     main.obj
+ 0002:00000fb0       ??_C@_0M@EMBKBDCK@glUniform1i?$AA@ 0000000140008fb0     main.obj
+ 0002:00000fc0       ??_C@_0M@EOFMKNHD@glUniform2i?$AA@ 0000000140008fc0     main.obj
+ 0002:00000fd0       ??_C@_0M@EPJOMHEE@glUniform3i?$AA@ 0000000140008fd0     main.obj
+ 0002:00000fe0       ??_C@_0M@EKNBNBMB@glUniform4i?$AA@ 0000000140008fe0     main.obj
+ 0002:00000ff0       ??_C@_0N@KJMOEKII@glUniform1fv?$AA@ 0000000140008ff0     main.obj
+ 0002:00001000       ??_C@_0N@LLHLOFGG@glUniform2fv?$AA@ 0000000140009000     main.obj
+ 0002:00001010       ??_C@_0N@DMHICAD@glUniform3fv?$AA@ 0000000140009010     main.obj
+ 0002:00001020       ??_C@_0N@LACHKCFL@glUniform2iv?$AA@ 0000000140009020     main.obj
+ 0002:00001030       ??_C@_0BD@LNHCBEKP@glUniformMatrix4fv?$AA@ 0000000140009030     main.obj
+ 0002:00001048       ??_C@_0BB@MIJLCBCJ@glVertexAttrib2f?$AA@ 0000000140009048     main.obj
+ 0002:00001060       ??_C@_0BB@MJFJELBO@glVertexAttrib3f?$AA@ 0000000140009060     main.obj
+ 0002:00001078       ??_C@_0BB@MMBGFNJL@glVertexAttrib4f?$AA@ 0000000140009078     main.obj
+ 0002:00001090       ??_C@_0BC@IDKDLKFI@glVertexAttrib3fv?$AA@ 0000000140009090     main.obj
+ 0002:000010a8       ??_C@_0BC@FAPEBGID@glGenFramebuffers?$AA@ 00000001400090a8     main.obj
+ 0002:000010c0       ??_C@_0BC@CJMIBNO@glBindFramebuffer?$AA@ 00000001400090c0     main.obj
+ 0002:000010d8       ??_C@_0BH@JCIFGDEF@glFramebufferTexture2D?$AA@ 00000001400090d8     main.obj
+ 0002:000010f0       ??_C@_0BJ@GIOLHEAD@glCheckFramebufferStatus?$AA@ 00000001400090f0     main.obj
+ 0002:00001110       ??_C@_0BD@MIGEDNGJ@glGenRenderbuffers?$AA@ 0000000140009110     main.obj
+ 0002:00001128       ??_C@_0BD@EPOPJGFA@glBindRenderbuffer?$AA@ 0000000140009128     main.obj
+ 0002:00001140       ??_C@_0BG@EOIILGMJ@glRenderbufferStorage?$AA@ 0000000140009140     main.obj
+ 0002:00001158       ??_C@_0BK@OJDINAOA@glFramebufferRenderbuffer?$AA@ 0000000140009158     main.obj
+ 0002:00001178       ??_C@_0BB@BHNIMGDM@glGenerateMipmap?$AA@ 0000000140009178     main.obj
+ 0002:00001190       ??_C@_0BH@NLOEHKCD@glVertexAttribIPointer?$AA@ 0000000140009190     main.obj
+ 0002:000011a8       ??_C@_0BB@EOHJGBIO@glMapBufferRange?$AA@ 00000001400091a8     main.obj
+ 0002:000011c0       ??_C@_0BC@LHBAHFAN@glBindVertexArray?$AA@ 00000001400091c0     main.obj
+ 0002:000011d8       ??_C@_0BC@EPJLBJBJ@glGenVertexArrays?$AA@ 00000001400091d8     main.obj
+ 0002:000011f0       ??_C@_0BC@OANBDDEP@glBlitFramebuffer?$AA@ 00000001400091f0     main.obj
+ 0002:00001208       ??_C@_0CB@HNONLGJE@glRenderbufferStorageMultisample@ 0000000140009208     main.obj
+ 0002:00001230       ??_C@_0BE@EPKABDOG@glCopyBufferSubData?$AA@ 0000000140009230     main.obj
+ 0002:00001248       ??_C@_0BI@FHDFLFA@glTexImage2DMultisample?$AA@ 0000000140009248     main.obj
+ 0002:00001260       ??_C@_0M@EFGFPFLP@glFenceSync?$AA@ 0000000140009260     main.obj
+ 0002:00001270       ??_C@_0BB@KDMPGJAC@glClientWaitSync?$AA@ 0000000140009270     main.obj
+ 0002:00001288       ??_C@_0N@PIFDNDFG@glDeleteSync?$AA@ 0000000140009288     main.obj
+ 0002:00001298       ??_C@_0BA@COBILMHM@glBufferStorage?$AA@ 0000000140009298     main.obj
+ 0002:000012a8       ??_C@_0O@FMBMCDIL@glClearDepthf?$AA@ 00000001400092a8     main.obj
+ 0002:000012b8       ??_C@_0O@JDFJDNND@glDepthRangef?$AA@ 00000001400092b8     main.obj
+ 0002:000012c8       ??_C@_06EIGKMFKH@?$CBError?$AA@ 00000001400092c8     main.obj
+ 0002:000012d0       ??_C@_0BJ@GGCBKOKN@Opengl?5Error?5Code?3?50x?$CFX?6?$AA@ 00000001400092d0     main.obj
+ 0002:000012f0       ??_C@_0EC@POIPJAJA@c?3?2users?2jan?2documents?2programmi@ 00000001400092f0     main.obj
+ 0002:00001338       ??_C@_0BC@BONDAABK@OpenGL_CheckError?$AA@ 0000000140009338     main.obj
+ 0002:0000134c       ??_C@_01EJNLAFE@P?$AA@     000000014000934c     main.obj
+ 0002:00001350       ??_C@_01NANMIPIL@N?$AA@    0000000140009350     main.obj
+ 0002:00001358       ??_C@_0BL@CDHBILIN@?4?4?1code?1gfx?1gl?1shader?4frag?$AA@ 0000000140009358     main.obj
+ 0002:00001378       ??_C@_0O@NJEFBEPD@WorldToCamera?$AA@ 0000000140009378     main.obj
+ 0002:00001388       ??_C@_0BH@CDKFHNBN@Arena?9?$DOMarkerCount?5?$DO?50?$AA@ 0000000140009388     main.obj
+ 0002:000013a0       ??_C@_0DI@PCLBOLIN@c?3?2users?2jan?2documents?2programmi@ 00000001400093a0     main.obj
+ 0002:000013d8       ??_C@_0L@JLBNKHFA@Api_Ualloc?$AA@ 00000001400093d8     main.obj
+ 0002:000013e8       ??_C@_0L@DNGKKMOE@Api_Talloc?$AA@ 00000001400093e8     main.obj
+ 0002:000013f8       ??_C@_0BA@HOIIBJKB@Platform?5Error?$CB?$AA@ 00000001400093f8     main.obj
+ 0002:00001408       ??_C@_09MBKONHHH@GAME_NAME?$AA@ 0000000140009408     main.obj
+ 0002:00001418       ??_C@_0BI@CHOFMLOL@Couldn?8t?5create?5Window?$CB?$AA@ 0000000140009418     main.obj
+ 0002:00001430       ??_C@_0CA@IIOPKFKC@Couldn?8t?5create?5OpenGL?5Context?$CB?$AA@ 0000000140009430     main.obj
+ 0002:00001450       ??_C@_0CA@JOFMNFJI@Couldn?8t?5load?5OpenGL?5functions?$CB?$AA@ 0000000140009450     main.obj
+ 0002:00001470       ??_C@_0BO@PIJLAGIO@Couldn?8t?5set?5up?5OpenGL?5state?$CB?$AA@ 0000000140009470     main.obj
+ 0002:00001490       ??_C@_0CE@HILKMMOL@RDTSC?5is?5not?5supported?5on?5this?5C@ 0000000140009490     main.obj
+ 0002:000014b8       ??_C@_0CC@KKIJLOKD@SSE?5is?5not?5supported?5on?5this?5CPU@ 00000001400094b8     main.obj
+ 0002:000014e0       ??_C@_0CD@EHEOJDBD@SSE2?5is?5not?5supported?5on?5this?5CP@ 00000001400094e0     main.obj
+ 0002:00001508       ??_C@_0CD@LGJEJGLJ@SSE3?5is?5not?5supported?5on?5this?5CP@ 0000000140009508     main.obj
+ 0002:00001530       ??_C@_0CE@GDJMOPAL@SSSE3?5is?5not?5supported?5on?5this?5C@ 0000000140009530     main.obj
+ 0002:00001558       ??_C@_0CE@PDPCINCH@SSE41?5is?5not?5supported?5on?5this?5C@ 0000000140009558     main.obj
+ 0002:00001580       ??_C@_0CE@DKONIFJI@SSE42?5is?5not?5supported?5on?5this?5C@ 0000000140009580     main.obj
+ 0002:000015a8       ??_C@_0CC@ELDPEIIF@FMA?5is?5not?5supported?5on?5this?5CPU@ 00000001400095a8     main.obj
+ 0002:000015d0       ??_C@_0BJ@CPDINALG@Couldn?8t?5initialize?5SDL?$CB?$AA@ 00000001400095d0     main.obj
+ 0002:000015f0       ??_C@_0BG@LKIEBDKK@Missing?5CPU?5features?$CB?$AA@ 00000001400095f0     main.obj
+ 0002:00001608       ??_C@_0BM@LEAFLOGK@Couldn?8t?5open?5audio?5device?$CB?$AA@ 0000000140009608     main.obj
+ 0002:00001628       ??_C@_0BI@NOJDKJLN@Couldn?8t?5create?5window?$CB?$AA@ 0000000140009628     main.obj
+ 0002:00001640       ??_C@_0BF@DCLIFGLH@gamecontrollerdb?4txt?$AA@ 0000000140009640     main.obj
+ 0002:00001658       ??_C@_0BF@NPCOFCEC@Startup?5Time?3?5?$CF?42fs?$CB?$AA@ 0000000140009658     main.obj
+ 0002:00001670       ??_C@_0BD@OJMAMOLJ@Splat?5Count?3?5?$CFllu?$CB?$AA@ 0000000140009670     main.obj
+ 0002:00001684       __real@39ca57b0            0000000140009684     main.obj
+ 0002:00001688       __real@3be0cb6c            0000000140009688     main.obj
+ 0002:0000168c       __real@3c8efa2e            000000014000968c     main.obj
+ 0002:00001690       __real@3ccccccd            0000000140009690     main.obj
+ 0002:00001694       __real@3d4ccccd            0000000140009694     main.obj
+ 0002:00001698       __real@3d99fbc8            0000000140009698     main.obj
+ 0002:0000169c       __real@3dcccccd            000000014000969c     main.obj
+ 0002:000016a0       __real@3e800000            00000001400096a0     main.obj
+ 0002:000016a4       __real@3ea2f983            00000001400096a4     main.obj
+ 0002:000016a8       __real@3f000000            00000001400096a8     main.obj
+ 0002:000016ac       __real@3f06273c            00000001400096ac     main.obj
+ 0002:000016b0       __real@3f100000            00000001400096b0     main.obj
+ 0002:000016b4       __real@3f733333            00000001400096b4     main.obj
+ 0002:000016b8       __real@3f800000            00000001400096b8     main.obj
+ 0002:000016bc       __real@3fc00000            00000001400096bc     main.obj
+ 0002:000016c0       __real@40000000            00000001400096c0     main.obj
+ 0002:000016c4       __real@4001abf1            00000001400096c4     main.obj
+ 0002:000016c8       __real@40400000            00000001400096c8     main.obj
+ 0002:000016cc       __real@40490fdb            00000001400096cc     main.obj
+ 0002:000016d0       __real@408f400000000000    00000001400096d0     main.obj
+ 0002:000016d8       __real@4090000000000000    00000001400096d8     main.obj
+ 0002:000016e0       __real@42340000            00000001400096e0     main.obj
+ 0002:000016e4       __real@5f800000            00000001400096e4     main.obj
+ 0002:000016e8       __real@7f800000            00000001400096e8     main.obj
+ 0002:000016ec       __real@bf000000            00000001400096ec     main.obj
+ 0002:000016f0       __real@bf4ccccd            00000001400096f0     main.obj
+ 0002:000016f4       __real@bf733333            00000001400096f4     main.obj
+ 0002:000016f8       __real@c0000000            00000001400096f8     main.obj
+ 0002:00001700       __xmm@0000000000000000000000003f800000 0000000140009700     main.obj
+ 0002:00001710       __xmm@000000000000000000000000ffffffff 0000000140009710     main.obj
+ 0002:00001720       __xmm@00000000000000003f80000000000000 0000000140009720     main.obj
+ 0002:00001730       __xmm@0000000038d1b71738d1b71738d1b717 0000000140009730     main.obj
+ 0002:00001740       __xmm@0000000038d1b717b8d1b717b8d1b717 0000000140009740     main.obj
+ 0002:00001750       __xmm@000000003f8000000000000000000000 0000000140009750     main.obj
+ 0002:00001760       __xmm@000000003f8000003f8000003f800000 0000000140009760     main.obj
+ 0002:00001770       __xmm@000000003f800000bf800000bf800000 0000000140009770     main.obj
+ 0002:00001780       __xmm@000000004000000040000000c0000000 0000000140009780     main.obj
+ 0002:00001790       __xmm@0000000040000000c000000040000000 0000000140009790     main.obj
+ 0002:000017a0       __xmm@0000000040000000c0000000c0000000 00000001400097a0     main.obj
+ 0002:000017b0       __xmm@00000000b8d1b71738d1b717b8d1b717 00000001400097b0     main.obj
+ 0002:000017c0       __xmm@00000000b8d1b717b8d1b71738d1b717 00000001400097c0     main.obj
+ 0002:000017d0       __xmm@00000000bf8000003f800000bf800000 00000001400097d0     main.obj
+ 0002:000017e0       __xmm@00000000bf800000bf8000003f800000 00000001400097e0     main.obj
+ 0002:000017f0       __xmm@00000000c00000004000000040000000 00000001400097f0     main.obj
+ 0002:00001800       __xmm@00000000c000000040000000c0000000 0000000140009800     main.obj
+ 0002:00001810       __xmm@00000000c0000000c000000040000000 0000000140009810     main.obj
+ 0002:00001820       __xmm@3f800000000000000000000000000000 0000000140009820     main.obj
+ 0002:00001830       __xmm@7fffffff7fffffff7fffffff7fffffff 0000000140009830     main.obj
+ 0002:00001840       __xmm@80000000000000008000000000000000 0000000140009840     main.obj
+ 0002:00001850       __xmm@80000000800000008000000080000000 0000000140009850     main.obj
+ 0002:00001860       __xmm@bf800000000000000000000000000000 0000000140009860     main.obj
+ 0002:00001870       __xmm@bf800000bf8000000000000000000000 0000000140009870     main.obj
+ 0002:00001880       __ymm@00000000000000003f800000000000000000000000000000000000003f800000 0000000140009880     main.obj
+ 0002:000018a0       __ymm@3e8000003e8000003e8000003e8000003e8000003e8000003e8000003e800000 00000001400098a0     main.obj
  0002:000018c0       __ymm@3eaaaaab3eaaaaab3eaaaaab3eaaaaab3eaaaaab3eaaaaab3eaaaaab3eaaaaab 00000001400098c0     main.obj
  0002:000018e0       __ymm@3f0000003f0000003f0000003f0000003f0000003f0000003f0000003f000000 00000001400098e0     main.obj
- 0002:00001900       __ymm@3f8000003f8000003f8000003f8000003f8000003f8000003f8000003f800000 0000000140009900     main.obj
- 0002:00001920       __ymm@3f8000003f8000003f8000003f800000bf800000bf800000bf800000bf800000 0000000140009920     main.obj
- 0002:00001940       __ymm@3f8000003f800000bf800000bf8000003f8000003f800000bf800000bf800000 0000000140009940     main.obj
- 0002:00001960       __ymm@3f800000bf8000003f800000bf8000003f800000bf8000003f800000bf800000 0000000140009960     main.obj
- 0002:00001980       __ymm@4000000040000000400000004000000040000000400000004000000040000000 0000000140009980     main.obj
- 0002:000019a0       __ymm@4040000040400000404000004040000040400000404000004040000040400000 00000001400099a0     main.obj
- 0002:000019c0       __ymm@7f8000007f8000007f8000007f8000007f8000007f8000007f8000007f800000 00000001400099c0     main.obj
- 0002:000019e0       __ymm@7fffffff7fffffff7fffffff7fffffff7fffffff7fffffff7fffffff7fffffff 00000001400099e0     main.obj
- 0002:00001a00       __ymm@8000000080000000800000008000000080000000800000008000000080000000 0000000140009a00     main.obj
- 0002:00001a20       ??_C@_0M@HFFOIJBL@Fatal?5Error?$AA@ 0000000140009a20     SDL2main:SDL_windows_main.obj
- 0002:00001a30       ??_C@_0BJ@HFNMHALN@Out?5of?5memory?5?9?5aborting?$AA@ 0000000140009a30     SDL2main:SDL_windows_main.obj
- 0002:00001a4c       ??_C@_05EGJIMALK@UTF?98?$AA@ 0000000140009a4c     SDL2main:SDL_windows_main.obj
- 0002:00001a58       ??_C@_08NBDJLNFA@UTF?916LE?$AA@ 0000000140009a58     SDL2main:SDL_windows_main.obj
- 0002:00002198       __IMPORT_DESCRIPTOR_KERNEL32 000000014000a198     kernel32:KERNEL32.dll
- 0002:000021ac       __IMPORT_DESCRIPTOR_OPENGL32 000000014000a1ac     opengl32:OPENGL32.dll
- 0002:000021c0       __IMPORT_DESCRIPTOR_SDL2   000000014000a1c0     SDL2:SDL2.dll
- 0002:000021d4       __NULL_IMPORT_DESCRIPTOR   000000014000a1d4     kernel32:KERNEL32.dll
+ 0002:00001900       __ymm@3f8000003f8000003f8000003f800000bf800000bf800000bf800000bf800000 0000000140009900     main.obj
+ 0002:00001920       __ymm@3f8000003f800000bf800000bf8000003f8000003f800000bf800000bf800000 0000000140009920     main.obj
+ 0002:00001940       __ymm@3f800000bf8000003f800000bf8000003f800000bf8000003f800000bf800000 0000000140009940     main.obj
+ 0002:00001960       __ymm@4000000040000000400000004000000040000000400000004000000040000000 0000000140009960     main.obj
+ 0002:00001980       __ymm@4040000040400000404000004040000040400000404000004040000040400000 0000000140009980     main.obj
+ 0002:000019a0       __ymm@7f8000007f8000007f8000007f8000007f8000007f8000007f8000007f800000 00000001400099a0     main.obj
+ 0002:000019c0       __ymm@7fffffff7fffffff7fffffff7fffffff7fffffff7fffffff7fffffff7fffffff 00000001400099c0     main.obj
+ 0002:000019e0       __ymm@8000000080000000800000008000000080000000800000008000000080000000 00000001400099e0     main.obj
+ 0002:00001a00       ??_C@_0M@HFFOIJBL@Fatal?5Error?$AA@ 0000000140009a00     SDL2main:SDL_windows_main.obj
+ 0002:00001a10       ??_C@_0BJ@HFNMHALN@Out?5of?5memory?5?9?5aborting?$AA@ 0000000140009a10     SDL2main:SDL_windows_main.obj
+ 0002:00001a2c       ??_C@_05EGJIMALK@UTF?98?$AA@ 0000000140009a2c     SDL2main:SDL_windows_main.obj
+ 0002:00001a38       ??_C@_08NBDJLNFA@UTF?916LE?$AA@ 0000000140009a38     SDL2main:SDL_windows_main.obj
+ 0002:00002108       __IMPORT_DESCRIPTOR_KERNEL32 000000014000a108     kernel32:KERNEL32.dll
+ 0002:0000211c       __IMPORT_DESCRIPTOR_OPENGL32 000000014000a11c     opengl32:OPENGL32.dll
+ 0002:00002130       __IMPORT_DESCRIPTOR_SDL2   000000014000a130     SDL2:SDL2.dll
+ 0002:00002144       __NULL_IMPORT_DESCRIPTOR   000000014000a144     kernel32:KERNEL32.dll
  0003:000000e0       ?VertShader@@3Ustring@@A   000000014000b0e0     main.obj
  0003:000000f0       ?SplatVertShader@@3Ustring@@A 000000014000b0f0     main.obj
  0003:00000100       ?SplatFragShader@@3Ustring@@A 000000014000b100     main.obj
  0003:00000170       ?sdl_assert_data@?5??Api_Ualloc@@YAPEAX_K@Z@4USDL_AssertData@@A 000000014000b170     main.obj
  0003:000001a0       ?sdl_assert_data@?5??Api_Talloc@@YAPEAX_K@Z@4USDL_AssertData@@A 000000014000b1a0     main.obj
  0003:000001d0       ?SPLATS@@3PAUsplat@@A      000000014000b1d0     main.obj
- 0003:0e4e1dd0       ?SPLATCOUNT@@3_KA          000000014e4ecdd0     main.obj
- 0003:0e4e1e30       _fltused                   000000014e4ece30     main.obj
+ 0003:393871d0       ?SPLATCOUNT@@3_KA          00000001793921d0     main.obj
+ 0003:39387230       _fltused                   0000000179392230     main.obj
 
  entry point at        0000:00000000
 
  Static symbols
 
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     sdl_msvc.exp
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     kernel32:KERNEL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     kernel32:KERNEL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     kernel32:KERNEL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     kernel32:KERNEL32.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
- 0000:f1b0e000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     kernel32:KERNEL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     kernel32:KERNEL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     sdl_msvc.exp
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     kernel32:KERNEL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     kernel32:KERNEL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     SDL2:SDL2.dll
+ 0000:c6c69000       .debug$S                   0000000140000000     opengl32:OPENGL32.dll
  0001:00000000       ParseCommandLine           0000000140001000 f   SDL2main:SDL_windows_main.obj
  0001:00000180       main_getcmdline            0000000140001180 f   SDL2main:SDL_windows_main.obj
  0001:00000300       ?OpenGL_Clear@@YAXXZ       0000000140001300 f   main.obj
  0001:00000330       ?OpenGL_Frame@@YAXXZ       0000000140001330 f   main.obj
  0001:00000380       ??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 0000000140001380 f   main.obj
- 0001:00000490       ??$SDF_Combine@Uf32x8@@@@YA?AUf32x8@@Usdf_op@@U0@1@Z 0000000140001490 f   main.obj
- 0001:00000610       ??$SDF_EvalMax@Uf32x8@@@@YA?AUf32x8@@PEBUsdf@@U0@11@Z 0000000140001610 f   main.obj
- 0001:000007f0       ??$SDF_SphereMax@Uf32x8@@@@YA?AUf32x8@@Usdf_shape_sphere@@U0@11@Z 00000001400017f0 f   main.obj
- 0001:00000bb0       ?Async_WorkThread@@YAHPEAX@Z 0000000140001bb0 f   main.obj
- 0001:00000de0       ?GL_LoadFunctions@@YAIXZ   0000000140001de0 f   main.obj
- 0001:00001550       ?InitCPU@@YAXXZ            0000000140002550 f   main.obj
- 0001:000016b0       ?Main_Audiocallback@@YAXPEAXPEAEH@Z 00000001400026b0 f   main.obj
- 0001:000016c0       ?Main_CheckCPUFeatures@@YAIXZ 00000001400026c0 f   main.obj
- 0001:000017c0       ?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 00000001400027c0 f   main.obj
- 0001:00001940       ?Main_CreateOpenGLWindow@@YAPEAUSDL_Window@@XZ 0000000140002940 f   main.obj
- 0001:00001a60       ?Main_Error@@YAHUstring@@@Z 0000000140002a60 f   main.obj
- 0001:00001be0       ?Main_ToggleFullscreen@@YAXPEAUmain_state@@PEAUSDL_Window@@@Z 0000000140002be0 f   main.obj
- 0001:00001f70       ?OpenGL_CheckError@@YAIXZ  0000000140002f70 f   main.obj
- 0001:00002040       ?OpenGL_CompileShader@@YAIIUstring@@@Z 0000000140003040 f   main.obj
- 0001:00002170       ?OpenGL_DrawSplats@@YAXXZ  0000000140003170 f   main.obj
- 0001:000021b0       ?OpenGL_Init@@YAIXZ        00000001400031b0 f   main.obj
- 0001:000026a0       ?OpenGL_LoadProgram@@YAIUstring@@0@Z 00000001400036a0 f   main.obj
- 0001:00002850       ?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 0000000140003850 f   main.obj
- 0001:000029a0       ?SDF_Gen8@@YAXPEBUsdf@@Uvec3@@MI@Z 00000001400039a0 f   main.obj
- 0001:00002c10       ?SDF_Normal@@YA?AUvec3@@PEBUsdf@@U1@@Z 0000000140003c10 f   main.obj
- 0001:00002ea0       ?TSPrint@@YA?AUstring@@PEBDZZ 0000000140003ea0 f   main.obj
- 0001:00002f10       ?TSPrint_Callback@@YAPEADPEADPEAXH@Z 0000000140003f10 f   main.obj
- 0001:00003150       ?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000140004150 f   main.obj
- 0001:00003b50       ?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140004b50 f   main.obj
- 0001:000061e4       $LN976                     00000001400071e4     main.obj
- 0001:00006208       $LN975                     0000000140007208     main.obj
- 0001:00006248       $LN974                     0000000140007248     main.obj
- 0001:0000625c       $LN973                     000000014000725c     main.obj
- 0001:00006290       $LN972                     0000000140007290     main.obj
- 0001:000062c4       $LN971                     00000001400072c4     main.obj
+ 0001:00000470       ??$SDF_Combine@Uf32x8@@@@YA?AUf32x8@@Usdf_op@@U0@1@Z 0000000140001470 f   main.obj
+ 0001:000005d0       ??$SDF_EvalMax@Uf32x8@@@@YA?AUf32x8@@PEBUsdf@@U0@11@Z 00000001400015d0 f   main.obj
+ 0001:000007e0       ??$SDF_SphereMax@Uf32x8@@@@YA?AUf32x8@@Usdf_shape_sphere@@U0@11@Z 00000001400017e0 f   main.obj
+ 0001:00000ba0       ?Async_WorkThread@@YAHPEAX@Z 0000000140001ba0 f   main.obj
+ 0001:00000dd0       ?GL_LoadFunctions@@YAIXZ   0000000140001dd0 f   main.obj
+ 0001:00001540       ?InitCPU@@YAXXZ            0000000140002540 f   main.obj
+ 0001:000016a0       ?Main_Audiocallback@@YAXPEAXPEAEH@Z 00000001400026a0 f   main.obj
+ 0001:000016b0       ?Main_CheckCPUFeatures@@YAIXZ 00000001400026b0 f   main.obj
+ 0001:000017b0       ?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 00000001400027b0 f   main.obj
+ 0001:00001930       ?Main_CreateOpenGLWindow@@YAPEAUSDL_Window@@XZ 0000000140002930 f   main.obj
+ 0001:00001a50       ?Main_Error@@YAHUstring@@@Z 0000000140002a50 f   main.obj
+ 0001:00001bd0       ?Main_ToggleFullscreen@@YAXPEAUmain_state@@PEAUSDL_Window@@@Z 0000000140002bd0 f   main.obj
+ 0001:00001f60       ?OpenGL_CheckError@@YAIXZ  0000000140002f60 f   main.obj
+ 0001:00002030       ?OpenGL_CompileShader@@YAIIUstring@@@Z 0000000140003030 f   main.obj
+ 0001:00002160       ?OpenGL_DrawSplats@@YAXXZ  0000000140003160 f   main.obj
+ 0001:000021a0       ?OpenGL_Init@@YAIXZ        00000001400031a0 f   main.obj
+ 0001:00002690       ?OpenGL_LoadProgram@@YAIUstring@@0@Z 0000000140003690 f   main.obj
+ 0001:00002840       ?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 0000000140003840 f   main.obj
+ 0001:000028f0       ?SDF_EvalShape@@YAMUsdf_shape@@Uvec@@@Z 00000001400038f0 f   main.obj
+ 0001:00002a10       ?SDF_Gen8@@YAXPEBUsdf@@Uvec3@@MI@Z 0000000140003a10 f   main.obj
+ 0001:00002d20       ?SDF_Normal@@YA?AUvec3@@PEBUsdf@@U1@@Z 0000000140003d20 f   main.obj
+ 0001:00002fc0       ?TSPrint@@YA?AUstring@@PEBDZZ 0000000140003fc0 f   main.obj
+ 0001:00003030       ?TSPrint_Callback@@YAPEADPEADPEAXH@Z 0000000140004030 f   main.obj
+ 0001:00003270       ?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000140004270 f   main.obj
+ 0001:00003c70       ?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140004c70 f   main.obj
+ 0001:00006574       $LN976                     0000000140007574     main.obj
+ 0001:00006598       $LN975                     0000000140007598     main.obj
+ 0001:000065d8       $LN974                     00000001400075d8     main.obj
+ 0001:000065ec       $LN973                     00000001400075ec     main.obj
+ 0001:00006620       $LN972                     0000000140007620     main.obj
+ 0001:00006654       $LN971                     0000000140007654     main.obj
  0002:000001e0       ?stbsp__bot@@3QBNB         00000001400081e0     main.obj
  0002:000002a0       ?stbsp__negbot@@3QBNB      00000001400082a0     main.obj
  0002:00000350       ?stbsp__negboterr@@3QBNB   0000000140008350     main.obj
@@ -451,85 +455,79 @@
  0002:00000660       ?Gfx@@3Ugfx_functions@@B   0000000140008660     main.obj
  0002:00000670       ?CRC32Table@@3QBIB         0000000140008670     main.obj
  0002:00000a70       ?UTF8LUP@@3QBEB            0000000140008a70     main.obj
- 0002:00001c5c       $unwind$memset             0000000140009c5c     main.obj
- 0002:00001c64       $chain$0$memset            0000000140009c64     main.obj
- 0002:00001c78       $chain$1$memset            0000000140009c78     main.obj
- 0002:00001c88       $unwind$?Api_Ualloc@@YAPEAX_K@Z 0000000140009c88     main.obj
- 0002:00001c94       $unwind$?Api_Talloc@@YAPEAX_K@Z 0000000140009c94     main.obj
- 0002:00001ca0       $unwind$?Sin@@YAMM@Z       0000000140009ca0     main.obj
- 0002:00001cb0       $unwind$?Cos@@YAMM@Z       0000000140009cb0     main.obj
- 0002:00001cc0       $unwind$?Mat4_Mul@@YA?AUmat4@@U1@0@Z 0000000140009cc0     main.obj
- 0002:00001ce0       $unwind$?Mat4_InfinitePerspective@@YA?AUmat4@@MMM@Z 0000000140009ce0     main.obj
- 0002:00001d00       $unwind$?Async_WorkThread@@YAHPEAX@Z 0000000140009d00     main.obj
- 0002:00001d08       $unwind$?WinMainCRTStartup@@YAXXZ 0000000140009d08     main.obj
- 0002:00001d08       $unwind$?OpenGL_DrawSplats@@YAXXZ 0000000140009d08     main.obj
- 0002:00001d08       $unwind$?OpenGL_Frame@@YAXXZ 0000000140009d08     main.obj
- 0002:00001d08       $unwind$?GL_LoadFunctions@@YAIXZ 0000000140009d08     main.obj
- 0002:00001d08       $unwind$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 0000000140009d08     main.obj
- 0002:00001d08       $unwind$?OpenGL_Clear@@YAXXZ 0000000140009d08     main.obj
- 0002:00001d08       $unwind$?Main_CheckCPUFeatures@@YAIXZ 0000000140009d08     main.obj
- 0002:00001d10       $chain$0$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 0000000140009d10     main.obj
- 0002:00001d24       $chain$1$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 0000000140009d24     main.obj
- 0002:00001d34       $unwind$stbsp_vsprintfcb   0000000140009d34     main.obj
- 0002:00001d50       $unwind$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d50     main.obj
- 0002:00001d64       $chain$0$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d64     main.obj
- 0002:00001d78       $chain$1$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d78     main.obj
- 0002:00001d8c       $chain$2$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d8c     main.obj
- 0002:00001d9c       $chain$3$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d9c     main.obj
- 0002:00001dac       $unwind$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000140009dac     main.obj
- 0002:00001dc0       $chain$2$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000140009dc0     main.obj
- 0002:00001ddc       $chain$3$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000140009ddc     main.obj
- 0002:00001dec       $unwind$?TSPrint_Callback@@YAPEADPEADPEAXH@Z 0000000140009dec     main.obj
- 0002:00001dfc       $unwind$?TSPrint@@YA?AUstring@@PEBDZZ 0000000140009dfc     main.obj
- 0002:00001e0c       $unwind$SDL_main           0000000140009e0c     main.obj
- 0002:00001e20       $chain$4$SDL_main          0000000140009e20     main.obj
- 0002:00001e3c       $chain$7$SDL_main          0000000140009e3c     main.obj
+ 0002:00001c3c       $unwind$memset             0000000140009c3c     main.obj
+ 0002:00001c44       $chain$0$memset            0000000140009c44     main.obj
+ 0002:00001c58       $chain$1$memset            0000000140009c58     main.obj
+ 0002:00001c68       $unwind$?Api_Ualloc@@YAPEAX_K@Z 0000000140009c68     main.obj
+ 0002:00001c74       $unwind$?Api_Talloc@@YAPEAX_K@Z 0000000140009c74     main.obj
+ 0002:00001c80       $unwind$?File_ReadEntireFile@@YAPEAXUstring@@PEA_K@Z 0000000140009c80     main.obj
+ 0002:00001c80       $unwind$?Main_Error@@YAHUstring@@@Z 0000000140009c80     main.obj
+ 0002:00001c94       $unwind$?Sin@@YAMM@Z       0000000140009c94     main.obj
+ 0002:00001ca4       $unwind$?Cos@@YAMM@Z       0000000140009ca4     main.obj
+ 0002:00001cb4       $unwind$?Mat4_Mul@@YA?AUmat4@@U1@0@Z 0000000140009cb4     main.obj
+ 0002:00001cd4       $unwind$?Mat4_InfinitePerspective@@YA?AUmat4@@MMM@Z 0000000140009cd4     main.obj
+ 0002:00001cf4       $unwind$?Async_WorkThread@@YAHPEAX@Z 0000000140009cf4     main.obj
+ 0002:00001cfc       $chain$0$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 0000000140009cfc     main.obj
+ 0002:00001d10       $chain$1$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 0000000140009d10     main.obj
+ 0002:00001d20       $unwind$stbsp_vsprintfcb   0000000140009d20     main.obj
+ 0002:00001d3c       $unwind$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d3c     main.obj
+ 0002:00001d50       $chain$0$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d50     main.obj
+ 0002:00001d64       $chain$1$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d64     main.obj
+ 0002:00001d78       $chain$2$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d78     main.obj
+ 0002:00001d88       $chain$3$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000140009d88     main.obj
+ 0002:00001d98       $unwind$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000140009d98     main.obj
+ 0002:00001dac       $chain$2$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000140009dac     main.obj
+ 0002:00001dc8       $chain$3$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000140009dc8     main.obj
+ 0002:00001dd8       $unwind$?TSPrint_Callback@@YAPEADPEADPEAXH@Z 0000000140009dd8     main.obj
+ 0002:00001de8       $unwind$?TSPrint@@YA?AUstring@@PEBDZZ 0000000140009de8     main.obj
+ 0002:00001df8       $unwind$SDL_main           0000000140009df8     main.obj
+ 0002:00001e0c       $chain$4$SDL_main          0000000140009e0c     main.obj
+ 0002:00001e28       $chain$7$SDL_main          0000000140009e28     main.obj
+ 0002:00001e44       $chain$8$SDL_main          0000000140009e44     main.obj
  0002:00001e58       $chain$9$SDL_main          0000000140009e58     main.obj
- 0002:00001e70       $chain$10$SDL_main         0000000140009e70     main.obj
- 0002:00001e84       $chain$11$SDL_main         0000000140009e84     main.obj
- 0002:00001e94       $chain$12$SDL_main         0000000140009e94     main.obj
- 0002:00001ea8       $chain$13$SDL_main         0000000140009ea8     main.obj
- 0002:00001eb8       $chain$14$SDL_main         0000000140009eb8     main.obj
- 0002:00001ec8       $unwind$?InitCPU@@YAXXZ    0000000140009ec8     main.obj
- 0002:00001efc       $unwind$?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 0000000140009efc     main.obj
- 0002:00001f10       $chain$0$?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 0000000140009f10     main.obj
- 0002:00001f24       $chain$1$?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 0000000140009f24     main.obj
- 0002:00001f34       $unwind$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 0000000140009f34     main.obj
- 0002:00001f3c       $chain$0$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 0000000140009f3c     main.obj
- 0002:00001f50       $chain$2$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 0000000140009f50     main.obj
- 0002:00001f50       $chain$4$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 0000000140009f50     main.obj
- 0002:00001f64       $chain$5$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 0000000140009f64     main.obj
- 0002:00001f74       $unwind$?SDF_Normal@@YA?AUvec3@@PEBUsdf@@U1@@Z 0000000140009f74     main.obj
- 0002:00001f8c       $unwind$?SDF_Gen8@@YAXPEBUsdf@@Uvec3@@MI@Z 0000000140009f8c     main.obj
- 0002:00001fa8       $unwind$??$SDF_EvalMax@Uf32x8@@@@YA?AUf32x8@@PEBUsdf@@U0@11@Z 0000000140009fa8     main.obj
- 0002:00001fd8       $unwind$?OpenGL_CheckError@@YAIXZ 0000000140009fd8     main.obj
- 0002:00001fe0       $chain$2$?OpenGL_CheckError@@YAIXZ 0000000140009fe0     main.obj
- 0002:00001ffc       $chain$3$?OpenGL_CheckError@@YAIXZ 0000000140009ffc     main.obj
- 0002:0000200c       $unwind$?OpenGL_CompileShader@@YAIIUstring@@@Z 000000014000a00c     main.obj
- 0002:0000201c       $unwind$?OpenGL_LoadProgram@@YAIUstring@@0@Z 000000014000a01c     main.obj
- 0002:00002028       $chain$0$?OpenGL_LoadProgram@@YAIUstring@@0@Z 000000014000a028     main.obj
- 0002:0000203c       $chain$2$?OpenGL_LoadProgram@@YAIUstring@@0@Z 000000014000a03c     main.obj
- 0002:00002050       $unwind$?OpenGL_Init@@YAIXZ 000000014000a050     main.obj
- 0002:00002074       $unwind$?File_ReadEntireFile@@YAPEAXUstring@@PEA_K@Z 000000014000a074     main.obj
- 0002:00002074       $unwind$?Main_Error@@YAHUstring@@@Z 000000014000a074     main.obj
- 0002:00002088       $unwind$?Main_ToggleFullscreen@@YAXPEAUmain_state@@PEAUSDL_Window@@@Z 000000014000a088     main.obj
- 0002:00002094       $unwind$?Main_CreateOpenGLWindow@@YAPEAUSDL_Window@@XZ 000000014000a094     main.obj
- 0002:0000209c       $unwind$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014000a09c     main.obj
- 0002:000020a8       $chain$1$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014000a0a8     main.obj
- 0002:000020c0       $chain$2$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014000a0c0     main.obj
- 0002:000020d0       $unwind$??$SDF_Combine@Uf32x8@@@@YA?AUf32x8@@Usdf_op@@U0@1@Z 000000014000a0d0     main.obj
- 0002:000020e4       $unwind$??$SDF_SphereMax@Uf32x8@@@@YA?AUf32x8@@Usdf_shape_sphere@@U0@11@Z 000000014000a0e4     main.obj
- 0002:00002118       $unwind$ParseCommandLine   000000014000a118     SDL2main:SDL_windows_main.obj
- 0002:00002130       $unwind$main_getcmdline    000000014000a130     SDL2main:SDL_windows_main.obj
- 0002:00002150       .edata                     000000014000a150     sdl_msvc.exp
- 0002:00002178       rgpv                       000000014000a178     sdl_msvc.exp
- 0002:0000217c       rgszName                   000000014000a17c     sdl_msvc.exp
- 0002:00002180       rgwOrd                     000000014000a180     sdl_msvc.exp
- 0002:00002182       szName                     000000014000a182     sdl_msvc.exp
- 0002:0000218f       $N00001                    000000014000a18f     sdl_msvc.exp
- 0002:000023fa       .idata$6                   000000014000a3fa     kernel32:KERNEL32.dll
- 0002:00002474       .idata$6                   000000014000a474     opengl32:OPENGL32.dll
- 0002:000027fc       .idata$6                   000000014000a7fc     SDL2:SDL2.dll
+ 0002:00001e68       $chain$10$SDL_main         0000000140009e68     main.obj
+ 0002:00001e7c       $chain$11$SDL_main         0000000140009e7c     main.obj
+ 0002:00001e8c       $chain$12$SDL_main         0000000140009e8c     main.obj
+ 0002:00001e9c       $unwind$?InitCPU@@YAXXZ    0000000140009e9c     main.obj
+ 0002:00001ed0       $unwind$?SDF_EvalShape@@YAMUsdf_shape@@Uvec@@@Z 0000000140009ed0     main.obj
+ 0002:00001ed8       $unwind$?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 0000000140009ed8     main.obj
+ 0002:00001ee8       $unwind$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 0000000140009ee8     main.obj
+ 0002:00001ef4       $unwind$?SDF_Normal@@YA?AUvec3@@PEBUsdf@@U1@@Z 0000000140009ef4     main.obj
+ 0002:00001f14       $unwind$?SDF_Gen8@@YAXPEBUsdf@@Uvec3@@MI@Z 0000000140009f14     main.obj
+ 0002:00001f34       $unwind$??$SDF_EvalMax@Uf32x8@@@@YA?AUf32x8@@PEBUsdf@@U0@11@Z 0000000140009f34     main.obj
+ 0002:00001f60       $unwind$?OpenGL_CheckError@@YAIXZ 0000000140009f60     main.obj
+ 0002:00001f68       $chain$2$?OpenGL_CheckError@@YAIXZ 0000000140009f68     main.obj
+ 0002:00001f84       $chain$3$?OpenGL_CheckError@@YAIXZ 0000000140009f84     main.obj
+ 0002:00001f94       $unwind$?OpenGL_CompileShader@@YAIIUstring@@@Z 0000000140009f94     main.obj
+ 0002:00001fa4       $unwind$?OpenGL_LoadProgram@@YAIUstring@@0@Z 0000000140009fa4     main.obj
+ 0002:00001fb0       $chain$0$?OpenGL_LoadProgram@@YAIUstring@@0@Z 0000000140009fb0     main.obj
+ 0002:00001fc4       $chain$2$?OpenGL_LoadProgram@@YAIUstring@@0@Z 0000000140009fc4     main.obj
+ 0002:00001fd8       $unwind$?OpenGL_Init@@YAIXZ 0000000140009fd8     main.obj
+ 0002:00001ffc       $unwind$?Main_ToggleFullscreen@@YAXPEAUmain_state@@PEAUSDL_Window@@@Z 0000000140009ffc     main.obj
+ 0002:00002008       $unwind$?Main_CreateOpenGLWindow@@YAPEAUSDL_Window@@XZ 000000014000a008     main.obj
+ 0002:00002010       $unwind$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014000a010     main.obj
+ 0002:0000201c       $chain$1$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014000a01c     main.obj
+ 0002:00002034       $chain$2$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014000a034     main.obj
+ 0002:00002044       $unwind$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 000000014000a044     main.obj
+ 0002:00002044       $unwind$?OpenGL_DrawSplats@@YAXXZ 000000014000a044     main.obj
+ 0002:00002044       $unwind$?GL_LoadFunctions@@YAIXZ 000000014000a044     main.obj
+ 0002:00002044       $unwind$?Main_CheckCPUFeatures@@YAIXZ 000000014000a044     main.obj
+ 0002:00002044       $unwind$?WinMainCRTStartup@@YAXXZ 000000014000a044     main.obj
+ 0002:00002044       $unwind$?OpenGL_Frame@@YAXXZ 000000014000a044     main.obj
+ 0002:00002044       $unwind$?OpenGL_Clear@@YAXXZ 000000014000a044     main.obj
+ 0002:0000204c       $unwind$??$SDF_Combine@Uf32x8@@@@YA?AUf32x8@@Usdf_op@@U0@1@Z 000000014000a04c     main.obj
+ 0002:00002058       $unwind$??$SDF_SphereMax@Uf32x8@@@@YA?AUf32x8@@Usdf_shape_sphere@@U0@11@Z 000000014000a058     main.obj
+ 0002:0000208c       $unwind$ParseCommandLine   000000014000a08c     SDL2main:SDL_windows_main.obj
+ 0002:000020a4       $unwind$main_getcmdline    000000014000a0a4     SDL2main:SDL_windows_main.obj
+ 0002:000020c0       .edata                     000000014000a0c0     sdl_msvc.exp
+ 0002:000020e8       rgpv                       000000014000a0e8     sdl_msvc.exp
+ 0002:000020ec       rgszName                   000000014000a0ec     sdl_msvc.exp
+ 0002:000020f0       rgwOrd                     000000014000a0f0     sdl_msvc.exp
+ 0002:000020f2       szName                     000000014000a0f2     sdl_msvc.exp
+ 0002:000020ff       $N00001                    000000014000a0ff     sdl_msvc.exp
+ 0002:0000236a       .idata$6                   000000014000a36a     kernel32:KERNEL32.dll
+ 0002:000023e4       .idata$6                   000000014000a3e4     opengl32:OPENGL32.dll
+ 0002:0000276c       .idata$6                   000000014000a76c     SDL2:SDL2.dll
  0003:00000000       ?stbsp__period@@3DA        000000014000b000     main.obj
  0003:00000001       ?stbsp__comma@@3DA         000000014000b001     main.obj
  0003:00000010       ?stbsp__digitpair@@3PADA   000000014000b010     main.obj
@@ -537,152 +535,146 @@
  0003:00000110       ?hex@?1??stbsp_vsprintfcb@@9@4PADA 000000014000b110     main.obj
  0003:00000128       ?hexu@?1??stbsp_vsprintfcb@@9@4PADA 000000014000b128     main.obj
  0003:00000140       ?sdl_assert_data@?7??OpenGL_CheckError@@YAIXZ@4USDL_AssertData@@A 000000014000b140     main.obj
- 0003:0e4e1dd8       ?GL@@3Ugl_state@@A         000000014e4ecdd8     main.obj
- 0003:0e4e1df0       ?CPU@@3Ucpu@@A             000000014e4ecdf0     main.obj
- 0003:0e4e1e14       ?GlobalAudioDevice@@3IA    000000014e4ece14     main.obj
- 0003:0e4e1e18       ?GlobalResetGame@@3Uatomic@@A 000000014e4ece18     main.obj
- 0003:0e4e1e20       ?GlobalZone@@3PEAUmemory_zone@@EA 000000014e4ece20     main.obj
- 0003:0e4e1e28       ?GlobalPerfCountFrequency@@3_KA 000000014e4ece28     main.obj
- 0003:0e4e1e34       ?MemoryArenaTLS@@3IA       000000014e4ece34     main.obj
- 0003:0e4e1e38       ?GlobalGLContext@@3PEAXEA  000000014e4ece38     main.obj
- 0003:0e4e1e40       ?AsyncQueue@@3Uasync_queue@@A 000000014e4ece40     main.obj
- 0003:0e4e2e60       ?glTexImage3D@@3P6AXIHHHHHHIIPEBX@ZEA 000000014e4ede60     main.obj
- 0003:0e4e2e68       ?glTexSubImage3D@@3P6AXIHHHHHHHIIPEBX@ZEA 000000014e4ede68     main.obj
- 0003:0e4e2e70       ?glGenBuffers@@3P6AXHPEAI@ZEA 000000014e4ede70     main.obj
- 0003:0e4e2e78       ?glBindBuffer@@3P6AXII@ZEA 000000014e4ede78     main.obj
- 0003:0e4e2e80       ?glDeleteBuffers@@3P6AXHPEBI@ZEA 000000014e4ede80     main.obj
- 0003:0e4e2e88       ?glBufferData@@3P6AXI_JPEBXI@ZEA 000000014e4ede88     main.obj
- 0003:0e4e2e90       ?glBufferSubData@@3P6AXI_J0PEBX@ZEA 000000014e4ede90     main.obj
- 0003:0e4e2e98       ?glCreateShader@@3P6AII@ZEA 000000014e4ede98     main.obj
- 0003:0e4e2ea0       ?glCompileShader@@3P6AXI@ZEA 000000014e4edea0     main.obj
- 0003:0e4e2ea8       ?glDeleteShader@@3P6AXI@ZEA 000000014e4edea8     main.obj
- 0003:0e4e2eb0       ?glShaderSource@@3P6AXIHPEBQEBDPEBH@ZEA 000000014e4edeb0     main.obj
- 0003:0e4e2eb8       ?glGetShaderiv@@3P6AXIIPEAH@ZEA 000000014e4edeb8     main.obj
- 0003:0e4e2ec0       ?glAttachShader@@3P6AXII@ZEA 000000014e4edec0     main.obj
- 0003:0e4e2ec8       ?glGetShaderInfoLog@@3P6AXIHPEAHPEAD@ZEA 000000014e4edec8     main.obj
- 0003:0e4e2ed0       ?glDetachShader@@3P6AXII@ZEA 000000014e4eded0     main.obj
- 0003:0e4e2ed8       ?glCreateProgram@@3P6AIXZEA 000000014e4eded8     main.obj
- 0003:0e4e2ee0       ?glLinkProgram@@3P6AXI@ZEA 000000014e4edee0     main.obj
- 0003:0e4e2ee8       ?glUseProgram@@3P6AXI@ZEA  000000014e4edee8     main.obj
- 0003:0e4e2ef0       ?glGetProgramiv@@3P6AXIIPEAH@ZEA 000000014e4edef0     main.obj
- 0003:0e4e2ef8       ?glGetProgramInfoLog@@3P6AXIHPEAHPEAD@ZEA 000000014e4edef8     main.obj
- 0003:0e4e2f00       ?glDeleteProgram@@3P6AXI@ZEA 000000014e4edf00     main.obj
- 0003:0e4e2f08       ?glEnableVertexAttribArray@@3P6AXI@ZEA 000000014e4edf08     main.obj
- 0003:0e4e2f10       ?glDisableVertexAttribArray@@3P6AXI@ZEA 000000014e4edf10     main.obj
- 0003:0e4e2f18       ?glVertexAttribPointer@@3P6AXIHIEHPEBX@ZEA 000000014e4edf18     main.obj
- 0003:0e4e2f20       ?glBindAttribLocation@@3P6AXIIPEBD@ZEA 000000014e4edf20     main.obj
- 0003:0e4e2f28       ?glActiveTexture@@3P6AXI@ZEA 000000014e4edf28     main.obj
- 0003:0e4e2f30       ?glBlendFuncSeparate@@3P6AXIIII@ZEA 000000014e4edf30     main.obj
- 0003:0e4e2f38       ?glGetUniformLocation@@3P6AHIPEBD@ZEA 000000014e4edf38     main.obj
- 0003:0e4e2f40       ?glUniform1f@@3P6AXHM@ZEA  000000014e4edf40     main.obj
- 0003:0e4e2f48       ?glUniform2f@@3P6AXHMM@ZEA 000000014e4edf48     main.obj
- 0003:0e4e2f50       ?glUniform3f@@3P6AXHMMM@ZEA 000000014e4edf50     main.obj
- 0003:0e4e2f58       ?glUniform4f@@3P6AXHMMMM@ZEA 000000014e4edf58     main.obj
- 0003:0e4e2f60       ?glUniform1i@@3P6AXHH@ZEA  000000014e4edf60     main.obj
- 0003:0e4e2f68       ?glUniform2i@@3P6AXHHH@ZEA 000000014e4edf68     main.obj
- 0003:0e4e2f70       ?glUniform3i@@3P6AXHHHH@ZEA 000000014e4edf70     main.obj
- 0003:0e4e2f78       ?glUniform4i@@3P6AXHHHHH@ZEA 000000014e4edf78     main.obj
- 0003:0e4e2f80       ?glUniform1fv@@3P6AXHHPEBM@ZEA 000000014e4edf80     main.obj
- 0003:0e4e2f88       ?glUniform2fv@@3P6AXHHPEBM@ZEA 000000014e4edf88     main.obj
- 0003:0e4e2f90       ?glUniform3fv@@3P6AXHHPEBM@ZEA 000000014e4edf90     main.obj
- 0003:0e4e2f98       ?glUniform2iv@@3P6AXHHPEBH@ZEA 000000014e4edf98     main.obj
- 0003:0e4e2fa0       ?glUniformMatrix4fv@@3P6AXHHEPEBM@ZEA 000000014e4edfa0     main.obj
- 0003:0e4e2fa8       ?glVertexAttrib2f@@3P6AXIMM@ZEA 000000014e4edfa8     main.obj
- 0003:0e4e2fb0       ?glVertexAttrib3f@@3P6AXIMMM@ZEA 000000014e4edfb0     main.obj
- 0003:0e4e2fb8       ?glVertexAttrib4f@@3P6AXIMMMM@ZEA 000000014e4edfb8     main.obj
- 0003:0e4e2fc0       ?glVertexAttrib3fv@@3P6AXIPEBM@ZEA 000000014e4edfc0     main.obj
- 0003:0e4e2fc8       ?glGenFramebuffers@@3P6AXHPEAI@ZEA 000000014e4edfc8     main.obj
- 0003:0e4e2fd0       ?glBindFramebuffer@@3P6AXII@ZEA 000000014e4edfd0     main.obj
- 0003:0e4e2fd8       ?glFramebufferTexture2D@@3P6AXIIIIH@ZEA 000000014e4edfd8     main.obj
- 0003:0e4e2fe0       ?glCheckFramebufferStatus@@3P6AII@ZEA 000000014e4edfe0     main.obj
- 0003:0e4e2fe8       ?glGenRenderbuffers@@3P6AXHPEAI@ZEA 000000014e4edfe8     main.obj
- 0003:0e4e2ff0       ?glBindRenderbuffer@@3P6AXII@ZEA 000000014e4edff0     main.obj
- 0003:0e4e2ff8       ?glRenderbufferStorage@@3P6AXIIHH@ZEA 000000014e4edff8     main.obj
- 0003:0e4e3000       ?glFramebufferRenderbuffer@@3P6AXIIII@ZEA 000000014e4ee000     main.obj
- 0003:0e4e3008       ?glGenerateMipmap@@3P6AXI@ZEA 000000014e4ee008     main.obj
- 0003:0e4e3010       ?glVertexAttribIPointer@@3P6AXIHIHPEBX@ZEA 000000014e4ee010     main.obj
- 0003:0e4e3018       ?glMapBufferRange@@3P6APEAXI_J0I@ZEA 000000014e4ee018     main.obj
- 0003:0e4e3020       ?glBindVertexArray@@3P6AXI@ZEA 000000014e4ee020     main.obj
- 0003:0e4e3028       ?glGenVertexArrays@@3P6AXHPEAI@ZEA 000000014e4ee028     main.obj
- 0003:0e4e3030       ?glBlitFramebuffer@@3P6AXHHHHHHHHII@ZEA 000000014e4ee030     main.obj
- 0003:0e4e3038       ?glRenderbufferStorageMultisample@@3P6AXIHIHH@ZEA 000000014e4ee038     main.obj
- 0003:0e4e3040       ?glCopyBufferSubData@@3P6AXII_J00@ZEA 000000014e4ee040     main.obj
- 0003:0e4e3048       ?glTexImage2DMultisample@@3P6AXIHIHHE@ZEA 000000014e4ee048     main.obj
- 0003:0e4e3050       ?glFenceSync@@3P6APEAU__GLsync@@II@ZEA 000000014e4ee050     main.obj
- 0003:0e4e3058       ?glClientWaitSync@@3P6AIPEAU__GLsync@@I_K@ZEA 000000014e4ee058     main.obj
- 0003:0e4e3060       ?glDeleteSync@@3P6AXPEAU__GLsync@@@ZEA 000000014e4ee060     main.obj
- 0003:0e4e3068       ?glBufferStorage@@3P6AXI_JPEBXI@ZEA 000000014e4ee068     main.obj
- 0003:0e4e3070       ?glClearDepthf@@3P6AXM@ZEA 000000014e4ee070     main.obj
- 0003:0e4e3078       ?glDepthRangef@@3P6AXMM@ZEA 000000014e4ee078     main.obj
- 0004:00000000       $pdata$ParseCommandLine    000000014e4ef000     SDL2main:SDL_windows_main.obj
- 0004:0000000c       $pdata$main_getcmdline     000000014e4ef00c     SDL2main:SDL_windows_main.obj
- 0004:00000018       $pdata$?OpenGL_Clear@@YAXXZ 000000014e4ef018     main.obj
- 0004:00000024       $pdata$?OpenGL_Frame@@YAXXZ 000000014e4ef024     main.obj
- 0004:00000030       $pdata$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 000000014e4ef030     main.obj
- 0004:0000003c       $pdata$0$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 000000014e4ef03c     main.obj
- 0004:00000048       $pdata$2$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 000000014e4ef048     main.obj
- 0004:00000054       $pdata$4$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 000000014e4ef054     main.obj
- 0004:00000060       $pdata$5$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 000000014e4ef060     main.obj
- 0004:0000006c       $pdata$??$SDF_Combine@Uf32x8@@@@YA?AUf32x8@@Usdf_op@@U0@1@Z 000000014e4ef06c     main.obj
- 0004:00000078       $pdata$??$SDF_EvalMax@Uf32x8@@@@YA?AUf32x8@@PEBUsdf@@U0@11@Z 000000014e4ef078     main.obj
- 0004:00000084       $pdata$??$SDF_SphereMax@Uf32x8@@@@YA?AUf32x8@@Usdf_shape_sphere@@U0@11@Z 000000014e4ef084     main.obj
- 0004:00000090       $pdata$?Api_Talloc@@YAPEAX_K@Z 000000014e4ef090     main.obj
- 0004:0000009c       $pdata$?Api_Ualloc@@YAPEAX_K@Z 000000014e4ef09c     main.obj
- 0004:000000a8       $pdata$?Async_WorkThread@@YAHPEAX@Z 000000014e4ef0a8     main.obj
- 0004:000000b4       $pdata$?Cos@@YAMM@Z        000000014e4ef0b4     main.obj
- 0004:000000c0       $pdata$?File_ReadEntireFile@@YAPEAXUstring@@PEA_K@Z 000000014e4ef0c0     main.obj
- 0004:000000cc       $pdata$?GL_LoadFunctions@@YAIXZ 000000014e4ef0cc     main.obj
- 0004:000000d8       $pdata$?InitCPU@@YAXXZ     000000014e4ef0d8     main.obj
- 0004:000000e4       $pdata$?Main_CheckCPUFeatures@@YAIXZ 000000014e4ef0e4     main.obj
- 0004:000000f0       $pdata$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014e4ef0f0     main.obj
- 0004:000000fc       $pdata$1$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014e4ef0fc     main.obj
- 0004:00000108       $pdata$2$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 000000014e4ef108     main.obj
- 0004:00000114       $pdata$?Main_CreateOpenGLWindow@@YAPEAUSDL_Window@@XZ 000000014e4ef114     main.obj
- 0004:00000120       $pdata$?Main_Error@@YAHUstring@@@Z 000000014e4ef120     main.obj
- 0004:0000012c       $pdata$?Main_ToggleFullscreen@@YAXPEAUmain_state@@PEAUSDL_Window@@@Z 000000014e4ef12c     main.obj
- 0004:00000138       $pdata$?Mat4_InfinitePerspective@@YA?AUmat4@@MMM@Z 000000014e4ef138     main.obj
- 0004:00000144       $pdata$?Mat4_Mul@@YA?AUmat4@@U1@0@Z 000000014e4ef144     main.obj
- 0004:00000150       $pdata$?OpenGL_CheckError@@YAIXZ 000000014e4ef150     main.obj
- 0004:0000015c       $pdata$2$?OpenGL_CheckError@@YAIXZ 000000014e4ef15c     main.obj
- 0004:00000168       $pdata$3$?OpenGL_CheckError@@YAIXZ 000000014e4ef168     main.obj
- 0004:00000174       $pdata$?OpenGL_CompileShader@@YAIIUstring@@@Z 000000014e4ef174     main.obj
- 0004:00000180       $pdata$?OpenGL_DrawSplats@@YAXXZ 000000014e4ef180     main.obj
- 0004:0000018c       $pdata$?OpenGL_Init@@YAIXZ 000000014e4ef18c     main.obj
- 0004:00000198       $pdata$?OpenGL_LoadProgram@@YAIUstring@@0@Z 000000014e4ef198     main.obj
- 0004:000001a4       $pdata$0$?OpenGL_LoadProgram@@YAIUstring@@0@Z 000000014e4ef1a4     main.obj
- 0004:000001b0       $pdata$2$?OpenGL_LoadProgram@@YAIUstring@@0@Z 000000014e4ef1b0     main.obj
- 0004:000001bc       $pdata$?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 000000014e4ef1bc     main.obj
- 0004:000001c8       $pdata$0$?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 000000014e4ef1c8     main.obj
- 0004:000001d4       $pdata$1$?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 000000014e4ef1d4     main.obj
- 0004:000001e0       $pdata$?SDF_Gen8@@YAXPEBUsdf@@Uvec3@@MI@Z 000000014e4ef1e0     main.obj
- 0004:000001ec       $pdata$?SDF_Normal@@YA?AUvec3@@PEBUsdf@@U1@@Z 000000014e4ef1ec     main.obj
- 0004:000001f8       $pdata$?Sin@@YAMM@Z        000000014e4ef1f8     main.obj
- 0004:00000204       $pdata$?TSPrint@@YA?AUstring@@PEBDZZ 000000014e4ef204     main.obj
- 0004:00000210       $pdata$?TSPrint_Callback@@YAPEADPEADPEAXH@Z 000000014e4ef210     main.obj
- 0004:0000021c       $pdata$?WinMainCRTStartup@@YAXXZ 000000014e4ef21c     main.obj
- 0004:00000228       $pdata$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 000000014e4ef228     main.obj
- 0004:00000234       $pdata$0$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 000000014e4ef234     main.obj
- 0004:00000240       $pdata$1$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 000000014e4ef240     main.obj
- 0004:0000024c       $pdata$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 000000014e4ef24c     main.obj
- 0004:00000258       $pdata$2$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 000000014e4ef258     main.obj
- 0004:00000264       $pdata$3$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 000000014e4ef264     main.obj
- 0004:00000270       $pdata$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 000000014e4ef270     main.obj
- 0004:0000027c       $pdata$0$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 000000014e4ef27c     main.obj
- 0004:00000288       $pdata$1$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 000000014e4ef288     main.obj
- 0004:00000294       $pdata$2$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 000000014e4ef294     main.obj
- 0004:000002a0       $pdata$3$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 000000014e4ef2a0     main.obj
- 0004:000002ac       $pdata$SDL_main            000000014e4ef2ac     main.obj
- 0004:000002b8       $pdata$4$SDL_main          000000014e4ef2b8     main.obj
- 0004:000002c4       $pdata$7$SDL_main          000000014e4ef2c4     main.obj
- 0004:000002d0       $pdata$9$SDL_main          000000014e4ef2d0     main.obj
- 0004:000002dc       $pdata$10$SDL_main         000000014e4ef2dc     main.obj
- 0004:000002e8       $pdata$11$SDL_main         000000014e4ef2e8     main.obj
- 0004:000002f4       $pdata$12$SDL_main         000000014e4ef2f4     main.obj
- 0004:00000300       $pdata$13$SDL_main         000000014e4ef300     main.obj
- 0004:0000030c       $pdata$14$SDL_main         000000014e4ef30c     main.obj
- 0004:00000318       $pdata$memset              000000014e4ef318     main.obj
- 0004:00000324       $pdata$0$memset            000000014e4ef324     main.obj
- 0004:00000330       $pdata$1$memset            000000014e4ef330     main.obj
- 0004:0000033c       $pdata$stbsp_vsprintfcb    000000014e4ef33c     main.obj
- 0005:000000c0       $R000000                   000000014e4f00c0     icon.res
- 0005:000003a8       $R0002E8                   000000014e4f03a8     icon.res
+ 0003:393871d8       ?CPU@@3Ucpu@@A             00000001793921d8     main.obj
+ 0003:393871fc       ?GlobalAudioDevice@@3IA    00000001793921fc     main.obj
+ 0003:39387200       ?GlobalResetGame@@3Uatomic@@A 0000000179392200     main.obj
+ 0003:39387208       ?GL@@3Ugl_state@@A         0000000179392208     main.obj
+ 0003:39387220       ?GlobalZone@@3PEAUmemory_zone@@EA 0000000179392220     main.obj
+ 0003:39387228       ?GlobalPerfCountFrequency@@3_KA 0000000179392228     main.obj
+ 0003:39387234       ?MemoryArenaTLS@@3IA       0000000179392234     main.obj
+ 0003:39387238       ?GlobalGLContext@@3PEAXEA  0000000179392238     main.obj
+ 0003:39387240       ?AsyncQueue@@3Uasync_queue@@A 0000000179392240     main.obj
+ 0003:39388260       ?glTexImage3D@@3P6AXIHHHHHHIIPEBX@ZEA 0000000179393260     main.obj
+ 0003:39388268       ?glTexSubImage3D@@3P6AXIHHHHHHHIIPEBX@ZEA 0000000179393268     main.obj
+ 0003:39388270       ?glGenBuffers@@3P6AXHPEAI@ZEA 0000000179393270     main.obj
+ 0003:39388278       ?glBindBuffer@@3P6AXII@ZEA 0000000179393278     main.obj
+ 0003:39388280       ?glDeleteBuffers@@3P6AXHPEBI@ZEA 0000000179393280     main.obj
+ 0003:39388288       ?glBufferData@@3P6AXI_JPEBXI@ZEA 0000000179393288     main.obj
+ 0003:39388290       ?glBufferSubData@@3P6AXI_J0PEBX@ZEA 0000000179393290     main.obj
+ 0003:39388298       ?glCreateShader@@3P6AII@ZEA 0000000179393298     main.obj
+ 0003:393882a0       ?glCompileShader@@3P6AXI@ZEA 00000001793932a0     main.obj
+ 0003:393882a8       ?glDeleteShader@@3P6AXI@ZEA 00000001793932a8     main.obj
+ 0003:393882b0       ?glShaderSource@@3P6AXIHPEBQEBDPEBH@ZEA 00000001793932b0     main.obj
+ 0003:393882b8       ?glGetShaderiv@@3P6AXIIPEAH@ZEA 00000001793932b8     main.obj
+ 0003:393882c0       ?glAttachShader@@3P6AXII@ZEA 00000001793932c0     main.obj
+ 0003:393882c8       ?glGetShaderInfoLog@@3P6AXIHPEAHPEAD@ZEA 00000001793932c8     main.obj
+ 0003:393882d0       ?glDetachShader@@3P6AXII@ZEA 00000001793932d0     main.obj
+ 0003:393882d8       ?glCreateProgram@@3P6AIXZEA 00000001793932d8     main.obj
+ 0003:393882e0       ?glLinkProgram@@3P6AXI@ZEA 00000001793932e0     main.obj
+ 0003:393882e8       ?glUseProgram@@3P6AXI@ZEA  00000001793932e8     main.obj
+ 0003:393882f0       ?glGetProgramiv@@3P6AXIIPEAH@ZEA 00000001793932f0     main.obj
+ 0003:393882f8       ?glGetProgramInfoLog@@3P6AXIHPEAHPEAD@ZEA 00000001793932f8     main.obj
+ 0003:39388300       ?glDeleteProgram@@3P6AXI@ZEA 0000000179393300     main.obj
+ 0003:39388308       ?glEnableVertexAttribArray@@3P6AXI@ZEA 0000000179393308     main.obj
+ 0003:39388310       ?glDisableVertexAttribArray@@3P6AXI@ZEA 0000000179393310     main.obj
+ 0003:39388318       ?glVertexAttribPointer@@3P6AXIHIEHPEBX@ZEA 0000000179393318     main.obj
+ 0003:39388320       ?glBindAttribLocation@@3P6AXIIPEBD@ZEA 0000000179393320     main.obj
+ 0003:39388328       ?glActiveTexture@@3P6AXI@ZEA 0000000179393328     main.obj
+ 0003:39388330       ?glBlendFuncSeparate@@3P6AXIIII@ZEA 0000000179393330     main.obj
+ 0003:39388338       ?glGetUniformLocation@@3P6AHIPEBD@ZEA 0000000179393338     main.obj
+ 0003:39388340       ?glUniform1f@@3P6AXHM@ZEA  0000000179393340     main.obj
+ 0003:39388348       ?glUniform2f@@3P6AXHMM@ZEA 0000000179393348     main.obj
+ 0003:39388350       ?glUniform3f@@3P6AXHMMM@ZEA 0000000179393350     main.obj
+ 0003:39388358       ?glUniform4f@@3P6AXHMMMM@ZEA 0000000179393358     main.obj
+ 0003:39388360       ?glUniform1i@@3P6AXHH@ZEA  0000000179393360     main.obj
+ 0003:39388368       ?glUniform2i@@3P6AXHHH@ZEA 0000000179393368     main.obj
+ 0003:39388370       ?glUniform3i@@3P6AXHHHH@ZEA 0000000179393370     main.obj
+ 0003:39388378       ?glUniform4i@@3P6AXHHHHH@ZEA 0000000179393378     main.obj
+ 0003:39388380       ?glUniform1fv@@3P6AXHHPEBM@ZEA 0000000179393380     main.obj
+ 0003:39388388       ?glUniform2fv@@3P6AXHHPEBM@ZEA 0000000179393388     main.obj
+ 0003:39388390       ?glUniform3fv@@3P6AXHHPEBM@ZEA 0000000179393390     main.obj
+ 0003:39388398       ?glUniform2iv@@3P6AXHHPEBH@ZEA 0000000179393398     main.obj
+ 0003:393883a0       ?glUniformMatrix4fv@@3P6AXHHEPEBM@ZEA 00000001793933a0     main.obj
+ 0003:393883a8       ?glVertexAttrib2f@@3P6AXIMM@ZEA 00000001793933a8     main.obj
+ 0003:393883b0       ?glVertexAttrib3f@@3P6AXIMMM@ZEA 00000001793933b0     main.obj
+ 0003:393883b8       ?glVertexAttrib4f@@3P6AXIMMMM@ZEA 00000001793933b8     main.obj
+ 0003:393883c0       ?glVertexAttrib3fv@@3P6AXIPEBM@ZEA 00000001793933c0     main.obj
+ 0003:393883c8       ?glGenFramebuffers@@3P6AXHPEAI@ZEA 00000001793933c8     main.obj
+ 0003:393883d0       ?glBindFramebuffer@@3P6AXII@ZEA 00000001793933d0     main.obj
+ 0003:393883d8       ?glFramebufferTexture2D@@3P6AXIIIIH@ZEA 00000001793933d8     main.obj
+ 0003:393883e0       ?glCheckFramebufferStatus@@3P6AII@ZEA 00000001793933e0     main.obj
+ 0003:393883e8       ?glGenRenderbuffers@@3P6AXHPEAI@ZEA 00000001793933e8     main.obj
+ 0003:393883f0       ?glBindRenderbuffer@@3P6AXII@ZEA 00000001793933f0     main.obj
+ 0003:393883f8       ?glRenderbufferStorage@@3P6AXIIHH@ZEA 00000001793933f8     main.obj
+ 0003:39388400       ?glFramebufferRenderbuffer@@3P6AXIIII@ZEA 0000000179393400     main.obj
+ 0003:39388408       ?glGenerateMipmap@@3P6AXI@ZEA 0000000179393408     main.obj
+ 0003:39388410       ?glVertexAttribIPointer@@3P6AXIHIHPEBX@ZEA 0000000179393410     main.obj
+ 0003:39388418       ?glMapBufferRange@@3P6APEAXI_J0I@ZEA 0000000179393418     main.obj
+ 0003:39388420       ?glBindVertexArray@@3P6AXI@ZEA 0000000179393420     main.obj
+ 0003:39388428       ?glGenVertexArrays@@3P6AXHPEAI@ZEA 0000000179393428     main.obj
+ 0003:39388430       ?glBlitFramebuffer@@3P6AXHHHHHHHHII@ZEA 0000000179393430     main.obj
+ 0003:39388438       ?glRenderbufferStorageMultisample@@3P6AXIHIHH@ZEA 0000000179393438     main.obj
+ 0003:39388440       ?glCopyBufferSubData@@3P6AXII_J00@ZEA 0000000179393440     main.obj
+ 0003:39388448       ?glTexImage2DMultisample@@3P6AXIHIHHE@ZEA 0000000179393448     main.obj
+ 0003:39388450       ?glFenceSync@@3P6APEAU__GLsync@@II@ZEA 0000000179393450     main.obj
+ 0003:39388458       ?glClientWaitSync@@3P6AIPEAU__GLsync@@I_K@ZEA 0000000179393458     main.obj
+ 0003:39388460       ?glDeleteSync@@3P6AXPEAU__GLsync@@@ZEA 0000000179393460     main.obj
+ 0003:39388468       ?glBufferStorage@@3P6AXI_JPEBXI@ZEA 0000000179393468     main.obj
+ 0003:39388470       ?glClearDepthf@@3P6AXM@ZEA 0000000179393470     main.obj
+ 0003:39388478       ?glDepthRangef@@3P6AXMM@ZEA 0000000179393478     main.obj
+ 0004:00000000       $pdata$ParseCommandLine    0000000179394000     SDL2main:SDL_windows_main.obj
+ 0004:0000000c       $pdata$main_getcmdline     000000017939400c     SDL2main:SDL_windows_main.obj
+ 0004:00000018       $pdata$?OpenGL_Clear@@YAXXZ 0000000179394018     main.obj
+ 0004:00000024       $pdata$?OpenGL_Frame@@YAXXZ 0000000179394024     main.obj
+ 0004:00000030       $pdata$??$SDF_Combine@M@@YAMUsdf_op@@MM@Z 0000000179394030     main.obj
+ 0004:0000003c       $pdata$??$SDF_Combine@Uf32x8@@@@YA?AUf32x8@@Usdf_op@@U0@1@Z 000000017939403c     main.obj
+ 0004:00000048       $pdata$??$SDF_EvalMax@Uf32x8@@@@YA?AUf32x8@@PEBUsdf@@U0@11@Z 0000000179394048     main.obj
+ 0004:00000054       $pdata$??$SDF_SphereMax@Uf32x8@@@@YA?AUf32x8@@Usdf_shape_sphere@@U0@11@Z 0000000179394054     main.obj
+ 0004:00000060       $pdata$?Api_Talloc@@YAPEAX_K@Z 0000000179394060     main.obj
+ 0004:0000006c       $pdata$?Api_Ualloc@@YAPEAX_K@Z 000000017939406c     main.obj
+ 0004:00000078       $pdata$?Async_WorkThread@@YAHPEAX@Z 0000000179394078     main.obj
+ 0004:00000084       $pdata$?Cos@@YAMM@Z        0000000179394084     main.obj
+ 0004:00000090       $pdata$?File_ReadEntireFile@@YAPEAXUstring@@PEA_K@Z 0000000179394090     main.obj
+ 0004:0000009c       $pdata$?GL_LoadFunctions@@YAIXZ 000000017939409c     main.obj
+ 0004:000000a8       $pdata$?InitCPU@@YAXXZ     00000001793940a8     main.obj
+ 0004:000000b4       $pdata$?Main_CheckCPUFeatures@@YAIXZ 00000001793940b4     main.obj
+ 0004:000000c0       $pdata$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 00000001793940c0     main.obj
+ 0004:000000cc       $pdata$1$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 00000001793940cc     main.obj
+ 0004:000000d8       $pdata$2$?Main_CollectEvents@@YAXPEAUSDL_Window@@PEAUmain_state@@@Z 00000001793940d8     main.obj
+ 0004:000000e4       $pdata$?Main_CreateOpenGLWindow@@YAPEAUSDL_Window@@XZ 00000001793940e4     main.obj
+ 0004:000000f0       $pdata$?Main_Error@@YAHUstring@@@Z 00000001793940f0     main.obj
+ 0004:000000fc       $pdata$?Main_ToggleFullscreen@@YAXPEAUmain_state@@PEAUSDL_Window@@@Z 00000001793940fc     main.obj
+ 0004:00000108       $pdata$?Mat4_InfinitePerspective@@YA?AUmat4@@MMM@Z 0000000179394108     main.obj
+ 0004:00000114       $pdata$?Mat4_Mul@@YA?AUmat4@@U1@0@Z 0000000179394114     main.obj
+ 0004:00000120       $pdata$?OpenGL_CheckError@@YAIXZ 0000000179394120     main.obj
+ 0004:0000012c       $pdata$2$?OpenGL_CheckError@@YAIXZ 000000017939412c     main.obj
+ 0004:00000138       $pdata$3$?OpenGL_CheckError@@YAIXZ 0000000179394138     main.obj
+ 0004:00000144       $pdata$?OpenGL_CompileShader@@YAIIUstring@@@Z 0000000179394144     main.obj
+ 0004:00000150       $pdata$?OpenGL_DrawSplats@@YAXXZ 0000000179394150     main.obj
+ 0004:0000015c       $pdata$?OpenGL_Init@@YAIXZ 000000017939415c     main.obj
+ 0004:00000168       $pdata$?OpenGL_LoadProgram@@YAIUstring@@0@Z 0000000179394168     main.obj
+ 0004:00000174       $pdata$0$?OpenGL_LoadProgram@@YAIUstring@@0@Z 0000000179394174     main.obj
+ 0004:00000180       $pdata$2$?OpenGL_LoadProgram@@YAIUstring@@0@Z 0000000179394180     main.obj
+ 0004:0000018c       $pdata$?SDF_Eval@@YAMPEBUsdf@@Uvec3@@@Z 000000017939418c     main.obj
+ 0004:00000198       $pdata$?SDF_EvalShape@@YAMUsdf_shape@@Uvec@@@Z 0000000179394198     main.obj
+ 0004:000001a4       $pdata$?SDF_Gen8@@YAXPEBUsdf@@Uvec3@@MI@Z 00000001793941a4     main.obj
+ 0004:000001b0       $pdata$?SDF_Normal@@YA?AUvec3@@PEBUsdf@@U1@@Z 00000001793941b0     main.obj
+ 0004:000001bc       $pdata$?Sin@@YAMM@Z        00000001793941bc     main.obj
+ 0004:000001c8       $pdata$?TSPrint@@YA?AUstring@@PEBDZZ 00000001793941c8     main.obj
+ 0004:000001d4       $pdata$?TSPrint_Callback@@YAPEADPEADPEAXH@Z 00000001793941d4     main.obj
+ 0004:000001e0       $pdata$?WinMainCRTStartup@@YAXXZ 00000001793941e0     main.obj
+ 0004:000001ec       $pdata$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 00000001793941ec     main.obj
+ 0004:000001f8       $pdata$0$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 00000001793941f8     main.obj
+ 0004:00000204       $pdata$1$?Zone_TagMalloc@@YAPEAXPEAUmemory_zone@@_K1@Z 0000000179394204     main.obj
+ 0004:00000210       $pdata$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000179394210     main.obj
+ 0004:0000021c       $pdata$2$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 000000017939421c     main.obj
+ 0004:00000228       $pdata$3$?stbsp__raise_to_power10@@YAXPEAN0NH@Z 0000000179394228     main.obj
+ 0004:00000234       $pdata$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000179394234     main.obj
+ 0004:00000240       $pdata$0$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000179394240     main.obj
+ 0004:0000024c       $pdata$1$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 000000017939424c     main.obj
+ 0004:00000258       $pdata$2$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000179394258     main.obj
+ 0004:00000264       $pdata$3$?stbsp__real_to_str@@YAHPEAPEBDPEAIPEADPEAHNI@Z 0000000179394264     main.obj
+ 0004:00000270       $pdata$SDL_main            0000000179394270     main.obj
+ 0004:0000027c       $pdata$4$SDL_main          000000017939427c     main.obj
+ 0004:00000288       $pdata$7$SDL_main          0000000179394288     main.obj
+ 0004:00000294       $pdata$8$SDL_main          0000000179394294     main.obj
+ 0004:000002a0       $pdata$9$SDL_main          00000001793942a0     main.obj
+ 0004:000002ac       $pdata$10$SDL_main         00000001793942ac     main.obj
+ 0004:000002b8       $pdata$11$SDL_main         00000001793942b8     main.obj
+ 0004:000002c4       $pdata$12$SDL_main         00000001793942c4     main.obj
+ 0004:000002d0       $pdata$memset              00000001793942d0     main.obj
+ 0004:000002dc       $pdata$0$memset            00000001793942dc     main.obj
+ 0004:000002e8       $pdata$1$memset            00000001793942e8     main.obj
+ 0004:000002f4       $pdata$stbsp_vsprintfcb    00000001793942f4     main.obj
+ 0005:000000c0       $R000000                   00000001793950c0     icon.res
+ 0005:000003a8       $R0002E8                   00000001793953a8     icon.res
