@@ -63,7 +63,7 @@ inline f32x8 Vec3x8_Dot(vec3x8 A, vec3x8 B)   { return Vec3x8_Sum(Vec3x8_Mul(A, 
 inline vec3x8 Vec3x8_Log(vec3x8 X);
 inline vec3x8 Vec3x8_Exp(vec3x8 X);
 inline vec3x8 Vec3x8_Pow(vec3x8 X, vec3x8 Y);
-inline vec3x8 Vec3x8_Normalize(vec3x8 A);
+inline vec3x8 Vec3x8_Normalize(vec3x8 A)      { return Vec3x8_Div(A, Vec3x8_Length(A)); }
 
 // UNIQUE FUNCTIONS
 inline vec3x8

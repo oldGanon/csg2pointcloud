@@ -1,4 +1,6 @@
 
+#include "f32x4.cpp"
+#include "vec3x4.cpp"
 #include "f32x8.cpp"
 #include "vec3x8.cpp"
 
@@ -49,6 +51,7 @@ struct sdf_shape
     };
 
     quat Rotation;
+    f32 RotationScale;
     vec3 Position;
     u32 Type;
 };
@@ -88,18 +91,20 @@ SDF_Sphere(vec3 Pos, f32 Radius)
     sdf_shape Shape;
     Shape.Sphere = Sphere;
     Shape.Rotation = Quat_Id();
+    Shape.RotationScale = 1.0f / HMax(Shape.Rotation * Vec3(1,1,1));
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_SPHERE;
     return Shape;
 }
 
 static sdf_shape
-SDF_Ellipsoid(vec3 Pos, vec3 HalfDim)
+SDF_Ellipsoid(vec3 Pos, quat Rotation, vec3 HalfDim)
 {
     sdf_shape_ellipsoid Ellipsoid = { HalfDim };
     sdf_shape Shape;
     Shape.Ellipsoid = Ellipsoid;
-    Shape.Rotation = Quat(Vec3(0,0,1), PI/3.0f);
+    Shape.Rotation = Rotation;
+    Shape.RotationScale = 1.0f / HMax(Shape.Rotation * Vec3(1,1,1));
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_ELLIPSOID;
     return Shape;
@@ -112,18 +117,20 @@ SDF_Cube(vec3 Pos, f32 HalfDim)
     sdf_shape Shape;
     Shape.Cube = Cube;
     Shape.Rotation = Quat_Id();
+    Shape.RotationScale = 1.0f / HMax(Shape.Rotation * Vec3(1,1,1));
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_CUBE;
     return Shape;
 }
 
 static sdf_shape
-SDF_Cuboid(vec3 Pos, vec3 HalfDim)
+SDF_Cuboid(vec3 Pos, quat Rotation, vec3 HalfDim)
 {
     sdf_shape_cuboid Cuboid = { HalfDim };
     sdf_shape Shape;
     Shape.Cuboid = Cuboid;
-    Shape.Rotation = Quat_Id();
+    Shape.Rotation = Rotation;
+    Shape.RotationScale = 1.0f / HMax(Shape.Rotation * Vec3(1,1,1));
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_CUBOID;
     return Shape;
@@ -304,14 +311,14 @@ template <typename FLOAT, typename VEC3>
 static FLOAT
 SDF_EvalMax(const sdf_shape Shape, VEC3 P)
 {
-    P = -Shape.Rotation * P - Shape.Position;
-    f32 Scale = 1.0f / Vec3_HMax(Shape.Rotation * Vec3(1,1,1));
+    P -= Shape.Position;
+    P = -Shape.Rotation * P;
     switch (Shape.Type)
     {
-        case SDF_SHAPE_SPHERE:    return Scale * SDF_SphereMax<FLOAT>(Shape.Sphere, P);
-        case SDF_SHAPE_ELLIPSOID: return Scale * SDF_EllipsoidMax<FLOAT>(Shape.Ellipsoid, P);
-        case SDF_SHAPE_CUBE:      return Scale * SDF_CubeMax<FLOAT>(Shape.Cube, P);
-        case SDF_SHAPE_CUBOID:    return Scale * SDF_CuboidMax<FLOAT>(Shape.Cuboid, P);
+        case SDF_SHAPE_SPHERE:    return Shape.RotationScale * SDF_SphereMax<FLOAT>(Shape.Sphere, P);
+        case SDF_SHAPE_ELLIPSOID: return Shape.RotationScale * SDF_EllipsoidMax<FLOAT>(Shape.Ellipsoid, P);
+        case SDF_SHAPE_CUBE:      return Shape.RotationScale * SDF_CubeMax<FLOAT>(Shape.Cube, P);
+        case SDF_SHAPE_CUBOID:    return Shape.RotationScale * SDF_CuboidMax<FLOAT>(Shape.Cuboid, P);
         default:                  return INFINITY;
     }
 }
@@ -331,73 +338,78 @@ SDF_EvalMax(const sdf *SDF, VEC3 P)
 
 
 
-static f32
-SDF_Sphere(const sdf_shape_sphere Sphere, vec P)
+template <typename FLOAT, typename VEC3>
+static FLOAT
+SDF_Sphere(const sdf_shape_sphere Sphere, VEC3 P)
 {
-    f32 D = Vec_Length(P) - Sphere.Radius;
+    FLOAT D = Length(P) - Sphere.Radius;
     return D;
 }
 
-static f32
-SDF_Ellipsoid(const sdf_shape_ellipsoid Ellipsoid, vec P)
+template <typename FLOAT, typename VEC3>
+static FLOAT
+SDF_Ellipsoid(const sdf_shape_ellipsoid Ellipsoid, VEC3 P)
 {
-    vec R = Vec4(Ellipsoid.HalfDim, 1.0f);
-    f32 K0 = Vec_Length(P/R);
-    f32 K1 = Vec_Length(P/(R*R));
+    VEC3 R = Ellipsoid.HalfDim;
+    FLOAT K0 = Length(P/R);
+    FLOAT K1 = Length(P/(R*R));
     return K0*(K0-1.0f)/K1;
 }
 
-static f32
-SDF_Cube(const sdf_shape_cube Cube, vec P)
+template <typename FLOAT, typename VEC3>
+static FLOAT
+SDF_Cube(const sdf_shape_cube Cube, VEC3 P)
 {
-    vec D = Vec_Abs(P) - Vec_Set1(Cube.HalfDim);
-    return Vec_Length(Vec_Max(D,0.0)) + Min(Vec_HMax(D),0.0);
+    VEC3 D = Abs(P) - Cube.HalfDim;
+    return Length(Max(D,0.0)) + Min(HMax(D),0.0);
 }
 
-static f32
-SDF_Cuboid(const sdf_shape_cuboid Cuboid, vec P)
+template <typename FLOAT, typename VEC3>
+static FLOAT
+SDF_Cuboid(const sdf_shape_cuboid Cuboid, VEC3 P)
 {
-    vec D = Vec_Abs(P) - Vec3_Load(Cuboid.HalfDim);
-    return Vec_Length(Vec_Max(D,0.0)) + Min(Vec_HMax(D),0.0);
+    VEC3 D = Abs(P) - Cuboid.HalfDim;
+    return Length(Max(D,0.0)) + Min(HMax(D),0.0);
 }
 
-static f32
-SDF_EvalShape(const sdf_shape Shape, vec P)
+template <typename FLOAT, typename VEC3>
+static FLOAT
+SDF_EvalShape(const sdf_shape Shape, VEC3 P)
 {
     P -= Shape.Position;
     P = -Shape.Rotation * P;
     switch (Shape.Type)
     {
-        case SDF_SHAPE_SPHERE:    return SDF_Sphere(Shape.Sphere, P);
-        case SDF_SHAPE_ELLIPSOID: return SDF_Ellipsoid(Shape.Ellipsoid, P);
-        case SDF_SHAPE_CUBE:      return SDF_Cube(Shape.Cube, P);
-        case SDF_SHAPE_CUBOID:    return SDF_Cuboid(Shape.Cuboid, P);
+        case SDF_SHAPE_SPHERE:    return SDF_Sphere<FLOAT>(Shape.Sphere, P);
+        case SDF_SHAPE_ELLIPSOID: return SDF_Ellipsoid<FLOAT>(Shape.Ellipsoid, P);
+        case SDF_SHAPE_CUBE:      return SDF_Cube<FLOAT>(Shape.Cube, P);
+        case SDF_SHAPE_CUBOID:    return SDF_Cuboid<FLOAT>(Shape.Cuboid, P);
         default: return INFINITY;
     }
 }
 
-static f32
-SDF_Eval(const sdf *SDF, vec3 Pos)
+template <typename FLOAT, typename VEC3>
+static FLOAT
+SDF_Eval(const sdf *SDF, VEC3 Pos)
 {
-    vec P = Pos;
-    f32 Dist = INFINITY;
+    FLOAT Dist = INFINITY;
     for (u32 i = 0; i < SDF->EditCount; ++i)
     {
-        f32 Dist2 = SDF_EvalShape(SDF->Edits[i].Shape, P);
+        FLOAT Dist2 = SDF_EvalShape<FLOAT>(SDF->Edits[i].Shape, Pos);
         Dist = SDF_Combine(SDF->Edits[i].Op, Dist, Dist2);
     }
     return Dist;
 }
 
-static vec3
-SDF_Normal(const sdf *SDF, vec3 Position)
+static vec3x8
+SDF_Normal(const sdf *SDF, vec3x8 Position)
 {
-#define H 0.0001f
-    vec P = Position;
-    return Vec_Normalize(Vec( 1,-1,-1, 0) * SDF_Eval(SDF, P + Vec( H,-H,-H, 0)) + 
-                         Vec(-1,-1, 1, 0) * SDF_Eval(SDF, P + Vec(-H,-H, H, 0)) + 
-                         Vec(-1, 1,-1, 0) * SDF_Eval(SDF, P + Vec(-H, H,-H, 0)) + 
-                         Vec( 1, 1, 1, 0) * SDF_Eval(SDF, P + Vec( H, H, H, 0)));
+#define H 0.001f
+    return Vec3x8_Normalize(Vec3x8( 1,-1,-1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8( H,-H,-H)) + 
+                            Vec3x8(-1,-1, 1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8(-H,-H, H)) + 
+                            Vec3x8(-1, 1,-1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8(-H, H,-H)) + 
+                            Vec3x8( 1, 1, 1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8( H, H, H)));
+#undef H
 }
 
 struct splat
@@ -406,7 +418,7 @@ struct splat
     vec3 Normal;
 };
 
-splat SPLATS[40000000];
+splat SPLATS[10000000];
 u64 SPLATCOUNT;
 
 static void
@@ -427,9 +439,18 @@ SDF_Gen8(const sdf *SDF, vec3 P, f32 Dim, u32 Depth)
     f32 XX[8];
     f32 YY[8];
     f32 ZZ[8];
-    F32x8_Store8(X, XX);
-    F32x8_Store8(Y, YY);
-    F32x8_Store8(Z, ZZ);
+    F32x8_Store8(Pos.x, XX);
+    F32x8_Store8(Pos.y, YY);
+    F32x8_Store8(Pos.z, ZZ);
+
+    vec3x8 Nrm = SDF_Normal(SDF, Pos);
+
+    f32 NX[8];
+    f32 NY[8];
+    f32 NZ[8];
+    F32x8_Store8(Nrm.x, NX);
+    F32x8_Store8(Nrm.y, NY);
+    F32x8_Store8(Nrm.z, NZ);
 
     for (u8 x = 0; x < 8; ++x)
     if (InRange & (1 << x))
@@ -439,8 +460,9 @@ SDF_Gen8(const sdf *SDF, vec3 P, f32 Dim, u32 Depth)
             SDF_Gen8(SDF, Q, Dim, Depth - 1);
         else
         {
-            f32 D = SDF_Eval(SDF, Q);
-            vec3 Normal = SDF_Normal(SDF, Q);
+            // f32 D = SDF_Eval(SDF, Q);
+            // vec3 Normal = SDF_Normal(SDF, Q);
+            vec3 Normal = Vec3(NX[x], NY[x], NZ[x]);
             // Q -= Normal * Vec3_Set1(D);
             SPLATS[SPLATCOUNT].Position = Q;
             SPLATS[SPLATCOUNT].Normal = Normal;
