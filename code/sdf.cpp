@@ -422,51 +422,56 @@ splat SPLATS[10000000];
 u64 SPLATCOUNT;
 
 static void
-SDF_Gen8(const sdf *SDF, vec3 P, f32 Dim, u32 Depth)
+SDF_PlaceSplat(vec3 Position, vec3 Normal)
+{
+    SPLATS[SPLATCOUNT].Position = Position;
+    SPLATS[SPLATCOUNT].Normal = Normal;
+    ++SPLATCOUNT;
+}
+
+static void
+SDF_Gen8(const sdf *SDF, vec3 Center, f32 Dim, u32 Depth)
 {
     Dim /= 2.0f;
     f32x8 vDim = F32x8_Set1(Dim);
  
-    f32x8 X = F32x8_Set1(P.x) + vDim * F32x8(-1,1,-1,1,-1,1,-1,1);
-    f32x8 Y = F32x8_Set1(P.y) + vDim * F32x8(-1,-1,1,1,-1,-1,1,1);
-    f32x8 Z = F32x8_Set1(P.z) + vDim * F32x8(-1,-1,-1,-1,1,1,1,1);
+    f32x8 X = F32x8_Set1(Center.x) + vDim * F32x8(-1,1,-1,1,-1,1,-1,1);
+    f32x8 Y = F32x8_Set1(Center.y) + vDim * F32x8(-1,-1,1,1,-1,-1,1,1);
+    f32x8 Z = F32x8_Set1(Center.z) + vDim * F32x8(-1,-1,-1,-1,1,1,1,1);
 
     vec3x8 Pos = Vec3x8(X,Y,Z);
-    f32x8 Dist = SDF_EvalMax<f32x8>(SDF, Pos);
-    u32 InRange = F32x8_Mask(F32x8_Abs(Dist) <= vDim);
+    f32x8 Dst = SDF_EvalMax<f32x8>(SDF, Pos);
+    u32 InRange = F32x8_Mask(F32x8_Abs(Dst) <= vDim);
     if (!InRange) return;
 
-    f32 XX[8];
-    f32 YY[8];
-    f32 ZZ[8];
-    F32x8_Store8(Pos.x, XX);
-    F32x8_Store8(Pos.y, YY);
-    F32x8_Store8(Pos.z, ZZ);
-
-    vec3x8 Nrm = SDF_Normal(SDF, Pos);
-
-    f32 NX[8];
-    f32 NY[8];
-    f32 NZ[8];
-    F32x8_Store8(Nrm.x, NX);
-    F32x8_Store8(Nrm.y, NY);
-    F32x8_Store8(Nrm.z, NZ);
-
-    for (u8 x = 0; x < 8; ++x)
-    if (InRange & (1 << x))
+    if (Depth)
     {
-        vec3 Q = Vec3(XX[x], YY[x], ZZ[x]);
-        if (Depth)
-            SDF_Gen8(SDF, Q, Dim, Depth - 1);
-        else
+        for (u8 x = 0; x < 8; ++x)
         {
-            // f32 D = SDF_Eval(SDF, Q);
-            // vec3 Normal = SDF_Normal(SDF, Q);
-            vec3 Normal = Vec3(NX[x], NY[x], NZ[x]);
-            // Q -= Normal * Vec3_Set1(D);
-            SPLATS[SPLATCOUNT].Position = Q;
-            SPLATS[SPLATCOUNT].Normal = Normal;
-            ++SPLATCOUNT;
+            if (InRange & (1 << x))
+            {
+                vec3 P = Vec3x8_First(Pos);
+                SDF_Gen8(SDF, P, Dim, Depth - 1);
+            }
+            Pos = Vec3x8_Roll(Pos);
+        }
+    }
+    else
+    {
+        vec3x8 Nrm = SDF_Normal(SDF, Pos);
+        for (u8 x = 0; x < 8; ++x)
+        {
+            if (InRange & (1 << x))
+            {
+                vec3 P = Vec3x8_First(Pos);
+                vec3 N = Vec3x8_First(Nrm);
+                f32 D = F32x8_First(Dst);
+                P -= N * Vec3_Set1(D);
+                SDF_PlaceSplat(P, N);
+            }
+            Pos = Vec3x8_Roll(Pos);
+            Nrm = Vec3x8_Roll(Nrm);
+            Dst = F32x8_Roll(Dst);
         }
     }
 }

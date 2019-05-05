@@ -55,6 +55,7 @@ inline f32x8 F32x8_Positive(f32x8 A)     { return mmF32x8(_mm256_and_ps(A.mm, _m
 inline f32x8 F32x8_Negative(f32x8 A)     { return mmF32x8(_mm256_or_ps(A.mm, _mm256_castsi256_ps(_mm256_set1_epi32(0x80000000)))); }
 inline f32x8 F32x8_Abs(f32x8 A)          { return mmF32x8(_mm256_and_ps(A.mm, _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)))); }
 inline f32x8 F32x8_Sqrt(f32x8 A)         { return mmF32x8(_mm256_sqrt_ps(A.mm)); }
+inline f32x8 F32x8_Roll(f32x8 A)         { return mmF32x8(_mm256_permutevar8x32_ps(A.mm, _mm256_set_epi32(0,7,6,5,4,3,2,1))); }
 inline f32x8 F32x8_Min(f32x8 A, f32x8 B) { return mmF32x8(_mm256_min_ps(A.mm, B.mm)); }
 inline f32x8 F32x8_Max(f32x8 A, f32x8 B) { return mmF32x8(_mm256_max_ps(A.mm, B.mm)); }
 inline f32x8 F32x8_Blend(f32x8 A, f32x8 B, f32x8 Mask)  { return mmF32x8(_mm256_blendv_ps(A.mm, B.mm, Mask.mm)); }
@@ -69,6 +70,7 @@ F32x8_Lerp(f32x8 F0, f32x8 F1, f32x8 T)
     return mmF32x8(_mm256_add_ps(mT0, mT1));
 }
 
+inline f32 F32x8_First(f32x8 A)        { return _mm_cvtss_f32(_mm256_castps256_ps128(A.mm)); }
 
 #ifdef __cplusplus
 

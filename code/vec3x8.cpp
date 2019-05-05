@@ -38,13 +38,16 @@ inline vec3x8 Vec3x8_Positive(vec3x8 A)      { vec3x8 Result = { F32x8_Positive(
 inline vec3x8 Vec3x8_Negative(vec3x8 A)      { vec3x8 Result = { F32x8_Negative(A.x), F32x8_Negative(A.y), F32x8_Negative(A.z) }; return Result; }
 inline vec3x8 Vec3x8_Abs(vec3x8 A)           { vec3x8 Result = { F32x8_Abs(A.x),      F32x8_Abs(A.y),      F32x8_Abs(A.z) };      return Result; }
 inline vec3x8 Vec3x8_Sqrt(vec3x8 A)          { vec3x8 Result = { F32x8_Sqrt(A.x),     F32x8_Sqrt(A.y),     F32x8_Sqrt(A.z) };     return Result; }
+inline vec3x8 Vec3x8_Roll(vec3x8 A)          { vec3x8 Result = { F32x8_Roll(A.x),     F32x8_Roll(A.y),     F32x8_Roll(A.z) };     return Result; }
 inline vec3x8 Vec3x8_Min(vec3x8 A, vec3x8 B) { vec3x8 Result = { F32x8_Min(A.x, B.x), F32x8_Min(A.y, B.y), F32x8_Min(A.z, B.z) }; return Result; }
 inline vec3x8 Vec3x8_Max(vec3x8 A, vec3x8 B) { vec3x8 Result = { F32x8_Max(A.x, B.x), F32x8_Max(A.y, B.y), F32x8_Max(A.z, B.z) }; return Result; }
 inline vec3x8 Vec3x8_Lerp(vec3x8 A, vec3x8 B, f32x8 T) 		 { vec3x8 Result = { F32x8_Lerp(A.x, B.x, T), F32x8_Lerp(A.y, B.y, T), F32x8_Lerp(A.z, B.z, T) }; return Result; }
 inline vec3x8 Vec3x8_Clamp(vec3x8 A, vec3x8 Min, vec3x8 Max) { vec3x8 Result = { F32x8_Clamp(A.x, Min.x, Max.x), F32x8_Clamp(A.y, Min.y, Max.y), F32x8_Clamp(A.z, Min.z, Max.z) }; return Result; }
-inline f32x8 Vec3x8_HMax(vec3x8 A) { return F32x8_Max(F32x8_Max(A.x, A.y), A.z); }
-inline f32x8 Vec3x8_HMin(vec3x8 A) { return F32x8_Min(F32x8_Min(A.x, A.y), A.z); }
-inline f32x8 Vec3x8_Sum(vec3x8 A)  { return F32x8_Add(F32x8_Add(A.x, A.y), A.z); }
+inline f32x8 Vec3x8_HMax(vec3x8 A)  { return F32x8_Max(F32x8_Max(A.x, A.y), A.z); }
+inline f32x8 Vec3x8_HMin(vec3x8 A)  { return F32x8_Min(F32x8_Min(A.x, A.y), A.z); }
+inline f32x8 Vec3x8_Sum(vec3x8 A)   { return F32x8_Add(F32x8_Add(A.x, A.y), A.z); }
+
+inline vec3 Vec3x8_First(vec3x8 A)        { return Vec3(F32x8_First(A.x), F32x8_First(A.y), F32x8_First(A.z)); }
 
 // TRIGONOMETRY
 inline vec3x8 Vec3x8_Sin(vec3x8 X);
