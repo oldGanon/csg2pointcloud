@@ -29,6 +29,17 @@ struct sdf_shape_torus
     vec2 Radius;
 };
 
+struct sdf_shape_cylinder
+{
+    f32 HalfHeight;
+    f32 Radius;
+};
+
+struct sdf_shape_cone
+{
+    vec2 Radius;
+};
+
 enum sdf_shape_type
 {
     SDF_SHAPE_SPHERE,
@@ -48,6 +59,9 @@ struct sdf_shape
         sdf_shape_ellipsoid Ellipsoid;
         sdf_shape_cube Cube;
         sdf_shape_cuboid Cuboid;
+        sdf_shape_torus Torus;
+        sdf_shape_cylinder Cylinder;
+        sdf_shape_cone Cone;
     };
 
     quat Rotation;
@@ -82,7 +96,11 @@ struct sdf
     sdf_edit Edits[64];
 };
 
-
+static f32
+SDF_RotationScale(quat Rotation)
+{
+    return 1.0f / HMax(Abs(Rotation * Vec3(1,1,1)));
+}
 
 static sdf_shape
 SDF_Sphere(vec3 Pos, f32 Radius)
@@ -91,7 +109,7 @@ SDF_Sphere(vec3 Pos, f32 Radius)
     sdf_shape Shape;
     Shape.Sphere = Sphere;
     Shape.Rotation = Quat_Id();
-    Shape.RotationScale = 1.0f / HMax(Shape.Rotation * Vec3(1,1,1));
+    Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_SPHERE;
     return Shape;
@@ -104,7 +122,7 @@ SDF_Ellipsoid(vec3 Pos, quat Rotation, vec3 HalfDim)
     sdf_shape Shape;
     Shape.Ellipsoid = Ellipsoid;
     Shape.Rotation = Rotation;
-    Shape.RotationScale = 1.0f / HMax(Shape.Rotation * Vec3(1,1,1));
+    Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_ELLIPSOID;
     return Shape;
@@ -117,7 +135,7 @@ SDF_Cube(vec3 Pos, f32 HalfDim)
     sdf_shape Shape;
     Shape.Cube = Cube;
     Shape.Rotation = Quat_Id();
-    Shape.RotationScale = 1.0f / HMax(Shape.Rotation * Vec3(1,1,1));
+    Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_CUBE;
     return Shape;
@@ -130,9 +148,22 @@ SDF_Cuboid(vec3 Pos, quat Rotation, vec3 HalfDim)
     sdf_shape Shape;
     Shape.Cuboid = Cuboid;
     Shape.Rotation = Rotation;
-    Shape.RotationScale = 1.0f / HMax(Shape.Rotation * Vec3(1,1,1));
+    Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_CUBOID;
+    return Shape;
+}
+
+static sdf_shape
+SDF_Cylinder(vec3 Pos, quat Rotation, f32 HalfHeight, f32 Radius)
+{
+    sdf_shape_cylinder Cylinder = { HalfHeight, Radius };
+    sdf_shape Shape;
+    Shape.Cylinder = Cylinder;
+    Shape.Rotation = Rotation;
+    Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
+    Shape.Position = Pos;
+    Shape.Type = SDF_SHAPE_CYLINDER;
     return Shape;
 }
 
@@ -216,6 +247,58 @@ SDF_Combine(const sdf_op Op, FLOAT D1, FLOAT D2)
 
 
 
+template <typename FLOAT>
+static FLOAT
+SDF_Quadratic(FLOAT A, FLOAT B, FLOAT C)
+{
+    FLOAT M = B*B-4.0f*A*C;
+    FLOAT R0 = -B/(2.0f*A);
+    FLOAT R1 = Sqrt(M)/(2.0f*A);
+    FLOAT R = Min(Abs(R0-R1),Abs(R0+R1));
+    return Blend(R, INFINITY, M < 0.0f);
+}
+
+template <typename FLOAT>
+static FLOAT
+SDF_Cubic(FLOAT a, FLOAT b, FLOAT c, FLOAT d)
+{
+    FLOAT A = b/a;
+    FLOAT B = c/a;
+    FLOAT C = d/a;
+    FLOAT AA = A*A;
+    FLOAT P = 1.0f/3.0f*(-1.0f/3.0f*AA + B);
+    FLOAT Q = 1.0f/2.0f*(2.0f/27.0f*A*AA - 1.0f/3.0f*A*B + C);
+
+    FLOAT PPP = P*P*P;
+    FLOAT D = Q*Q + PPP;
+    FLOAT R = INFINITY;
+
+    {
+        // INCOMPLETE
+    }
+
+    R -= 1.0f/3.0f*A;
+    return R;
+}
+
+template <typename FLOAT>
+static FLOAT
+SDF_Quartic(FLOAT a, FLOAT b, FLOAT c, FLOAT d, FLOAT e)
+{
+    FLOAT A = b/a;
+    FLOAT B = c/a;
+    FLOAT C = d/a;
+    FLOAT D = e/a;
+    FLOAT AA = A*A;
+    FLOAT P = -3.0f/8.0f*AA + C;
+    FLOAT Q = 1.0f/8.0f*AA*A - 1.0f/2.0f*A*B + C;
+    FLOAT R = 3.0f/256*AA*AA + 1.0f/16.0f*AA*B - 1.0f/4.0f*A*C + D;
+
+    // INCOMPLETE
+}
+
+
+
 template <typename FLOAT, typename VEC3>
 static FLOAT
 SDF_SphereMax(const sdf_shape_sphere Sphere, VEC3 P)
@@ -248,17 +331,6 @@ SDF_SphereMax(const sdf_shape_sphere Sphere, VEC3 P)
     FLOAT F = Abs(Max(C-R,B));
 
     return Min(Min(V,F),E);
-}
-
-template <typename FLOAT>
-static FLOAT
-SDF_Quadratic(FLOAT A, FLOAT B, FLOAT C)
-{
-    FLOAT M = B*B-4.0f*A*C;
-    FLOAT R0 = -B/(2.0f*A);
-    FLOAT R1 = Sqrt(M)/(2.0f*A);
-    FLOAT R = Min(Abs(R0-R1),Abs(R0+R1));
-    return Blend(R, INFINITY, M < 0.0f);
 }
 
 template <typename FLOAT, typename VEC3>
@@ -309,6 +381,55 @@ SDF_CuboidMax(const sdf_shape_cuboid Cuboid, VEC3 P)
 
 template <typename FLOAT, typename VEC3>
 static FLOAT
+SDF_TorusdMax(const sdf_shape_torus Torus, VEC3 P)
+{
+    P = Abs(P);
+    VEC3 PP= P*P;
+    FLOAT PS = Sum(P);
+    FLOAT PPS = Sum(PP);
+    FLOAT R = Torus.Radius.x;
+    FLOAT r = Torus.Radius.y;
+    FLOAT RR = R*R;
+    FLOAT rr = r*r;
+    FLOAT PPSrrRR = (PPS-rr-RR);
+
+    FLOAT QA = 9.0f;
+    FLOAT QB = 12.0f*PS;
+    FLOAT QC = 6.0f*PPSrrRR+4.0f*Ps*Ps+4.0f*RR*PP.y;
+    FLOAT QD = 4.0f*PPSrrRR*PS+8.0f*RR*P.y;
+    FLOAT QE = PPSrrRR*PPSrrRR-4.0f*RR*(rr-PP.y);
+
+    // INCOMPLETE
+}
+
+template <typename FLOAT, typename VEC3>
+static FLOAT
+SDF_CylinderMax(const sdf_shape_cylinder Cylinder, VEC3 P)
+{
+    VEC3 C = Abs(P);
+    VEC3 C2 = C*C;
+    FLOAT R = Cylinder.Radius;
+    FLOAT R2 = R*R;
+    FLOAT H = Cylinder.HalfHeight;
+    FLOAT D = INFINITY;
+
+    FLOAT QAS = 2.0f;
+    FLOAT QBS = -2.0f*(C.x+C.z);
+    FLOAT QCS = (C2.x+C2.z) - R2;
+
+    FLOAT A = C.y-H;
+    FLOAT B = Sign(QCS) * SDF_Quadratic(QAS, QBS, QCS);
+    D = Max(A, B);
+    if (All(D <= 0)) return D;
+
+    D = Min(D, Max(Max(C.x, C.y), Abs(C.z - R)));
+    D = Min(D, Max(Max(C.y, C.z), Abs(C.x - R)));
+
+    return D;
+}
+
+template <typename FLOAT, typename VEC3>
+static FLOAT
 SDF_EvalMax(const sdf_shape Shape, VEC3 P)
 {
     P -= Shape.Position;
@@ -319,6 +440,7 @@ SDF_EvalMax(const sdf_shape Shape, VEC3 P)
         case SDF_SHAPE_ELLIPSOID: return Shape.RotationScale * SDF_EllipsoidMax<FLOAT>(Shape.Ellipsoid, P);
         case SDF_SHAPE_CUBE:      return Shape.RotationScale * SDF_CubeMax<FLOAT>(Shape.Cube, P);
         case SDF_SHAPE_CUBOID:    return Shape.RotationScale * SDF_CuboidMax<FLOAT>(Shape.Cuboid, P);
+        case SDF_SHAPE_CYLINDER:  return Shape.RotationScale * SDF_CylinderMax<FLOAT>(Shape.Cylinder, P);
         default:                  return INFINITY;
     }
 }
@@ -374,6 +496,15 @@ SDF_Cuboid(const sdf_shape_cuboid Cuboid, VEC3 P)
 
 template <typename FLOAT, typename VEC3>
 static FLOAT
+SDF_Cylinder(const sdf_shape_cylinder Cylinder, VEC3 P)
+{
+    FLOAT X = Sqrt(P.x*P.x + P.z*P.z) - Cylinder.Radius;
+    FLOAT Y = Abs(P.y) - Cylinder.HalfHeight;
+    return Max(Max(X,Y),0) + Min(Max(X,Y),0);
+}
+
+template <typename FLOAT, typename VEC3>
+static FLOAT
 SDF_EvalShape(const sdf_shape Shape, VEC3 P)
 {
     P -= Shape.Position;
@@ -384,6 +515,7 @@ SDF_EvalShape(const sdf_shape Shape, VEC3 P)
         case SDF_SHAPE_ELLIPSOID: return SDF_Ellipsoid<FLOAT>(Shape.Ellipsoid, P);
         case SDF_SHAPE_CUBE:      return SDF_Cube<FLOAT>(Shape.Cube, P);
         case SDF_SHAPE_CUBOID:    return SDF_Cuboid<FLOAT>(Shape.Cuboid, P);
+        case SDF_SHAPE_CYLINDER:  return SDF_Cylinder<FLOAT>(Shape.Cylinder, P);
         default: return INFINITY;
     }
 }
