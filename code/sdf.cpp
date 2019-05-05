@@ -48,6 +48,7 @@ struct sdf_shape
         sdf_shape_cuboid Cuboid;
     };
 
+    quat Rotation;
     vec3 Position;
     u32 Type;
 };
@@ -86,6 +87,7 @@ SDF_Sphere(vec3 Pos, f32 Radius)
     sdf_shape_sphere Sphere = { Radius };
     sdf_shape Shape;
     Shape.Sphere = Sphere;
+    Shape.Rotation = Quat_Id();
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_SPHERE;
     return Shape;
@@ -97,6 +99,7 @@ SDF_Ellipsoid(vec3 Pos, vec3 HalfDim)
     sdf_shape_ellipsoid Ellipsoid = { HalfDim };
     sdf_shape Shape;
     Shape.Ellipsoid = Ellipsoid;
+    Shape.Rotation = Quat(Vec3(0,0,1), PI/3.0f);
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_ELLIPSOID;
     return Shape;
@@ -108,6 +111,7 @@ SDF_Cube(vec3 Pos, f32 HalfDim)
     sdf_shape_cube Cube = { HalfDim };
     sdf_shape Shape;
     Shape.Cube = Cube;
+    Shape.Rotation = Quat_Id();
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_CUBE;
     return Shape;
@@ -119,6 +123,7 @@ SDF_Cuboid(vec3 Pos, vec3 HalfDim)
     sdf_shape_cuboid Cuboid = { HalfDim };
     sdf_shape Shape;
     Shape.Cuboid = Cuboid;
+    Shape.Rotation = Quat_Id();
     Shape.Position = Pos;
     Shape.Type = SDF_SHAPE_CUBOID;
     return Shape;
@@ -299,13 +304,14 @@ template <typename FLOAT, typename VEC3>
 static FLOAT
 SDF_EvalMax(const sdf_shape Shape, VEC3 P)
 {
-    P -= Shape.Position;
+    P = -Shape.Rotation * P - Shape.Position;
+    f32 Scale = 1.0f / Vec3_HMax(Shape.Rotation * Vec3(1,1,1));
     switch (Shape.Type)
     {
-        case SDF_SHAPE_SPHERE:    return SDF_SphereMax<FLOAT>(Shape.Sphere, P);
-        case SDF_SHAPE_ELLIPSOID: return SDF_EllipsoidMax<FLOAT>(Shape.Ellipsoid, P);
-        case SDF_SHAPE_CUBE:      return SDF_CubeMax<FLOAT>(Shape.Cube, P);
-        case SDF_SHAPE_CUBOID:    return SDF_CuboidMax<FLOAT>(Shape.Cuboid, P);
+        case SDF_SHAPE_SPHERE:    return Scale * SDF_SphereMax<FLOAT>(Shape.Sphere, P);
+        case SDF_SHAPE_ELLIPSOID: return Scale * SDF_EllipsoidMax<FLOAT>(Shape.Ellipsoid, P);
+        case SDF_SHAPE_CUBE:      return Scale * SDF_CubeMax<FLOAT>(Shape.Cube, P);
+        case SDF_SHAPE_CUBOID:    return Scale * SDF_CuboidMax<FLOAT>(Shape.Cuboid, P);
         default:                  return INFINITY;
     }
 }
@@ -359,6 +365,7 @@ static f32
 SDF_EvalShape(const sdf_shape Shape, vec P)
 {
     P -= Shape.Position;
+    P = -Shape.Rotation * P;
     switch (Shape.Type)
     {
         case SDF_SHAPE_SPHERE:    return SDF_Sphere(Shape.Sphere, P);
@@ -434,7 +441,7 @@ SDF_Gen8(const sdf *SDF, vec3 P, f32 Dim, u32 Depth)
         {
             f32 D = SDF_Eval(SDF, Q);
             vec3 Normal = SDF_Normal(SDF, Q);
-            Q -= Normal * Vec3_Set1(D);
+            // Q -= Normal * Vec3_Set1(D);
             SPLATS[SPLATCOUNT].Position = Q;
             SPLATS[SPLATCOUNT].Normal = Normal;
             ++SPLATCOUNT;

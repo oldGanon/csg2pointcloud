@@ -66,7 +66,14 @@ inline vec3x8 Vec3x8_Pow(vec3x8 X, vec3x8 Y);
 inline vec3x8 Vec3x8_Normalize(vec3x8 A);
 
 // UNIQUE FUNCTIONS
-inline vec3x8 Vec3x8_Cross(vec3x8 A, vec3x8 B);
+inline vec3x8
+Vec3x8_Cross(vec3x8 A, vec3x8 B)
+{
+    f32x8 X = F32x8_Sub(F32x8_Mul(A.y, B.z), F32x8_Mul(A.z, B.y));
+    f32x8 Y = F32x8_Sub(F32x8_Mul(A.z, B.x), F32x8_Mul(A.x, B.z));
+    f32x8 Z = F32x8_Sub(F32x8_Mul(A.x, B.y), F32x8_Mul(A.y, B.x));
+    return Vec3x8(X,Y,Z);
+}
 
 #ifdef __cplusplus
 
@@ -141,3 +148,11 @@ inline vec3x8 Normalize(vec3x8 A)      { return Vec3x8_Normalize(A); }
 inline vec3x8 Cross(vec3x8 A, vec3x8 B) { return Vec3x8_Cross(A, B); }
 
 #endif
+
+inline vec3x8
+Quat_MulVec3x8(quat A, vec3x8 B)
+{
+    vec3x8 T = Vec3x8_Mul(Vec3x8_Cross(A.Imag, B), Vec3x8_Set1(2.0f));
+    return Vec3x8_Add(B, Vec3x8_Add(Vec3x8_Mul(T, Vec3x8_Set1(A.Real)), Vec3x8_Cross(A.Imag, T)));
+}
+inline vec3x8 operator*(const quat A, const vec3x8 B) { return Quat_MulVec3x8(A, B); }
