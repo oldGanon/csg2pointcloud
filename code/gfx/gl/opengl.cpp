@@ -37,7 +37,7 @@ OpenGL_DrawSplats()
 {
     glUseProgram(GL.SplatShader);
     glBindVertexArray(GL.SplatVAO);
-    glDrawArrays(GL_POINTS, 0, (GLsizei)SPLATCOUNT);
+    glDrawArrays(GL_POINTS, 0, (GLsizei)Atomic_Get(&SPLATCOUNT));
     glBindVertexArray(0);
 }
 
@@ -45,7 +45,7 @@ static void
 OpenGL_LoadSplats()
 {
     glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
-    glBufferData(GL_ARRAY_BUFFER, SPLATCOUNT * sizeof(splat), SPLATS, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, Atomic_Get(&SPLATCOUNT) * sizeof(splat), SPLATS, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 

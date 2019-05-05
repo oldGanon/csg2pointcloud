@@ -419,14 +419,14 @@ struct splat
 };
 
 splat SPLATS[10000000];
-u64 SPLATCOUNT;
+atomic SPLATCOUNT;
 
 static void
 SDF_PlaceSplat(vec3 Position, vec3 Normal)
 {
-    SPLATS[SPLATCOUNT].Position = Position;
-    SPLATS[SPLATCOUNT].Normal = Normal;
-    ++SPLATCOUNT;
+    u64 Index = Atomic_Inc(&SPLATCOUNT);
+    SPLATS[Index].Position = Position;
+    SPLATS[Index].Normal = Normal;
 }
 
 static void
@@ -476,10 +476,38 @@ SDF_Gen8(const sdf *SDF, vec3 Center, f32 Dim, u32 Depth)
     }
 }
 
+struct sdf_thread_data
+{
+    const sdf *SDF;
+    vec3 Center;
+    f32 Dim;
+    u32 Depth;
+};
+
+static void
+SDF_GenThread(void *Data)
+{
+    sdf_thread_data *SDFData = (sdf_thread_data *)Data;
+    SDF_Gen8(SDFData->SDF, SDFData->Center, SDFData->Dim, SDFData->Depth);
+}
+
 static void
 SDF_Gen(const sdf *SDF)
 {
     SPLATCOUNT = 0;
-    u32 MaxDepth = 9; // (8 ^ (MaxDepth+1) splats upper bound
-    SDF_Gen8(SDF, Vec3_Zero(), 1.0f, MaxDepth);
+    u32 MaxDepth = 8; // (8 ^ (MaxDepth) splats upper bound
+    // SDF_Gen8(SDF, Vec3_Zero(), 1.0f, MaxDepth+1);
+
+    sdf_thread_data ThreadData[8] = {
+     { SDF, Vec3( 0.5f, 0.5f, 0.5f), 0.5f, MaxDepth },
+     { SDF, Vec3( 0.5f, 0.5f,-0.5f), 0.5f, MaxDepth },
+     { SDF, Vec3( 0.5f,-0.5f, 0.5f), 0.5f, MaxDepth },
+     { SDF, Vec3( 0.5f,-0.5f,-0.5f), 0.5f, MaxDepth },
+     { SDF, Vec3(-0.5f, 0.5f, 0.5f), 0.5f, MaxDepth },
+     { SDF, Vec3(-0.5f, 0.5f,-0.5f), 0.5f, MaxDepth },
+     { SDF, Vec3(-0.5f,-0.5f, 0.5f), 0.5f, MaxDepth },
+     { SDF, Vec3(-0.5f,-0.5f,-0.5f), 0.5f, MaxDepth } };
+    for (u32 i = 0; i < 8; ++i)
+        Async_AddWork(SDF_GenThread, ThreadData + i);
+    Async_FinishAllWork();
 }
