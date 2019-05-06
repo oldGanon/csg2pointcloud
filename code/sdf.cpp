@@ -70,6 +70,8 @@ struct sdf_shape
     vec3 Position;
     vec3 Color;
     u32 Type;
+
+    sdf_shape() { };
 };
 
 enum sdf_op_type
@@ -96,6 +98,19 @@ struct sdf
 {
     u32 EditCount;
     sdf_edit Edits[64];
+};
+
+struct sdf_splat
+{
+    vec3 Position;
+    vec3 Normal;
+    vec3 Color;
+};
+
+struct sdf_splat_batch
+{
+    atomic SplatCount;
+    sdf_splat Splats[1];
 };
 
 static f32
@@ -220,6 +235,13 @@ SDF_SubSmooth(sdf *SDF, sdf_shape Shape, f32 Smoothing)
 {
     if (SDF->EditCount == 0) return;
     SDF_AddEdit(SDF, Shape, { SDF_OP_SUB_SMOOTH, Smoothing });
+}
+
+static void
+SDF_Undo(sdf *SDF)
+{
+    if (SDF->EditCount == 0) return;
+    --SDF->EditCount;
 }
 
 
@@ -592,27 +614,17 @@ SDF_Color(const sdf *SDF, vec3x8 Pos)
 
 
 
-struct splat
-{
-    vec3 Position;
-    vec3 Normal;
-    vec3 Color;
-};
-
-splat SPLATS[10000000];
-atomic SPLATCOUNT;
-
 static void
-SDF_PlaceSplat(vec3 Position, vec3 Normal, vec3 Color)
+SDF_PlaceSplat(sdf_splat_batch *Out, vec3 Position, vec3 Normal, vec3 Color)
 {
-    u64 Index = Atomic_Inc(&SPLATCOUNT);
-    SPLATS[Index].Position = Position;
-    SPLATS[Index].Normal = Normal;
-    SPLATS[Index].Color = Color;
+    u64 Index = Atomic_Inc(&Out->SplatCount);
+    Out->Splats[Index].Position = Position;
+    Out->Splats[Index].Normal = Normal;
+    Out->Splats[Index].Color = Color;
 }
 
 static void
-SDF_Gen8(const sdf *SDF, vec3 Center, f32 Dim, u32 Depth)
+SDF_Gen8(sdf *SDF, vec3 Center, f32 Dim, u32 Depth, sdf_splat_batch *Out)
 {
     Dim /= 2.0f;
     f32x8 vDim = F32x8_Set1(Dim);
@@ -633,7 +645,7 @@ SDF_Gen8(const sdf *SDF, vec3 Center, f32 Dim, u32 Depth)
             if (InRange & (1 << x))
             {
                 vec3 P = Vec3x8_First(Pos);
-                SDF_Gen8(SDF, P, Dim, Depth - 1);
+                SDF_Gen8(SDF, P, Dim, Depth - 1, Out);
             }
             Pos = Vec3x8_Roll(Pos);
         }
@@ -651,7 +663,7 @@ SDF_Gen8(const sdf *SDF, vec3 Center, f32 Dim, u32 Depth)
                 vec3 C = Vec3x8_First(Col);
                 f32 D = F32x8_First(Dst);
                 P -= N * Vec3_Set1(D);
-                SDF_PlaceSplat(P, N, C);
+                SDF_PlaceSplat(Out, P, N, C);
             }
             Pos = Vec3x8_Roll(Pos);
             Nrm = Vec3x8_Roll(Nrm);
@@ -663,36 +675,50 @@ SDF_Gen8(const sdf *SDF, vec3 Center, f32 Dim, u32 Depth)
 
 struct sdf_thread_data
 {
-    const sdf *SDF;
+    sdf *SDF;
     vec3 Center;
     f32 Dim;
     u32 Depth;
+    sdf_splat_batch *Out;
 };
 
 static void
 SDF_GenThread(void *Data)
 {
     sdf_thread_data *SDFData = (sdf_thread_data *)Data;
-    SDF_Gen8(SDFData->SDF, SDFData->Center, SDFData->Dim, SDFData->Depth);
+    SDF_Gen8(SDFData->SDF, SDFData->Center, SDFData->Dim, SDFData->Depth, SDFData->Out);
 }
 
 static void
-SDF_Gen(const sdf *SDF)
+SDF_Gen(sdf *SDF, u32 Depth, sdf_splat_batch *Out)
 {
-    SPLATCOUNT = 0;
-    u32 MaxDepth = 8; // (8 ^ (MaxDepth) splats upper bound
+    Atomic_Set(&Out->SplatCount, 0);
+    u32 MaxDepth = Depth; // (8 ^ (MaxDepth) splats upper bound
     // SDF_Gen8(SDF, Vec3_Zero(), 1.0f, MaxDepth+1);
 
     sdf_thread_data ThreadData[8] = {
-     { SDF, Vec3( 0.5f, 0.5f, 0.5f), 0.5f, MaxDepth },
-     { SDF, Vec3( 0.5f, 0.5f,-0.5f), 0.5f, MaxDepth },
-     { SDF, Vec3( 0.5f,-0.5f, 0.5f), 0.5f, MaxDepth },
-     { SDF, Vec3( 0.5f,-0.5f,-0.5f), 0.5f, MaxDepth },
-     { SDF, Vec3(-0.5f, 0.5f, 0.5f), 0.5f, MaxDepth },
-     { SDF, Vec3(-0.5f, 0.5f,-0.5f), 0.5f, MaxDepth },
-     { SDF, Vec3(-0.5f,-0.5f, 0.5f), 0.5f, MaxDepth },
-     { SDF, Vec3(-0.5f,-0.5f,-0.5f), 0.5f, MaxDepth } };
+     { SDF, Vec3( 0.5f, 0.5f, 0.5f), 0.5f, MaxDepth, Out },
+     { SDF, Vec3( 0.5f, 0.5f,-0.5f), 0.5f, MaxDepth, Out },
+     { SDF, Vec3( 0.5f,-0.5f, 0.5f), 0.5f, MaxDepth, Out },
+     { SDF, Vec3( 0.5f,-0.5f,-0.5f), 0.5f, MaxDepth, Out },
+     { SDF, Vec3(-0.5f, 0.5f, 0.5f), 0.5f, MaxDepth, Out },
+     { SDF, Vec3(-0.5f, 0.5f,-0.5f), 0.5f, MaxDepth, Out },
+     { SDF, Vec3(-0.5f,-0.5f, 0.5f), 0.5f, MaxDepth, Out },
+     { SDF, Vec3(-0.5f,-0.5f,-0.5f), 0.5f, MaxDepth, Out } };
     for (u32 i = 0; i < 8; ++i)
         Async_AddWork(SDF_GenThread, ThreadData + i);
     Async_FinishAllWork();
+}
+
+static f32
+SDF_Eval(const sdf *SDF, vec3 O, vec3 D, f32 W = 0.001)
+{
+    f32 t = 0.0f;
+    for (int i = 0; i < 256; ++i)
+    {
+        f32 Dist = SDF_Eval<f32>(SDF, O + D * t);
+        if (Dist < W) return t;
+        t += Dist - W;
+    }
+    return t;
 }

@@ -5,11 +5,13 @@ struct gl_state
 {
     u32 SquareVBO;
     u32 SquareVAO;
-    u32 SDFShader;
 
     u32 SplatVAO;
     u32 SplatVBO;
     u32 SplatShader;
+    u32 SplatShaderWorldToClipLoc;
+    u64 SplatCountHi;
+    u64 SplatCountLo;
 };
 
 global gl_state GL = { };
@@ -33,19 +35,31 @@ OpenGL_DrawFullscreenQuad()
 }
 
 static void
-OpenGL_DrawSplats()
+OpenGL_DrawSplats(mat4 WorldToClip)
 {
     glUseProgram(GL.SplatShader);
     glBindVertexArray(GL.SplatVAO);
-    glDrawArrays(GL_POINTS, 0, (GLsizei)Atomic_Get(&SPLATCOUNT));
+    glUniformMatrix4fv(GL.SplatShaderWorldToClipLoc, 1, GL_FALSE, WorldToClip.E);
+    glDrawArrays(GL_POINTS, 0, (GLsizei)(GL.SplatCountLo + GL.SplatCountHi));
     glBindVertexArray(0);
 }
 
 static void
-OpenGL_LoadSplats()
+OpenGL_LoadSplatsHi(sdf_splat_batch *Batch)
 {
+    GL.SplatCountLo = 0;
+    GL.SplatCountHi = Atomic_Get(&Batch->SplatCount);
     glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
-    glBufferData(GL_ARRAY_BUFFER, Atomic_Get(&SPLATCOUNT) * sizeof(splat), SPLATS, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, GL.SplatCountHi * sizeof(sdf_splat), Batch->Splats);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+static void
+OpenGL_LoadSplatsLo(sdf_splat_batch *Batch)
+{
+    GL.SplatCountLo = Atomic_Get(&Batch->SplatCount);
+    glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, GL.SplatCountHi * sizeof(sdf_splat), GL.SplatCountLo * sizeof(sdf_splat), Batch->Splats);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -62,21 +76,9 @@ OpenGL_Init()
     glDepthFunc(GL_LESS);
 
     /* SHADERS */
-    size FragShaderSize;
-    char *FragShaderSource = (char *)File_ReadEntireFile("../code/gfx/gl/shader.frag", &FragShaderSize);
-    string FragShader = String(FragShaderSource, FragShaderSize);
-    GL.SDFShader = OpenGL_LoadProgram(VertShader, FragShader);
-    
     GL.SplatShader = OpenGL_LoadProgram(SplatVertShader, SplatFragShader);
-    vec3 CameraPosition = Vec3(0,0,3);
-    quat CameraRotation = Quat_Id();
-    mat4 Translation = Mat4_Translation(Vec3_Negate(CameraPosition));
-    mat4 Rotation = Mat4_Rotation(Quat_Negate(CameraRotation));
-    mat4 Perspective = Mat4_InfinitePerspective(45.0f, 9.0f/16.0f, 0.1f);
-    mat4 WorldToClip = Perspective * Rotation * Translation;
     glUseProgram(GL.SplatShader);
-    u32 UniformLocation = glGetUniformLocation(GL.SplatShader, "WorldToCamera");
-    glUniformMatrix4fv(UniformLocation, 1, GL_FALSE, WorldToClip.E);
+    GL.SplatShaderWorldToClipLoc = glGetUniformLocation(GL.SplatShader, "WorldToCamera");
     glUseProgram(0);
 
     {   /* SQUARE VAO */
@@ -97,9 +99,10 @@ OpenGL_Init()
         glBindVertexArray(GL.SplatVAO);
         glGenBuffers(1, &GL.SplatVBO);
         glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(splat), (GLvoid *)offsetof(splat, Position));
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(splat), (GLvoid *)offsetof(splat, Normal));
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(splat), (GLvoid *)offsetof(splat, Color));
+        glBufferData(GL_ARRAY_BUFFER, sizeof(sdf_splat) * 10000000, 0, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(sdf_splat), (GLvoid *)offsetof(sdf_splat, Position));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(sdf_splat), (GLvoid *)offsetof(sdf_splat, Normal));
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(sdf_splat), (GLvoid *)offsetof(sdf_splat, Color));
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
@@ -118,9 +121,7 @@ OpenGL_Clear()
 }
 
 static void
-OpenGL_Frame()
+OpenGL_Frame(mat4 WorldToClip)
 {
-    glUseProgram(GL.SDFShader);
-    // OpenGL_DrawFullscreenQuad();
-    OpenGL_DrawSplats();
+    OpenGL_DrawSplats(WorldToClip);
 }

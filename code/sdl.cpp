@@ -36,6 +36,10 @@ struct main_state
     i32 GamepadIndex;
     b32 VSyncState;
     b32 PreferWindowedFullscreen;
+
+    vec2 MousePos;
+    b32 MouseMoved;
+    b32 LeftMouseDown;
 };
 
 /*-------------*/
@@ -251,7 +255,7 @@ static SDL_Window *
 Main_CreateOpenGLWindow()
 {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, 
                         SDL_GL_CONTEXT_PROFILE_CORE);
 
@@ -396,7 +400,7 @@ Main_CollectEvents(SDL_Window *Window, main_state *MainState)
                         if (ScanCode == SDL_SCANCODE_F4)
                             GlobalRunning = false;
 
-                        if (ScanCode == SDL_SCANCODE_RETURN && Window)
+                        if (ScanCode == SDL_SCANCODE_RETURN)
                             Main_ToggleFullscreen(MainState, Window);
                     }
                 }
@@ -428,11 +432,17 @@ Main_CollectEvents(SDL_Window *Window, main_state *MainState)
 
             case SDL_MOUSEMOTION:
             {
+                ivec2 D = Main_GetWindowSize(Window);
+                f32 X = (Event.motion.x / (f32)D.x) * -2.0f + 1.0f;
+                f32 Y = (Event.motion.y / (f32)D.y) * 2.0f - 1.0f;
+                MainState->MousePos = Vec2(X, Y);
+                MainState->MouseMoved = true;
             } break;
 
-            case SDL_MOUSEBUTTONUP:
+            case SDL_MOUSEBUTTONUP: break;
             case SDL_MOUSEBUTTONDOWN:
             {
+                MainState->LeftMouseDown = true;
             } break;
 
             /* WINDOW EVENTS */
@@ -603,9 +613,11 @@ int SDL_main(int argc, char **argv)
 
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
 
-    {
-        sdf SDF = { };
+    sdf_splat_batch *Splats = (sdf_splat_batch *)SDL_malloc(sizeof(sdf_splat) * 10000000);
 
+    sdf SDF = { };
+
+    {
         vec3 Color = Vec3(1.0f,0.878f,0.741f);
         vec3 Red = Vec3(1,0,0);
         vec3 Green = Vec3(0,1,0);
@@ -613,6 +625,7 @@ int SDL_main(int argc, char **argv)
 
         SDF_Add(&SDF,       SDF_Cuboid(Vec3( 0.0f,0.0f,0.0f), Quat(), Color, Vec3(0.5f,0.1f,0.01f)));
         SDF_Add(&SDF,       SDF_Cuboid(Vec3( 0.0f,0.0f,0.0f), Quat(), Color, Vec3(0.1f,0.5f,0.01f)));
+
         SDF_AddSmooth(&SDF, SDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), PI/3.0f), Red, Vec3(0.5f,0.1f,0.1f)), 0.02f);
         SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.5f,0.0f,0.0f), Blue, 0.25f), 0.05f);
         SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0.0f,0.0f), Green, 0.25f), 0.05f);
@@ -622,16 +635,33 @@ int SDL_main(int argc, char **argv)
         SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.95f,0,0), Red, 0.025f), 0.05f);
         SDF_AddSmooth(&SDF, SDF_Cylinder(Vec3( 0.75f,0,0), Quat(Vec3(1,0,0), PI/1.5f), Blue, 0.45f, 0.25f), 0.05f);
 
-        // SDF_Add(&SDF, SDF_Ellipsoid(Vec3_Set1(0), Quat(Vec3(0,0,1), PI/3.0f), Vec3(0.5f, 0.75f, 0.5f)));
-        // SDF_Sub(&SDF, SDF_Cuboid(Vec3(0.0f,-0.5,0.0f), Quat(), Vec3(0.6f, 0.5f, 0.6f)));
-        // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3_Set1(0), 0.5f), 0.1f);
+        // SDF_Add(&SDF, SDF_Ellipsoid(Vec3_Set1(0), Quat(Vec3(0,0,1), PI/3.0f), Color, Vec3(0.5f, 0.75f, 0.5f)));
+        // SDF_Sub(&SDF, SDF_Cuboid(Vec3(0.0f,-0.5,0.0f), Quat(), Color, Vec3(0.6f, 0.5f, 0.6f)));
+        // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3_Set1(0), Color, 0.5f), 0.1f);
 
-        SDF_Gen(&SDF);
+        SDF_Gen(&SDF, 8, Splats);
 
-        Api_PrintF("Splat Count: %llu!", SPLATCOUNT);
+        Api_PrintF("Splat Count: %llu!", Splats->SplatCount);
 
-        OpenGL_LoadSplats();
+        OpenGL_LoadSplatsHi(Splats);
     }
+
+    vec3 CameraPosition = Vec3(0,0,3);
+    quat CameraRotation = Quat_Id();
+
+    mat4 Translation = Mat4_Translation(Vec3_Negate(CameraPosition));
+    mat4 Rotation = Mat4_Rotation(Quat_Negate(CameraRotation));
+    mat4 Perspective = Mat4_Perspective(45.0f, 9.0f/16.0f, 0.1f, 1000.0f);
+    mat4 WorldToClip = Perspective * Rotation * Translation;
+
+    mat4 InvTranslation = Mat4_Translation(CameraPosition);
+    mat4 InvRotation = Mat4_Rotation(CameraRotation);
+    mat4 InvPerspective = Mat4_Perspective(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
+    mat4 ClipToWorld = InvPerspective * InvRotation * InvTranslation;
+
+    sdf_shape EditShape = SDF_Sphere(Vec3(0,0,0), Vec3(1,0,0), 0.25);
+    EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.25);
+    sdf_op EditOp = { SDF_OP_ADD_SMOOTH, 0.1f };
 
     /* GAME INIT */
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
@@ -646,8 +676,38 @@ int SDL_main(int argc, char **argv)
 
         Main_CollectEvents(Window, &MainState);
         
+        if (MainState.LeftMouseDown)
+        {
+            MainState.LeftMouseDown = false;
+            SDF_AddEdit(&SDF, EditShape, EditOp);
+            SDF_Gen(&SDF, 8, Splats);
+            OpenGL_LoadSplatsHi(Splats);
+        }
+
+        if (MainState.MouseMoved)
+        {
+            MainState.MouseMoved = false;
+            vec4 MousePos3D = Vec4(MainState.MousePos, Vec2(0,1));
+            MousePos3D = ClipToWorld * MousePos3D;
+            MousePos3D = MousePos3D / MousePos3D.w;
+            vec3 MouseDir = Vec3_Normalize(MousePos3D-CameraPosition);
+            f32 Depth = SDF_Eval(&SDF, CameraPosition, MouseDir);
+
+            vec3 EditPos;
+            if (Depth < 1000.0f)
+                EditPos = CameraPosition + MouseDir * Depth;
+            else
+                EditPos = MousePos3D.xyz;
+
+            EditShape.Position = EditPos;
+            SDF_AddEdit(&SDF, EditShape, EditOp);
+            SDF_Gen(&SDF, 6, Splats);
+            OpenGL_LoadSplatsLo(Splats);
+            SDF_Undo(&SDF);
+        }
+
         Gfx.Clear();
-        Gfx.Frame();
+        Gfx.Frame(WorldToClip);
         SDL_GL_SwapWindow(Window);
 
         /* FRAME TIMING */

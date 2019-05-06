@@ -1,7 +1,7 @@
 struct gfx_functions
 {
     void (*Clear) (void);
-    void (*Frame) (void);
+    void (*Frame) (mat4);
 };
 
 #if COMPILE_GFX_OPENGL
