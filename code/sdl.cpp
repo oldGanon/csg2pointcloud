@@ -639,7 +639,7 @@ int SDL_main(int argc, char **argv)
         // SDF_Sub(&SDF, SDF_Cuboid(Vec3(0.0f,-0.5,0.0f), Quat(), Color, Vec3(0.6f, 0.5f, 0.6f)));
         // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3_Set1(0), Color, 0.5f), 0.1f);
 
-        SDF_Gen(&SDF, 8, Splats);
+        SDF_Gen(&SDF, Vec3_Zero(), 1.0f, 8, Splats);
 
         Api_PrintF("Splat Count: %llu!", Splats->SplatCount);
 
@@ -659,9 +659,10 @@ int SDL_main(int argc, char **argv)
     mat4 InvPerspective = Mat4_Perspective(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
     mat4 ClipToWorld = InvPerspective * InvRotation * InvTranslation;
 
-    sdf_shape EditShape = SDF_Sphere(Vec3(0,0,0), Vec3(1,0,0), 0.25);
-    EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.25);
-    sdf_op EditOp = { SDF_OP_ADD_SMOOTH, 0.1f };
+    sdf_shape EditShape = SDF_Sphere(Vec3(0,0,0), Vec3(1,0,0), 0.1f);
+    // EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.1f);
+    sdf_op EditOp = { SDF_OP_ADD_SMOOTH, 0.05f };
+    f32 EditDim = 0.15f;
 
     /* GAME INIT */
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
@@ -680,7 +681,7 @@ int SDL_main(int argc, char **argv)
         {
             MainState.LeftMouseDown = false;
             SDF_AddEdit(&SDF, EditShape, EditOp);
-            SDF_Gen(&SDF, 8, Splats);
+            SDF_Gen(&SDF, Vec3_Zero(), 1.0f, 8, Splats);
             OpenGL_LoadSplatsHi(Splats);
         }
 
@@ -691,17 +692,17 @@ int SDL_main(int argc, char **argv)
             MousePos3D = ClipToWorld * MousePos3D;
             MousePos3D = MousePos3D / MousePos3D.w;
             vec3 MouseDir = Vec3_Normalize(MousePos3D-CameraPosition);
-            f32 Depth = SDF_Eval(&SDF, CameraPosition, MouseDir);
+            f32 Depth = SDF_Dist(&SDF, CameraPosition, MouseDir);
 
             vec3 EditPos;
-            if (Depth < 1000.0f)
+            if (Depth < 100.0f)
                 EditPos = CameraPosition + MouseDir * Depth;
             else
-                EditPos = MousePos3D.xyz;
+                EditPos = CameraPosition + MouseDir * 3.0f;
 
             EditShape.Position = EditPos;
             SDF_AddEdit(&SDF, EditShape, EditOp);
-            SDF_Gen(&SDF, 6, Splats);
+            SDF_Gen(&SDF, EditPos, EditDim, 5, Splats);
             OpenGL_LoadSplatsLo(Splats);
             SDF_Undo(&SDF);
         }

@@ -70,8 +70,7 @@ struct sdf_shape
     vec3 Position;
     vec3 Color;
     u32 Type;
-
-    sdf_shape() { };
+    sdf_shape() { }
 };
 
 enum sdf_op_type
@@ -123,7 +122,7 @@ static sdf_shape
 SDF_Sphere(vec3 Position, vec3 Color, f32 Radius)
 {
     sdf_shape_sphere Sphere = { Radius };
-    sdf_shape Shape;
+    sdf_shape Shape = { };
     Shape.Sphere = Sphere;
     Shape.Rotation = Quat_Id();
     Shape.RotationScale = 1.0f;
@@ -137,7 +136,7 @@ static sdf_shape
 SDF_Ellipsoid(vec3 Position, quat Rotation, vec3 Color, vec3 HalfDim)
 {
     sdf_shape_ellipsoid Ellipsoid = { HalfDim };
-    sdf_shape Shape;
+    sdf_shape Shape = { };
     Shape.Ellipsoid = Ellipsoid;
     Shape.Rotation = Rotation;
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
@@ -151,7 +150,7 @@ static sdf_shape
 SDF_Cube(vec3 Position, quat Rotation, vec3 Color, f32 HalfDim)
 {
     sdf_shape_cube Cube = { HalfDim };
-    sdf_shape Shape;
+    sdf_shape Shape = { };
     Shape.Cube = Cube;
     Shape.Rotation = Quat_Id();
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
@@ -165,7 +164,7 @@ static sdf_shape
 SDF_Cuboid(vec3 Position, quat Rotation, vec3 Color, vec3 HalfDim)
 {
     sdf_shape_cuboid Cuboid = { HalfDim };
-    sdf_shape Shape;
+    sdf_shape Shape = { };
     Shape.Cuboid = Cuboid;
     Shape.Rotation = Rotation;
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
@@ -179,7 +178,7 @@ static sdf_shape
 SDF_Cylinder(vec3 Position, quat Rotation, vec3 Color, f32 HalfHeight, f32 Radius)
 {
     sdf_shape_cylinder Cylinder = { HalfHeight, Radius };
-    sdf_shape Shape;
+    sdf_shape Shape = { };
     Shape.Cylinder = Cylinder;
     Shape.Rotation = Rotation;
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
@@ -193,7 +192,7 @@ static sdf_shape
 SDF_Cone(vec3 Position, quat Rotation, vec3 Color, f32 HalfHeight, f32 Radius)
 {
     sdf_shape_cone Cone = { HalfHeight, Radius };
-    sdf_shape Shape;
+    sdf_shape Shape = { };
     Shape.Cone = Cone;
     Shape.Rotation = Rotation;
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
@@ -690,28 +689,30 @@ SDF_GenThread(void *Data)
 }
 
 static void
-SDF_Gen(sdf *SDF, u32 Depth, sdf_splat_batch *Out)
+SDF_Gen(sdf *SDF, vec3 Center, f32 Dim, u32 Depth, sdf_splat_batch *Out)
 {
     Atomic_Set(&Out->SplatCount, 0);
     u32 MaxDepth = Depth; // (8 ^ (MaxDepth) splats upper bound
+    
     // SDF_Gen8(SDF, Vec3_Zero(), 1.0f, MaxDepth+1);
 
+    Dim /= 2.0f;
     sdf_thread_data ThreadData[8] = {
-     { SDF, Vec3( 0.5f, 0.5f, 0.5f), 0.5f, MaxDepth, Out },
-     { SDF, Vec3( 0.5f, 0.5f,-0.5f), 0.5f, MaxDepth, Out },
-     { SDF, Vec3( 0.5f,-0.5f, 0.5f), 0.5f, MaxDepth, Out },
-     { SDF, Vec3( 0.5f,-0.5f,-0.5f), 0.5f, MaxDepth, Out },
-     { SDF, Vec3(-0.5f, 0.5f, 0.5f), 0.5f, MaxDepth, Out },
-     { SDF, Vec3(-0.5f, 0.5f,-0.5f), 0.5f, MaxDepth, Out },
-     { SDF, Vec3(-0.5f,-0.5f, 0.5f), 0.5f, MaxDepth, Out },
-     { SDF, Vec3(-0.5f,-0.5f,-0.5f), 0.5f, MaxDepth, Out } };
+     { SDF, Center + Vec3( 1, 1, 1) * Dim, Dim, MaxDepth, Out },
+     { SDF, Center + Vec3( 1, 1,-1) * Dim, Dim, MaxDepth, Out },
+     { SDF, Center + Vec3( 1,-1, 1) * Dim, Dim, MaxDepth, Out },
+     { SDF, Center + Vec3( 1,-1,-1) * Dim, Dim, MaxDepth, Out },
+     { SDF, Center + Vec3(-1, 1, 1) * Dim, Dim, MaxDepth, Out },
+     { SDF, Center + Vec3(-1, 1,-1) * Dim, Dim, MaxDepth, Out },
+     { SDF, Center + Vec3(-1,-1, 1) * Dim, Dim, MaxDepth, Out },
+     { SDF, Center + Vec3(-1,-1,-1) * Dim, Dim, MaxDepth, Out } };
     for (u32 i = 0; i < 8; ++i)
         Async_AddWork(SDF_GenThread, ThreadData + i);
     Async_FinishAllWork();
 }
 
 static f32
-SDF_Eval(const sdf *SDF, vec3 O, vec3 D, f32 W = 0.001)
+SDF_Dist(const sdf *SDF, vec3 O, vec3 D, f32 W = 0.001)
 {
     f32 t = 0.0f;
     for (int i = 0; i < 256; ++i)
