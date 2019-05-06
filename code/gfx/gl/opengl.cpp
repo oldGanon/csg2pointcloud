@@ -99,8 +99,10 @@ OpenGL_Init()
         glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(splat), (GLvoid *)offsetof(splat, Position));
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(splat), (GLvoid *)offsetof(splat, Normal));
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(splat), (GLvoid *)offsetof(splat, Color));
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }

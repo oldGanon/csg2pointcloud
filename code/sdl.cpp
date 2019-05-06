@@ -606,20 +606,24 @@ int SDL_main(int argc, char **argv)
     {
         sdf SDF = { };
 
-        SDF_Add(&SDF, SDF_Cuboid(Vec3( 0.0f,0.0,0.0f), Quat(), Vec3(0.5f,0.1f,0.1f)));
-        SDF_Add(&SDF, SDF_Cuboid(Vec3( 0.0f,0.0,0.0f), Quat(), Vec3(0.1f,0.5f,0.1f)));
-        // SDF_AddSmooth(&SDF, SDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), PI/3.0f), Vec3(0.5f,0.1f,0.1f)), 0.025f);
-        // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.5f,0,0), 0.25f), 0.1f);
-        // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0,0), 0.25f), 0.1f);
-        // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.8f,0,0), 0.1f), 0.1f);
-        // SDF_SubSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0,0.25), 0.1f), 0.1f);
-        // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.95f,0,0), 0.025f), 0.05f);
-        // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.95f,0,0), 0.025f), 0.05f);
+        vec3 Color = Vec3(1.0f,0.878f,0.741f);
+        vec3 Red = Vec3(1,0,0);
+        vec3 Green = Vec3(0,1,0);
+        vec3 Blue = Vec3(0,0,1);
 
-        SDF_AddSmooth(&SDF, SDF_Cylinder(Vec3( 0.75f,0,0), Quat(Vec3(1,0,0), PI/1.5f), 0.25f, 0.25f), 0.05f);
+        SDF_Add(&SDF,       SDF_Cuboid(Vec3( 0.0f,0.0f,0.0f), Quat(), Color, Vec3(0.5f,0.1f,0.01f)));
+        SDF_Add(&SDF,       SDF_Cuboid(Vec3( 0.0f,0.0f,0.0f), Quat(), Color, Vec3(0.1f,0.5f,0.01f)));
+        SDF_AddSmooth(&SDF, SDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), PI/3.0f), Red, Vec3(0.5f,0.1f,0.1f)), 0.02f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.5f,0.0f,0.0f), Blue, 0.25f), 0.05f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0.0f,0.0f), Green, 0.25f), 0.05f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.8f,0.0f,0.0f), Red, 0.1f), 0.05f);
+        SDF_SubSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0.0f,0.25), Red, 0.1f), 0.05f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.95f,0,0), Red, 0.025f), 0.05f);
+        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.95f,0,0), Red, 0.025f), 0.05f);
+        SDF_AddSmooth(&SDF, SDF_Cylinder(Vec3( 0.75f,0,0), Quat(Vec3(1,0,0), PI/1.5f), Blue, 0.45f, 0.25f), 0.05f);
 
         // SDF_Add(&SDF, SDF_Ellipsoid(Vec3_Set1(0), Quat(Vec3(0,0,1), PI/3.0f), Vec3(0.5f, 0.75f, 0.5f)));
-        // SDF_Sub(&SDF, SDF_Cuboid(Vec3(0.0f,-0.5,0.0f), Vec3(0.6f, 0.5f, 0.6f)));
+        // SDF_Sub(&SDF, SDF_Cuboid(Vec3(0.0f,-0.5,0.0f), Quat(), Vec3(0.6f, 0.5f, 0.6f)));
         // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3_Set1(0), 0.5f), 0.1f);
 
         SDF_Gen(&SDF);

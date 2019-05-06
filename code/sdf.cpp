@@ -37,7 +37,8 @@ struct sdf_shape_cylinder
 
 struct sdf_shape_cone
 {
-    vec2 Radius;
+    f32 HalfHeight;
+    f32 Radius;
 };
 
 enum sdf_shape_type
@@ -67,6 +68,7 @@ struct sdf_shape
     quat Rotation;
     f32 RotationScale;
     vec3 Position;
+    vec3 Color;
     u32 Type;
 };
 
@@ -103,67 +105,86 @@ SDF_RotationScale(quat Rotation)
 }
 
 static sdf_shape
-SDF_Sphere(vec3 Pos, f32 Radius)
+SDF_Sphere(vec3 Position, vec3 Color, f32 Radius)
 {
     sdf_shape_sphere Sphere = { Radius };
     sdf_shape Shape;
     Shape.Sphere = Sphere;
     Shape.Rotation = Quat_Id();
-    Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
-    Shape.Position = Pos;
+    Shape.RotationScale = 1.0f;
+    Shape.Position = Position;
+    Shape.Color = Color;
     Shape.Type = SDF_SHAPE_SPHERE;
     return Shape;
 }
 
 static sdf_shape
-SDF_Ellipsoid(vec3 Pos, quat Rotation, vec3 HalfDim)
+SDF_Ellipsoid(vec3 Position, quat Rotation, vec3 Color, vec3 HalfDim)
 {
     sdf_shape_ellipsoid Ellipsoid = { HalfDim };
     sdf_shape Shape;
     Shape.Ellipsoid = Ellipsoid;
     Shape.Rotation = Rotation;
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
-    Shape.Position = Pos;
+    Shape.Position = Position;
+    Shape.Color = Color;
     Shape.Type = SDF_SHAPE_ELLIPSOID;
     return Shape;
 }
 
 static sdf_shape
-SDF_Cube(vec3 Pos, f32 HalfDim)
+SDF_Cube(vec3 Position, quat Rotation, vec3 Color, f32 HalfDim)
 {
     sdf_shape_cube Cube = { HalfDim };
     sdf_shape Shape;
     Shape.Cube = Cube;
     Shape.Rotation = Quat_Id();
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
-    Shape.Position = Pos;
+    Shape.Position = Position;
+    Shape.Color = Color;
     Shape.Type = SDF_SHAPE_CUBE;
     return Shape;
 }
 
 static sdf_shape
-SDF_Cuboid(vec3 Pos, quat Rotation, vec3 HalfDim)
+SDF_Cuboid(vec3 Position, quat Rotation, vec3 Color, vec3 HalfDim)
 {
     sdf_shape_cuboid Cuboid = { HalfDim };
     sdf_shape Shape;
     Shape.Cuboid = Cuboid;
     Shape.Rotation = Rotation;
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
-    Shape.Position = Pos;
+    Shape.Position = Position;
+    Shape.Color = Color;
     Shape.Type = SDF_SHAPE_CUBOID;
     return Shape;
 }
 
 static sdf_shape
-SDF_Cylinder(vec3 Pos, quat Rotation, f32 HalfHeight, f32 Radius)
+SDF_Cylinder(vec3 Position, quat Rotation, vec3 Color, f32 HalfHeight, f32 Radius)
 {
     sdf_shape_cylinder Cylinder = { HalfHeight, Radius };
     sdf_shape Shape;
     Shape.Cylinder = Cylinder;
     Shape.Rotation = Rotation;
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
-    Shape.Position = Pos;
+    Shape.Position = Position;
+    Shape.Color = Color;
     Shape.Type = SDF_SHAPE_CYLINDER;
+    return Shape;
+}
+
+static sdf_shape
+SDF_Cone(vec3 Position, quat Rotation, vec3 Color, f32 HalfHeight, f32 Radius)
+{
+    sdf_shape_cone Cone = { HalfHeight, Radius };
+    sdf_shape Shape;
+    Shape.Cone = Cone;
+    Shape.Rotation = Rotation;
+    Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
+    Shape.Position = Position;
+    Shape.Color = Color;
+    Shape.Type = SDF_SHAPE_CONE;
     return Shape;
 }
 
@@ -184,6 +205,7 @@ SDF_Add(sdf *SDF, sdf_shape Shape)
 static void
 SDF_Sub(sdf *SDF, sdf_shape Shape)
 {
+    if (SDF->EditCount == 0) return;
     SDF_AddEdit(SDF, Shape, { SDF_OP_SUB });
 }
 
@@ -196,6 +218,7 @@ SDF_AddSmooth(sdf *SDF, sdf_shape Shape, f32 Smoothing)
 static void
 SDF_SubSmooth(sdf *SDF, sdf_shape Shape, f32 Smoothing)
 {
+    if (SDF->EditCount == 0) return;
     SDF_AddEdit(SDF, Shape, { SDF_OP_SUB_SMOOTH, Smoothing });
 }
 
@@ -303,28 +326,30 @@ template <typename FLOAT, typename VEC3>
 static FLOAT
 SDF_SphereMax(const sdf_shape_sphere Sphere, VEC3 P)
 {
-    FLOAT X = Abs(P.x);
-    FLOAT Y = Abs(P.y);
-    FLOAT Z = Abs(P.z);
+    P = Abs(P);
+    FLOAT PS = Sum(P);
+    VEC3 P2 = P*P;
+    FLOAT P2S = Sum(P2);
     FLOAT R = Sphere.Radius;
+    FLOAT R2 = R*R;
 
-    FLOAT XYZ = X+Y+Z;
-    FLOAT M = 3.0f*R*R-2.0f*(X*X-X*(Y+Z)+Y*Y-Y*Z+Z*Z);
+    FLOAT M = 3.0f*R2-2.0f*(P2S-P.x*P.y-P.x*P.z-P.y*P.z);
     FLOAT S = Sqrt(M);
-    FLOAT V0 = 0.33333333333f*( S+XYZ);
-    FLOAT V1 = 0.33333333333f*(-S+XYZ);
+    FLOAT V0 = 0.33333333333f*(PS+S);
+    FLOAT V1 = 0.33333333333f*(PS-S);
     FLOAT V = Min(V0,V1);
     V = Blend(V, INFINITY, M < 0);
 
-    FLOAT A = Min(Min(X,Y),Z);
-    FLOAT B = Max(Max(Min(X,Y),Min(X,Z)),Min(Y,Z));
-    FLOAT C = Max(Max(X,Y),Z);
+    FLOAT A = HMin(P);
+    FLOAT B = Max(Max(Min(P.x,P.y),Min(P.x,P.z)),Min(P.y,P.z));
+    FLOAT C = HMax(P);
+
     FLOAT BPC = B+C;
     FLOAT BMC = B-C;
-    FLOAT N = 2.0f*R*R-BMC*BMC;
+    FLOAT N = 2.0f*R2-BMC*BMC;
     FLOAT K = Sqrt(N);
-    FLOAT E0 = 0.5f*( K+BPC);
-    FLOAT E1 = 0.5f*(-K+BPC);
+    FLOAT E0 = 0.5f*(BPC+K);
+    FLOAT E1 = 0.5f*(BPC-K);
     FLOAT E = Min(E0,E1);
     E = Max(Blend(E, INFINITY, N < 0), A);
 
@@ -434,15 +459,17 @@ SDF_EvalMax(const sdf_shape Shape, VEC3 P)
 {
     P -= Shape.Position;
     P = -Shape.Rotation * P;
+    FLOAT Dist = INFINITY;
     switch (Shape.Type)
     {
-        case SDF_SHAPE_SPHERE:    return Shape.RotationScale * SDF_SphereMax<FLOAT>(Shape.Sphere, P);
-        case SDF_SHAPE_ELLIPSOID: return Shape.RotationScale * SDF_EllipsoidMax<FLOAT>(Shape.Ellipsoid, P);
-        case SDF_SHAPE_CUBE:      return Shape.RotationScale * SDF_CubeMax<FLOAT>(Shape.Cube, P);
-        case SDF_SHAPE_CUBOID:    return Shape.RotationScale * SDF_CuboidMax<FLOAT>(Shape.Cuboid, P);
-        case SDF_SHAPE_CYLINDER:  return Shape.RotationScale * SDF_CylinderMax<FLOAT>(Shape.Cylinder, P);
-        default:                  return INFINITY;
+        case SDF_SHAPE_SPHERE:    Dist = SDF_SphereMax<FLOAT>(Shape.Sphere, P); break;
+        case SDF_SHAPE_ELLIPSOID: Dist = SDF_EllipsoidMax<FLOAT>(Shape.Ellipsoid, P); break;
+        case SDF_SHAPE_CUBE:      Dist = SDF_CubeMax<FLOAT>(Shape.Cube, P); break;
+        case SDF_SHAPE_CUBOID:    Dist = SDF_CuboidMax<FLOAT>(Shape.Cuboid, P); break;
+        case SDF_SHAPE_CYLINDER:  Dist = SDF_CylinderMax<FLOAT>(Shape.Cylinder, P); break;
+        default:                  break;
     }
+    return Shape.RotationScale * Dist;
 }
 
 template <typename FLOAT, typename VEC3>
@@ -500,7 +527,7 @@ SDF_Cylinder(const sdf_shape_cylinder Cylinder, VEC3 P)
 {
     FLOAT X = Sqrt(P.x*P.x + P.z*P.z) - Cylinder.Radius;
     FLOAT Y = Abs(P.y) - Cylinder.HalfHeight;
-    return Max(Max(X,Y),0) + Min(Max(X,Y),0);
+    return Max(X,Y);
 }
 
 template <typename FLOAT, typename VEC3>
@@ -544,21 +571,44 @@ SDF_Normal(const sdf *SDF, vec3x8 Position)
 #undef H
 }
 
+static vec3x8
+SDF_Color(const sdf *SDF, vec3x8 Pos)
+{
+    sdf_shape Shape = SDF->Edits[0].Shape;
+    vec3x8 Color = Shape.Color;
+    f32x8 D0 = SDF_EvalShape<f32x8>(Shape, Pos);
+    for (u32 i = 1; i < SDF->EditCount; ++i)
+    {
+        Shape = SDF->Edits[i].Shape;
+        f32x8 D1 = SDF_EvalShape<f32x8>(Shape, Pos);
+        D1 = SDF_Combine(SDF->Edits[i].Op, D0, D1);
+        f32x8 S = SDF->Edits[i].Op.Smoothing;
+        f32x8 C = Saturate((D0-D1)/S);
+        Color = Lerp(Color, Shape.Color, C);
+        D0 = D1;
+    }
+    return Color;
+}
+
+
+
 struct splat
 {
     vec3 Position;
     vec3 Normal;
+    vec3 Color;
 };
 
 splat SPLATS[10000000];
 atomic SPLATCOUNT;
 
 static void
-SDF_PlaceSplat(vec3 Position, vec3 Normal)
+SDF_PlaceSplat(vec3 Position, vec3 Normal, vec3 Color)
 {
     u64 Index = Atomic_Inc(&SPLATCOUNT);
     SPLATS[Index].Position = Position;
     SPLATS[Index].Normal = Normal;
+    SPLATS[Index].Color = Color;
 }
 
 static void
@@ -591,18 +641,21 @@ SDF_Gen8(const sdf *SDF, vec3 Center, f32 Dim, u32 Depth)
     else
     {
         vec3x8 Nrm = SDF_Normal(SDF, Pos);
+        vec3x8 Col = SDF_Color(SDF, Pos);
         for (u8 x = 0; x < 8; ++x)
         {
             if (InRange & (1 << x))
             {
                 vec3 P = Vec3x8_First(Pos);
                 vec3 N = Vec3x8_First(Nrm);
+                vec3 C = Vec3x8_First(Col);
                 f32 D = F32x8_First(Dst);
                 P -= N * Vec3_Set1(D);
-                SDF_PlaceSplat(P, N);
+                SDF_PlaceSplat(P, N, C);
             }
             Pos = Vec3x8_Roll(Pos);
             Nrm = Vec3x8_Roll(Nrm);
+            Col = Vec3x8_Roll(Col);
             Dst = F32x8_Roll(Dst);
         }
     }

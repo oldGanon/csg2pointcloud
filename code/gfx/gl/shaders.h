@@ -1,5 +1,6 @@
 #define GLSL_VERT_POSITION "P"
 #define GLSL_VERT_NORMAL "N"
+#define GLSL_VERT_COLOR "C"
 
 string VertShader = 
     "#version 460\n"
@@ -15,21 +16,24 @@ string SplatVertShader =
     "#version 460\n"
     "in vec3 " GLSL_VERT_POSITION ";"
     "in vec3 " GLSL_VERT_NORMAL ";"
+    "in vec3 " GLSL_VERT_COLOR ";"
     "uniform mat4 WorldToCamera;"
     "out vec3 Normal;"
+    "out vec3 Color;"
     "void main(){"
-        "Normal =  N;"
         "gl_Position = WorldToCamera * vec4(P,1);"
+        "Normal =  N;"
+        "Color =  C;"
     "}\0";
 
 string SplatFragShader = 
     "#version 460\n"
     "in vec3 Normal;"
+    "in vec3 Color;"
     "out vec4 Out;"
     "void main(){"
         "Out.xyz = vec3(dot(normalize(Normal), normalize(vec3(0.5,1,1))));"
-        // "if (Normal.z < 0) discard;"
-        "Out.xyz = mix(vec3(0.8,0.5,0.35),vec3(1,0.878,0.741),Out.xyz);"
+        "Out.xyz = Color * max(Out.xyz,0.5);"
     "}\0";
 
 static u32
@@ -87,6 +91,7 @@ OpenGL_LoadProgram(string Vertex, string Fragment)
     glUseProgram(ProgramID);
     glBindAttribLocation(ProgramID, 0, GLSL_VERT_POSITION);
     glBindAttribLocation(ProgramID, 1, GLSL_VERT_NORMAL);
+    glBindAttribLocation(ProgramID, 2, GLSL_VERT_COLOR);
     glLinkProgram(ProgramID);
     glUseProgram(0);
 
