@@ -15,7 +15,6 @@ global atomic GlobalResetGame = { };
 #include "gfx/gfx.cpp"
 
 global memory_zone *GlobalZone = 0;
-global SDL_TLSID MemoryArenaTLS;
 
 global b32 GlobalRunning = true;
 global u64 GlobalPerfCountFrequency = 0;
@@ -40,17 +39,32 @@ struct main_state
     vec2 MousePos;
     b32 MouseMoved;
     b32 LeftMouseDown;
+    b32 RightMouseDown;
 };
 
 /*-------------*/
 /*     API     */
 /*-------------*/
 
+inline size
+Api_Tsize()
+{
+    memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
+    return Arena->Used - sizeof(memory_arena);
+}
+
+inline void
+Api_Treset(size Size)
+{
+    memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
+    Arena->Used = sizeof(memory_arena) + Size;
+    Arena->MarkerCount = 0;
+}
+
 inline void*
 Api_Ualloc(size Size)
 {
     memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
-    Assert(Arena->MarkerCount > 0);
     return Arena_PushSize(Arena, Size, 1);
 }
 
@@ -58,7 +72,6 @@ inline void*
 Api_Talloc(size Size)
 {
     memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
-    Assert(Arena->MarkerCount > 0);
     return Arena_PushSize(Arena, Size, 16);
 }
 
@@ -442,7 +455,10 @@ Main_CollectEvents(SDL_Window *Window, main_state *MainState)
             case SDL_MOUSEBUTTONUP: break;
             case SDL_MOUSEBUTTONDOWN:
             {
-                MainState->LeftMouseDown = true;
+                if (Event.button.button == SDL_BUTTON_LEFT)
+                    MainState->LeftMouseDown = true;
+                if (Event.button.button == SDL_BUTTON_RIGHT)
+                    MainState->RightMouseDown = true;
             } break;
 
             /* WINDOW EVENTS */
@@ -553,8 +569,9 @@ int SDL_main(int argc, char **argv)
     GlobalZone = Zone_Init((memory_zone *)SDL_malloc(Megabytes(256)), Megabytes(256));
 
     /* THREAD LOCALS */
-    memory_arena *Arena = Arena_Clear((memory_arena *)SDL_malloc(Megabytes(1)), Megabytes(1));
     MemoryArenaTLS = SDL_TLSCreate();
+
+    memory_arena *Arena = Arena_Clear((memory_arena *)SDL_malloc(Megabytes(1)), Megabytes(1));
     SDL_TLSSet(MemoryArenaTLS, Arena, SDL_free);
     memory_arena_marker InitMarker = Arena_PlaceArenaMarker(Arena);
 
@@ -615,7 +632,8 @@ int SDL_main(int argc, char **argv)
 
     sdf_splat_batch *Splats = (sdf_splat_batch *)SDL_malloc(sizeof(sdf_splat) * 10000000);
 
-    sdf SDF = { };
+    sdf SDF;
+    SDF.EditCount = 0;
 
     {
         vec3 Color = Vec3(1.0f,0.878f,0.741f);
@@ -660,9 +678,10 @@ int SDL_main(int argc, char **argv)
     mat4 ClipToWorld = InvPerspective * InvRotation * InvTranslation;
 
     sdf_shape EditShape = SDF_Sphere(Vec3(0,0,0), Vec3(1,0,0), 0.1f);
-    // EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.1f);
-    sdf_op EditOp = { SDF_OP_ADD_SMOOTH, 0.05f };
-    f32 EditDim = 0.15f;
+    EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.1f);
+    EditShape = SDF_Cylinder(Vec3(0,0,0), Quat(), Vec3(1,0,1), 0.1f, 0.1f);
+    sdf_op EditOp = { SDF_OP_ADD_SMOOTH, 0.025f };
+    f32 EditDim = 0.125f;
 
     /* GAME INIT */
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
@@ -677,6 +696,15 @@ int SDL_main(int argc, char **argv)
 
         Main_CollectEvents(Window, &MainState);
         
+        if (MainState.RightMouseDown)
+        {
+            MainState.RightMouseDown = false;
+            if (EditOp.Type == SDF_OP_ADD_SMOOTH)
+                EditOp.Type = SDF_OP_SUB_SMOOTH;
+            else
+                EditOp.Type = SDF_OP_ADD_SMOOTH;
+        }
+
         if (MainState.LeftMouseDown)
         {
             MainState.LeftMouseDown = false;

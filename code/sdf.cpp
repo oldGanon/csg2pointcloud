@@ -4,6 +4,8 @@
 #include "f32x8.cpp"
 #include "vec3x8.cpp"
 
+#include "index_list.cpp"
+
 struct sdf_shape_sphere
 {
     f32 Radius;
@@ -70,7 +72,10 @@ struct sdf_shape
     vec3 Position;
     vec3 Color;
     u32 Type;
+    f32 Influence;
+
     sdf_shape() { }
+    sdf_shape *sdf_shape::operator =(const sdf_shape &Other) { return (sdf_shape *)memcpy(this, &Other, sizeof(sdf_shape)); }
 };
 
 enum sdf_op_type
@@ -91,12 +96,18 @@ struct sdf_edit
 {
     sdf_shape Shape;
     sdf_op Op;
+
+    sdf_edit() { }
+    sdf_edit *sdf_edit::operator =(const sdf_edit &Other) { return (sdf_edit *)memcpy(this, &Other, sizeof(sdf_edit)); }
 };
 
+#define SDF_MAX_EDITS 256
 struct sdf
 {
     u32 EditCount;
-    sdf_edit Edits[64];
+    sdf_edit Edits[SDF_MAX_EDITS];
+
+    sdf() : EditCount(0) { }
 };
 
 struct sdf_splat
@@ -129,6 +140,7 @@ SDF_Sphere(vec3 Position, vec3 Color, f32 Radius)
     Shape.Position = Position;
     Shape.Color = Color;
     Shape.Type = SDF_SHAPE_SPHERE;
+    Shape.Influence = 1.1f * Radius / Shape.RotationScale;
     return Shape;
 }
 
@@ -143,6 +155,7 @@ SDF_Ellipsoid(vec3 Position, quat Rotation, vec3 Color, vec3 HalfDim)
     Shape.Position = Position;
     Shape.Color = Color;
     Shape.Type = SDF_SHAPE_ELLIPSOID;
+    Shape.Influence = 1.1f * HMax(HalfDim) / Shape.RotationScale;
     return Shape;
 }
 
@@ -152,11 +165,12 @@ SDF_Cube(vec3 Position, quat Rotation, vec3 Color, f32 HalfDim)
     sdf_shape_cube Cube = { HalfDim };
     sdf_shape Shape = { };
     Shape.Cube = Cube;
-    Shape.Rotation = Quat_Id();
+    Shape.Rotation = Rotation;
     Shape.RotationScale = SDF_RotationScale(Shape.Rotation);
     Shape.Position = Position;
     Shape.Color = Color;
     Shape.Type = SDF_SHAPE_CUBE;
+    Shape.Influence = 1.1f * HalfDim / Shape.RotationScale;
     return Shape;
 }
 
@@ -171,6 +185,7 @@ SDF_Cuboid(vec3 Position, quat Rotation, vec3 Color, vec3 HalfDim)
     Shape.Position = Position;
     Shape.Color = Color;
     Shape.Type = SDF_SHAPE_CUBOID;
+    Shape.Influence = 1.1f * HMax(HalfDim) / Shape.RotationScale;
     return Shape;
 }
 
@@ -185,6 +200,7 @@ SDF_Cylinder(vec3 Position, quat Rotation, vec3 Color, f32 HalfHeight, f32 Radiu
     Shape.Position = Position;
     Shape.Color = Color;
     Shape.Type = SDF_SHAPE_CYLINDER;
+    Shape.Influence = 1.1f * Max(HalfHeight, Radius) / Shape.RotationScale;
     return Shape;
 }
 
@@ -199,12 +215,14 @@ SDF_Cone(vec3 Position, quat Rotation, vec3 Color, f32 HalfHeight, f32 Radius)
     Shape.Position = Position;
     Shape.Color = Color;
     Shape.Type = SDF_SHAPE_CONE;
+    Shape.Influence = 1.01f * Max(HalfHeight, Radius) / Shape.RotationScale;
     return Shape;
 }
 
 static void
 SDF_AddEdit(sdf *SDF, sdf_shape Shape, sdf_op Op)
 {
+    if (SDF->EditCount >= SDF_MAX_EDITS) return;
     u32 Index = SDF->EditCount++;
     SDF->Edits[Index].Shape = Shape;
     SDF->Edits[Index].Op = Op; 
@@ -495,15 +513,45 @@ SDF_EvalMax(const sdf_shape Shape, VEC3 P)
 
 template <typename FLOAT, typename VEC3>
 static FLOAT
-SDF_EvalMax(const sdf *SDF, VEC3 P)
+SDF_EvalMax(const sdf *SDF, VEC3 P, FLOAT Dim, index_list *List)
 {
+#if 1
     FLOAT Dist = INFINITY;
-    for (u32 i = 0; i < SDF->EditCount; ++i)
+    u16 Index = 0;
+    u16 EditCount = List->ElementCount;
+    for (u16 i = 0; i < EditCount; ++i)
     {
-        FLOAT Dist2 = SDF_EvalMax<FLOAT>(SDF->Edits[i].Shape, P);
-        Dist = SDF_Combine(SDF->Edits[i].Op, Dist, Dist2);
+        sdf_edit Edit = SDF->Edits[IndexList_Get(List, Index)];
+        
+        FLOAT Difference = HMax(Abs(P - Edit.Shape.Position));
+        FLOAT Influence = (Dim + Edit.Shape.Influence + Edit.Op.Smoothing);
+        if (All(Difference > Influence))
+        {
+            IndexList_Remove(List, Index);
+            continue;
+        }
+        Index = IndexList_Next(List, Index);
+        FLOAT Dist2 = SDF_EvalMax<FLOAT>(Edit.Shape, P);
+        Dist = SDF_Combine(Edit.Op, Dist, Dist2);
     }
     return Dist;
+#else
+    FLOAT Dist = INFINITY;
+    u16 Index = 0;
+    for (u16 i = 0; i < SDF->EditCount; ++i)
+    {
+        sdf_edit Edit = SDF->Edits[i];
+        
+        FLOAT Difference = HMax(Abs(P - Edit.Shape.Position));
+        FLOAT Influence = (Dim + Edit.Shape.Influence + Edit.Op.Smoothing);
+        if (All(Difference > Influence))
+            continue;
+
+        FLOAT Dist2 = SDF_EvalMax<FLOAT>(Edit.Shape, P);
+        Dist = SDF_Combine(Edit.Op, Dist, Dist2);
+    }
+    return Dist;    
+#endif
 }
 
 
@@ -570,25 +618,60 @@ SDF_EvalShape(const sdf_shape Shape, VEC3 P)
 
 template <typename FLOAT, typename VEC3>
 static FLOAT
-SDF_Eval(const sdf *SDF, VEC3 Pos)
+SDF_Eval(const sdf *SDF, VEC3 P, FLOAT Dim, index_list *List)
 {
+#if 1
     FLOAT Dist = INFINITY;
+    u16 Index = 0;
+    u16 EditCount = List->ElementCount;
+    for (u16 i = 0; i < EditCount; ++i)
+    {
+        sdf_edit Edit = SDF->Edits[IndexList_Get(List, Index)];
+        Index = IndexList_Next(List, Index);
+        FLOAT Dist2 = SDF_EvalMax<FLOAT>(Edit.Shape, P);
+        Dist = SDF_Combine(Edit.Op, Dist, Dist2);
+    }
+    return Dist;
+#else
+    FLOAT Dist = INFINITY;
+    u16 Index = 0;
+    for (u16 i = 0; i < SDF->EditCount; ++i)
+    {
+        sdf_edit Edit = SDF->Edits[i];
+
+        FLOAT Difference = HMax(Abs(P - Edit.Shape.Position));
+        FLOAT Influence = (Dim + Edit.Shape.Influence + Edit.Op.Smoothing);
+        if (All(Difference > Influence))
+            continue;
+        
+        FLOAT Dist2 = SDF_EvalMax<FLOAT>(Edit.Shape, P);
+        Dist = SDF_Combine(Edit.Op, Dist, Dist2);
+    }
+    return Dist;
+#endif
+}
+
+static f32
+SDF_Eval(const sdf *SDF, vec3 P, f32 Dim)
+{
+    f32 Dist = INFINITY;
     for (u32 i = 0; i < SDF->EditCount; ++i)
     {
-        FLOAT Dist2 = SDF_EvalShape<FLOAT>(SDF->Edits[i].Shape, Pos);
+        sdf_edit Edit = SDF->Edits[i];
+        f32 Dist2 = SDF_EvalShape<f32>(SDF->Edits[i].Shape, P);
         Dist = SDF_Combine(SDF->Edits[i].Op, Dist, Dist2);
     }
     return Dist;
 }
 
 static vec3x8
-SDF_Normal(const sdf *SDF, vec3x8 Position)
+SDF_Normal(const sdf *SDF, vec3x8 Position, index_list *List)
 {
 #define H 0.001f
-    return Vec3x8_Normalize(Vec3x8( 1,-1,-1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8( H,-H,-H)) + 
-                            Vec3x8(-1,-1, 1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8(-H,-H, H)) + 
-                            Vec3x8(-1, 1,-1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8(-H, H,-H)) + 
-                            Vec3x8( 1, 1, 1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8( H, H, H)));
+    return Vec3x8_Normalize(Vec3x8( 1,-1,-1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8( H,-H,-H), 0.0f, List) + 
+                            Vec3x8(-1,-1, 1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8(-H,-H, H), 0.0f, List) + 
+                            Vec3x8(-1, 1,-1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8(-H, H,-H), 0.0f, List) + 
+                            Vec3x8( 1, 1, 1) * SDF_Eval<f32x8>(SDF, Position + Vec3x8( H, H, H), 0.0f, List));
 #undef H
 }
 
@@ -600,7 +683,8 @@ SDF_Color(const sdf *SDF, vec3x8 Pos)
     f32x8 D0 = SDF_EvalShape<f32x8>(Shape, Pos);
     for (u32 i = 1; i < SDF->EditCount; ++i)
     {
-        Shape = SDF->Edits[i].Shape;
+        sdf_edit Edit = SDF->Edits[i];
+        Shape = Edit.Shape;
         f32x8 D1 = SDF_EvalShape<f32x8>(Shape, Pos);
         D1 = SDF_Combine(SDF->Edits[i].Op, D0, D1);
         f32x8 S = SDF->Edits[i].Op.Smoothing;
@@ -623,8 +707,11 @@ SDF_PlaceSplat(sdf_splat_batch *Out, vec3 Position, vec3 Normal, vec3 Color)
 }
 
 static void
-SDF_Gen8(sdf *SDF, vec3 Center, f32 Dim, u32 Depth, sdf_splat_batch *Out)
+SDF_Gen8(sdf *SDF, vec3 Center, f32 Dim, u32 Depth, index_list *List, sdf_splat_batch *Out)
 {
+    size Tsize = Api_Tsize();
+    List = IndexList_CopyTemp(List);
+
     Dim /= 2.0f;
     f32x8 vDim = F32x8_Set1(Dim);
  
@@ -633,43 +720,47 @@ SDF_Gen8(sdf *SDF, vec3 Center, f32 Dim, u32 Depth, sdf_splat_batch *Out)
     f32x8 Z = F32x8_Set1(Center.z) + vDim * F32x8(-1,-1,-1,-1,1,1,1,1);
 
     vec3x8 Pos = Vec3x8(X,Y,Z);
-    f32x8 Dst = SDF_EvalMax<f32x8>(SDF, Pos);
+    f32x8 Dst = SDF_EvalMax<f32x8>(SDF, Pos, Dim, List);
     u32 InRange = F32x8_Mask(F32x8_Abs(Dst) <= vDim);
-    if (!InRange) return;
+    if (InRange)
+    {
+        IndexList_Compress(List);
 
-    if (Depth)
-    {
-        for (u8 x = 0; x < 8; ++x)
+        if (Depth)
         {
-            if (InRange & (1 << x))
+            for (u8 x = 0; x < 8; ++x)
             {
-                vec3 P = Vec3x8_First(Pos);
-                SDF_Gen8(SDF, P, Dim, Depth - 1, Out);
+                if (InRange & (1 << x))
+                {
+                    vec3 P = Vec3x8_First(Pos);
+                    SDF_Gen8(SDF, P, Dim, Depth - 1, List, Out);
+                }
+                Pos = Vec3x8_Roll(Pos);
             }
-            Pos = Vec3x8_Roll(Pos);
+        }
+        else
+        {
+            vec3x8 Nrm = SDF_Normal(SDF, Pos, List);
+            vec3x8 Col = SDF_Color(SDF, Pos);
+            for (u8 x = 0; x < 8; ++x)
+            {
+                if (InRange & (1 << x))
+                {
+                    vec3 P = Vec3x8_First(Pos);
+                    vec3 N = Vec3x8_First(Nrm);
+                    vec3 C = Vec3x8_First(Col);
+                    f32 D = F32x8_First(Dst);
+                    P -= N * Vec3_Set1(D);
+                    SDF_PlaceSplat(Out, P, N, C);
+                }
+                Pos = Vec3x8_Roll(Pos);
+                Nrm = Vec3x8_Roll(Nrm);
+                Col = Vec3x8_Roll(Col);
+                Dst = F32x8_Roll(Dst);
+            }
         }
     }
-    else
-    {
-        vec3x8 Nrm = SDF_Normal(SDF, Pos);
-        vec3x8 Col = SDF_Color(SDF, Pos);
-        for (u8 x = 0; x < 8; ++x)
-        {
-            if (InRange & (1 << x))
-            {
-                vec3 P = Vec3x8_First(Pos);
-                vec3 N = Vec3x8_First(Nrm);
-                vec3 C = Vec3x8_First(Col);
-                f32 D = F32x8_First(Dst);
-                P -= N * Vec3_Set1(D);
-                SDF_PlaceSplat(Out, P, N, C);
-            }
-            Pos = Vec3x8_Roll(Pos);
-            Nrm = Vec3x8_Roll(Nrm);
-            Col = Vec3x8_Roll(Col);
-            Dst = F32x8_Roll(Dst);
-        }
-    }
+    Api_Treset(Tsize);
 }
 
 struct sdf_thread_data
@@ -685,7 +776,8 @@ static void
 SDF_GenThread(void *Data)
 {
     sdf_thread_data *SDFData = (sdf_thread_data *)Data;
-    SDF_Gen8(SDFData->SDF, SDFData->Center, SDFData->Dim, SDFData->Depth, SDFData->Out);
+    index_list *List = IndexList_InitTemp((u16)SDFData->SDF->EditCount);
+    SDF_Gen8(SDFData->SDF, SDFData->Center, SDFData->Dim, SDFData->Depth, List, SDFData->Out);
 }
 
 static void
@@ -717,7 +809,7 @@ SDF_Dist(const sdf *SDF, vec3 O, vec3 D, f32 W = 0.001)
     f32 t = 0.0f;
     for (int i = 0; i < 256; ++i)
     {
-        f32 Dist = SDF_Eval<f32>(SDF, O + D * t);
+        f32 Dist = SDF_Eval(SDF, O + D * t, 0.0f);
         if (Dist < W) return t;
         t += Dist - W;
     }
