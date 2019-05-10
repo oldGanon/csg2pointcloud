@@ -17,31 +17,83 @@ string SplatVertShader =
     "in vec3 " GLSL_VERT_POSITION ";"
     "in vec3 " GLSL_VERT_NORMAL ";"
     "in vec3 " GLSL_VERT_COLOR ";"
-    "uniform mat4 WorldToCamera;"
-    "out vec3 Normal;"
-    "out vec3 Color;"
+    "out VS_OUT {"
+        "vec3 Color;"
+        "vec3 Normal;"
+    "} vs_out;"
     "void main(){"
-        "gl_Position = WorldToCamera * vec4(P,1);"
-        "Normal =  N;"
-        "Color =  C;"
+        "gl_Position = vec4(P,1);"
+        "vs_out.Normal = " GLSL_VERT_NORMAL ";"
+        "vs_out.Color = " GLSL_VERT_COLOR ";"
+    "}\0";
+
+string SplatGeomShader = 
+    "#version 460\n"
+    "layout (points) in;"
+    "layout (triangle_strip, max_vertices = 4) out;"
+    "uniform mat4 WorldToCamera;"
+    "in VS_OUT {"
+        "vec3 Color;"
+        "vec3 Normal;"
+    "} gs_in[];"
+    "out GS_OUT {"
+        "vec3 Color;"
+        "vec3 Normal;"
+        "vec2 UV;"
+    "} gs_out;"
+    "void main(){"
+        "vec3 UpVector = abs(gs_in[0].Normal.y) < 0.7 ? vec3(0,1,0) : vec3(1,0,0);"
+        "vec3 Right = cross(UpVector, gs_in[0].Normal);"
+        "vec3 Up = cross(gs_in[0].Normal, Right);"
+        "Right *= 0.005;"
+        "Up *= 0.005;"
+
+        "gl_Position = WorldToCamera * vec4(gl_in[0].gl_Position.xyz - Right - Up,1);"
+        "gs_out.Color = gs_in[0].Color;"
+        "gs_out.Normal = gs_in[0].Normal;"
+        "gs_out.UV = vec2(-1,-1);"
+        "EmitVertex();"
+
+        "gl_Position = WorldToCamera * vec4(gl_in[0].gl_Position.xyz + Right - Up,1);"
+        "gs_out.Color = gs_in[0].Color;"
+        "gs_out.Normal = gs_in[0].Normal;"
+        "gs_out.UV = vec2(1,-1);"
+        "EmitVertex();"
+
+        "gl_Position = WorldToCamera * vec4(gl_in[0].gl_Position.xyz - Right + Up,1);"
+        "gs_out.Color = gs_in[0].Color;"
+        "gs_out.Normal = gs_in[0].Normal;"
+        "gs_out.UV = vec2(-1,1);"
+        "EmitVertex();"
+
+        "gl_Position = WorldToCamera * vec4(gl_in[0].gl_Position.xyz + Right + Up,1);"
+        "gs_out.Color = gs_in[0].Color;"
+        "gs_out.Normal = gs_in[0].Normal;"
+        "gs_out.UV = vec2(1,1);"
+        "EmitVertex();"
+        
+        "EndPrimitive();"
     "}\0";
 
 string SplatFragShader = 
     "#version 460\n"
-    "in vec3 Normal;"
-    "in vec3 Color;"
     "out vec4 Out;"
+    "in GS_OUT {"
+        "vec3 Color;"
+        "vec3 Normal;"
+        "vec2 UV;"
+    "} fs_in;"
     "void main(){"
-        "Out.xyz = vec3(dot(normalize(Normal), normalize(vec3(0.5,1,1))));"
-        "Out.xyz = Color * max(Out.xyz,0.5);"
+        "Out.xyz = vec3(dot(normalize(fs_in.Normal), normalize(vec3(0.5,1,1))));"
+        "Out.xyz = fs_in.Color * max(Out.xyz,0.5);"
+        "Out.a = 1.0-smoothstep(0.8, 1.0, length(fs_in.UV));"
     "}\0";
 
 static u32
 OpenGL_CompileShader(u32 Type, string Shader)
 {
     u32 ShaderID = glCreateShader(Type);
-    const char *CShader = CString(Shader);
-    glShaderSource(ShaderID, 1, &CShader, 0);
+    glShaderSource(ShaderID, 1, &Shader.Data, (i32 *)&Shader.Length);
     glCompileShader(ShaderID);
     i32 ShaderCompiled = GL_FALSE;
     glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &ShaderCompiled);
@@ -59,18 +111,18 @@ OpenGL_CompileShader(u32 Type, string Shader)
 }
 
 static u32
-OpenGL_LoadProgram(string Vertex, string Fragment)
+OpenGL_LoadProgram(string Vertex, string Geometry, string Fragment)
 {
-    /* COMPILE SHADERS */
-    u32 VertexShader = OpenGL_CompileShader(GL_VERTEX_SHADER, Vertex);
-    if (!VertexShader) return 0;
-    u32 FragmentShader = OpenGL_CompileShader(GL_FRAGMENT_SHADER, Fragment);
-    if (!FragmentShader) return 0;
-
     /* CREATE PROGRAM */
     u32 ProgramID = glCreateProgram();
-    glAttachShader(ProgramID, VertexShader);
-    glAttachShader(ProgramID, FragmentShader);
+
+    /* COMPILE SHADERS */
+    u32 VertexShader = OpenGL_CompileShader(GL_VERTEX_SHADER, Vertex);
+    if (VertexShader) glAttachShader(ProgramID, VertexShader);
+    u32 GeometryShader = OpenGL_CompileShader(GL_GEOMETRY_SHADER, Geometry);
+    if (GeometryShader) glAttachShader(ProgramID, GeometryShader);
+    u32 FragmentShader = OpenGL_CompileShader(GL_FRAGMENT_SHADER, Fragment);
+    if (FragmentShader) glAttachShader(ProgramID, FragmentShader);
 
     /* LINK PROGRAM */
     glLinkProgram(ProgramID);
@@ -97,9 +149,43 @@ OpenGL_LoadProgram(string Vertex, string Fragment)
 
     /* CLEAN UP */
     glDetachShader(ProgramID, VertexShader);
+    glDetachShader(ProgramID, GeometryShader);
     glDetachShader(ProgramID, FragmentShader);
     glDeleteShader(VertexShader);
+    glDeleteShader(GeometryShader);
     glDeleteShader(FragmentShader);
+
+    return ProgramID;
+}
+
+static u32
+OpenGL_LoadComputeProgram(string Compute)
+{
+    /* CREATE PROGRAM */
+    u32 ProgramID = glCreateProgram();
+
+    /* COMPILE SHADERS */
+    u32 ComputeShader = OpenGL_CompileShader(GL_COMPUTE_SHADER, Compute);
+    if (ComputeShader) glAttachShader(ProgramID, ComputeShader);
+
+    /* LINK PROGRAM */
+    glLinkProgram(ProgramID);
+    i32 ProgramSuccess = GL_TRUE;
+    glGetProgramiv(ProgramID, GL_LINK_STATUS, &ProgramSuccess);
+    if (ProgramSuccess != GL_TRUE)
+    {
+        i32 LogLength;
+        glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &LogLength);
+        char *Error = (char *)Api_Talloc(LogLength);
+        glGetProgramInfoLog(ProgramID, LogLength, &LogLength, Error);
+        glDeleteProgram(ProgramID);
+        Api_Error(String(Error, LogLength));
+        return 0;
+    }
+
+    /* CLEAN UP */
+    glDetachShader(ProgramID, ComputeShader);
+    glDeleteShader(ComputeShader);
 
     return ProgramID;
 }

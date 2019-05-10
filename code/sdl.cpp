@@ -57,7 +57,7 @@ inline void
 Api_Treset(size Size)
 {
     memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
-    Arena->Used = sizeof(memory_arena) + Size;
+    Arena->Used = Size + sizeof(memory_arena);
     Arena->MarkerCount = 0;
 }
 
@@ -657,7 +657,7 @@ int SDL_main(int argc, char **argv)
         // SDF_Sub(&SDF, SDF_Cuboid(Vec3(0.0f,-0.5,0.0f), Quat(), Color, Vec3(0.6f, 0.5f, 0.6f)));
         // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3_Set1(0), Color, 0.5f), 0.1f);
 
-        SDF_Gen(&SDF, Vec3_Zero(), 1.0f, 8, Splats);
+        SDF_Gen(&SDF, Vec3_Zero(), 1.0f, 7, Splats);
 
         Api_PrintF("Splat Count: %llu!", Splats->SplatCount);
 
@@ -678,10 +678,10 @@ int SDL_main(int argc, char **argv)
     mat4 ClipToWorld = InvPerspective * InvRotation * InvTranslation;
 
     sdf_shape EditShape = SDF_Sphere(Vec3(0,0,0), Vec3(1,0,0), 0.1f);
-    EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.1f);
-    EditShape = SDF_Cylinder(Vec3(0,0,0), Quat(), Vec3(1,0,1), 0.1f, 0.1f);
-    sdf_op EditOp = { SDF_OP_ADD_SMOOTH, 0.025f };
-    f32 EditDim = 0.125f;
+    // EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.1f);
+    // EditShape = SDF_Cylinder(Vec3(0,0,0), Quat(), Vec3(1,0,1), 0.1f, 0.1f);
+    sdf_op EditOp = { SDF_OP_ADD_SMOOTH, 0.05f };
+    f32 EditDim = 0.15f;
 
     /* GAME INIT */
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
@@ -709,7 +709,7 @@ int SDL_main(int argc, char **argv)
         {
             MainState.LeftMouseDown = false;
             SDF_AddEdit(&SDF, EditShape, EditOp);
-            SDF_Gen(&SDF, Vec3_Zero(), 1.0f, 8, Splats);
+            SDF_Gen(&SDF, Vec3_Zero(), 1.0f, 7, Splats);
             OpenGL_LoadSplatsHi(Splats);
         }
 

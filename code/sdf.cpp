@@ -740,8 +740,10 @@ SDF_Gen8(sdf *SDF, vec3 Center, f32 Dim, u32 Depth, index_list *List, sdf_splat_
         }
         else
         {
+            Dst = SDF_Eval<f32x8>(SDF, Pos, Dim, List);
             vec3x8 Nrm = SDF_Normal(SDF, Pos, List);
             vec3x8 Col = SDF_Color(SDF, Pos);
+            Pos -= Nrm * Dst;
             for (u8 x = 0; x < 8; ++x)
             {
                 if (InRange & (1 << x))
@@ -749,8 +751,6 @@ SDF_Gen8(sdf *SDF, vec3 Center, f32 Dim, u32 Depth, index_list *List, sdf_splat_
                     vec3 P = Vec3x8_First(Pos);
                     vec3 N = Vec3x8_First(Nrm);
                     vec3 C = Vec3x8_First(Col);
-                    f32 D = F32x8_First(Dst);
-                    P -= N * Vec3_Set1(D);
                     SDF_PlaceSplat(Out, P, N, C);
                 }
                 Pos = Vec3x8_Roll(Pos);

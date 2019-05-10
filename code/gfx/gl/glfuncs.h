@@ -65,6 +65,8 @@ GL_FUNC(GLBINDVERTEXARRAY,                glBindVertexArray);
 GL_FUNC(GLGENVERTEXARRAYS,                glGenVertexArrays);
 GL_FUNC(GLBLITFRAMEBUFFER,                glBlitFramebuffer);
 GL_FUNC(GLRENDERBUFFERSTORAGEMULTISAMPLE, glRenderbufferStorageMultisample);
+GL_FUNC(GLGETINTEGERI_V,                  glGetIntegeri_v);
+GL_FUNC(GLBINDBUFFERBASE,                 glBindBufferBase);
 
 /* 3.1 */
 GL_FUNC(GLCOPYBUFFERSUBDATA,        glCopyBufferSubData);
@@ -74,6 +76,9 @@ GL_FUNC(GLTEXIMAGE2DMULTISAMPLE,    glTexImage2DMultisample);
 GL_FUNC(GLFENCESYNC,                glFenceSync);
 GL_FUNC(GLCLIENTWAITSYNC,           glClientWaitSync);
 GL_FUNC(GLDELETESYNC,               glDeleteSync);
+
+/* 4.3 */
+GL_FUNC(GLDISPATCHCOMPUTE,          glDispatchCompute);
 
 /* 4.4 */
 GL_FUNC(GLBUFFERSTORAGE,            glBufferStorage);
@@ -152,6 +157,8 @@ GL_LoadFunctions()
     GL_LOAD_AND_CHECK(GLGENVERTEXARRAYS,                glGenVertexArrays);
     GL_LOAD_AND_CHECK(GLBLITFRAMEBUFFER,                glBlitFramebuffer);
     GL_LOAD_AND_CHECK(GLRENDERBUFFERSTORAGEMULTISAMPLE, glRenderbufferStorageMultisample);
+    GL_LOAD_AND_CHECK(GLGETINTEGERI_V,                  glGetIntegeri_v);
+    GL_LOAD_AND_CHECK(GLBINDBUFFERBASE,                 glBindBufferBase);
 
     /* 3.1 */
     GL_LOAD_AND_CHECK(GLCOPYBUFFERSUBDATA,        glCopyBufferSubData);
@@ -161,6 +168,9 @@ GL_LoadFunctions()
     GL_LOAD_AND_CHECK(GLFENCESYNC,                glFenceSync);
     GL_LOAD_AND_CHECK(GLCLIENTWAITSYNC,           glClientWaitSync);
     GL_LOAD_AND_CHECK(GLDELETESYNC,               glDeleteSync);
+
+    /* 4.3 */
+    GL_LOAD_AND_CHECK(GLDISPATCHCOMPUTE,          glDispatchCompute);
 
     /* 4.4 */
     GL_LOAD_AND_CHECK(GLBUFFERSTORAGE,            glBufferStorage);

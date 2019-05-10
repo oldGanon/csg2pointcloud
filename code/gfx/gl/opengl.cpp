@@ -12,6 +12,13 @@ struct gl_state
     u32 SplatShaderWorldToClipLoc;
     u64 SplatCountHi;
     u64 SplatCountLo;
+
+    u32 RenderBufferMSAA;
+    u32 DepthBufferMSAA;
+    u32 FramebufferMSAA;
+
+    u32 ComputeShader;
+    u32 ComputeShader2;
 };
 
 global gl_state GL = { };
@@ -64,22 +71,73 @@ OpenGL_LoadSplatsLo(sdf_splat_batch *Batch)
 }
 
 #include "shaders.h"
+#include "compute.h"
 
 static b32
 OpenGL_Init()
 {
     // glEnable(GL_FRAMEBUFFER_SRGB);
-    glDisable(GL_CULL_FACE);
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    
+    glEnable(GL_CULL_FACE);
 
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);
 
     /* SHADERS */
-    GL.SplatShader = OpenGL_LoadProgram(SplatVertShader, SplatFragShader);
+    GL.SplatShader = OpenGL_LoadProgram(SplatVertShader, SplatGeomShader, SplatFragShader);
     glUseProgram(GL.SplatShader);
     GL.SplatShaderWorldToClipLoc = glGetUniformLocation(GL.SplatShader, "WorldToCamera");
     glUseProgram(0);
+
+    GLuint SSBOs[3];
+    glGenBuffers(3, SSBOs);
+    
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBOs[0]);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 64, 0, GL_DYNAMIC_READ);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBOs[0]);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBOs[1]);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 64, 0, GL_DYNAMIC_READ);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, SSBOs[1]);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBOs[2]);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 16*65, 0, GL_DYNAMIC_READ);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, SSBOs[2]);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    GL.ComputeShader2 = OpenGL_LoadComputeProgram(ComputeShaderSource2);
+    GL.ComputeShader = OpenGL_LoadComputeProgram(ComputeShaderSource);
+    glUseProgram(GL.ComputeShader);
+    glDispatchCompute(1, 1, 1);
+    glUseProgram(0);
+
+    {   /* FRAMEBUFFER */
+        glGenRenderbuffers(1, &GL.RenderBufferMSAA);
+        glGenRenderbuffers(1, &GL.DepthBufferMSAA);
+
+        u32 Samples = 16;
+        glGetIntegerv(GL_MAX_SAMPLES, (GLint*)&Samples);
+        Samples = MIN(Samples, 16);
+        
+        glBindRenderbuffer(GL_RENDERBUFFER, GL.RenderBufferMSAA);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, Samples, GL_RGB, 1280, 720);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        glBindRenderbuffer(GL_RENDERBUFFER, GL.DepthBufferMSAA);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, Samples, GL_DEPTH_COMPONENT, 1280, 720);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        glGenFramebuffers(1, &GL.FramebufferMSAA);
+        glBindFramebuffer(GL_FRAMEBUFFER, GL.FramebufferMSAA);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, GL.RenderBufferMSAA);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, GL.DepthBufferMSAA);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
     {   /* SQUARE VAO */
         const u8 Vs[] = { 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0 };
@@ -117,11 +175,23 @@ static void
 OpenGL_Clear()
 {
     glClearColor(1,1,1,1);
+    glScissor(0, 0, 1280, 720);
+    glViewport(0, 0, 1280, 720);
+    glBindFramebuffer(GL_FRAMEBUFFER, GL.FramebufferMSAA);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 static void
 OpenGL_Frame(mat4 WorldToClip)
 {
+    glScissor(0, 0, 1280, 720);
+    glViewport(0, 0, 1280, 720);
+    glBindFramebuffer(GL_FRAMEBUFFER, GL.FramebufferMSAA);
+
     OpenGL_DrawSplats(WorldToClip);
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, GL.FramebufferMSAA);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(0, 0, 1280, 720, 0, 0, 1280, 720,
+                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }

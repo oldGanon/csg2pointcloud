@@ -13,7 +13,7 @@ struct f32x4
 
 // CONSTRUCTORS
 inline f32x4 mmF32x4(__m128 mm) { f32x4 Result = { mm }; return Result; }
-inline f32x4 F32x4(f32 a, f32 b, f32 c, f32 d) { return mmF32x4(_mm_set_ps(d,c,b,a)); }
+inline f32x4 F32x4(f32 x, f32 y, f32 z, f32 w) { return mmF32x4(_mm_set_ps(w,z,y,x)); }
 inline f32x4 F32x4_Zero(void)   { return mmF32x4(_mm_setzero_ps()); }
 inline f32x4 F32x4_Set1(f32 F)  { return mmF32x4(_mm_set1_ps(F)); };
 inline void F32x4_Store4(f32x4 F, f32 *E) { _mm_storeu_ps(E, F.mm); }
