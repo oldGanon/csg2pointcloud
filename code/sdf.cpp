@@ -445,7 +445,7 @@ SDF_CuboidMax(const sdf_shape_cuboid Cuboid, VEC3 P)
 
 template <typename FLOAT, typename VEC3>
 static FLOAT
-SDF_TorusdMax(const sdf_shape_torus Torus, VEC3 P)
+SDF_TorusMax(const sdf_shape_torus Torus, VEC3 P)
 {
     P = Abs(P);
     VEC3 PP= P*P;

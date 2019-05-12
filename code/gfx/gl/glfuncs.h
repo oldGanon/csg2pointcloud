@@ -77,9 +77,12 @@ GL_FUNC(GLFENCESYNC,                glFenceSync);
 GL_FUNC(GLCLIENTWAITSYNC,           glClientWaitSync);
 GL_FUNC(GLDELETESYNC,               glDeleteSync);
 
+/* 4.2 */
+GL_FUNC(GLMEMORYBARRIER,            glMemoryBarrier);
+    
 /* 4.3 */
 GL_FUNC(GLDISPATCHCOMPUTE,          glDispatchCompute);
-
+GL_FUNC(GLDISPATCHCOMPUTEINDIRECT,  glDispatchComputeIndirect);
 /* 4.4 */
 GL_FUNC(GLBUFFERSTORAGE,            glBufferStorage);
 
@@ -169,8 +172,12 @@ GL_LoadFunctions()
     GL_LOAD_AND_CHECK(GLCLIENTWAITSYNC,           glClientWaitSync);
     GL_LOAD_AND_CHECK(GLDELETESYNC,               glDeleteSync);
 
+    /* 4.2 */
+    GL_LOAD_AND_CHECK(GLMEMORYBARRIER,            glMemoryBarrier);
+
     /* 4.3 */
     GL_LOAD_AND_CHECK(GLDISPATCHCOMPUTE,          glDispatchCompute);
+    GL_LOAD_AND_CHECK(GLDISPATCHCOMPUTEINDIRECT,  glDispatchComputeIndirect);
 
     /* 4.4 */
     GL_LOAD_AND_CHECK(GLBUFFERSTORAGE,            glBufferStorage);
