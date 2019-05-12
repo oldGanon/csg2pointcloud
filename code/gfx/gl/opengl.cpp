@@ -18,10 +18,12 @@ struct gl_state
     u32 FramebufferMSAA;
 
     u32 VoxelComputeShader;
+    u32 SplatComputeShader;
 
     u32 SdfSSBO;
     u32 BlocksSSBO;
     u32 DispatchSSBO;
+    u32 SplatSSBO;
 
     u32 DispatchBuffer;
 };
@@ -59,6 +61,7 @@ OpenGL_DrawSplats(mat4 WorldToClip)
 static void
 OpenGL_LoadSplatsHi(sdf_splat_batch *Batch)
 {
+    return;
     GL.SplatCountLo = 0;
     GL.SplatCountHi = Atomic_Get(&Batch->SplatCount);
     glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
@@ -69,16 +72,19 @@ OpenGL_LoadSplatsHi(sdf_splat_batch *Batch)
 static void
 OpenGL_LoadSplatsLo(sdf_splat_batch *Batch)
 {
+    return;
     GL.SplatCountLo = Atomic_Get(&Batch->SplatCount);
     glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
     glBufferSubData(GL_ARRAY_BUFFER, GL.SplatCountHi * sizeof(sdf_splat), GL.SplatCountLo * sizeof(sdf_splat), Batch->Splats);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+#include "glsdf.cpp"
+
 static void
 OpenGL_GPUSplats()
 {
-    f32 Blocks[8] = { 0,0,0,0,0,0,0,1 };
+    u32 Blocks[8] = { 0,1,0,0,0,0,0,0x3F800000 };
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.BlocksSSBO);
     glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 32, Blocks);
     
@@ -94,12 +100,38 @@ OpenGL_GPUSplats()
         glCopyBufferSubData(GL_SHADER_STORAGE_BUFFER, GL_DISPATCH_INDIRECT_BUFFER, 0, 0, 12);
         glDispatchComputeIndirect(0);
     }
+
+    u32 SplatCount;
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+    glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 4, &SplatCount);
+
+    glUseProgram(GL.SplatComputeShader);
+    glDispatchCompute(SplatCount / 32 + 1, 1, 1);
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.SplatSSBO);
+    glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glsdf_splat) * SplatCount, 0, GL_STATIC_DRAW);
+    glCopyBufferSubData(GL_SHADER_STORAGE_BUFFER, GL_ARRAY_BUFFER, 16, 0, sizeof(glsdf_splat) * SplatCount);
+
+    GL.SplatCountLo = 0;
+    GL.SplatCountHi = SplatCount;
+
+    glBindBuffer(GL_DISPATCH_INDIRECT_BUFFER, 0);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glUseProgram(0);
+}
+
+static void
+OpenGL_GPU(glsdf *SDF)
+{
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.SdfSSBO);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(glsdf), SDF);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 #include "shaders.h"
 #include "compute.h"
-#include "glsdf.cpp"
 
 static b32
 OpenGL_Init()
@@ -120,15 +152,9 @@ OpenGL_Init()
     GL.SplatShaderWorldToClipLoc = glGetUniformLocation(GL.SplatShader, "WorldToCamera");
     glUseProgram(0);
 
-    glsdf SDF = { };
-    SDF.EditCount = 1;
-    SDF.Edits[0].Params.x = 0.33f;
-    SDF.Edits[0].Params.y = 0.33f;
-    SDF.Edits[0].Params.z = 0.33f;
-
     glGenBuffers(1, &GL.SdfSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.SdfSSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glsdf), &SDF, GL_DYNAMIC_READ);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glsdf), 0, GL_DYNAMIC_READ);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, GL.SdfSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
@@ -143,15 +169,23 @@ OpenGL_Init()
     glBufferData(GL_SHADER_STORAGE_BUFFER, 64, 0, GL_DYNAMIC_READ);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, GL.DispatchSSBO);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    glGenBuffers(1, &GL.SplatSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.SplatSSBO);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 128*1024*1024, 0, GL_DYNAMIC_READ);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, GL.SplatSSBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     
     glGenBuffers(1, &GL.DispatchBuffer);
     glBindBuffer(GL_DISPATCH_INDIRECT_BUFFER, GL.DispatchBuffer);
     glBufferData(GL_DISPATCH_INDIRECT_BUFFER, 64, 0, GL_DYNAMIC_READ);
     glBindBuffer(GL_DISPATCH_INDIRECT_BUFFER, 0);
 
-    GL.VoxelComputeShader = OpenGL_LoadComputeProgram(VoxelComputeShaderSource);
+    const char *VoxelShader[3] = { GLSL_Version, SDFShaderLib, VoxelComputeShaderSource };
+    const char *SplatShader[3] = { GLSL_Version, SDFShaderLib, SplatComputeShaderSource };
 
-    OpenGL_GPUSplats();
+    GL.VoxelComputeShader = OpenGL_LoadComputeProgram(VoxelShader, 3);
+    GL.SplatComputeShader = OpenGL_LoadComputeProgram(SplatShader, 3);
 
     {   /* FRAMEBUFFER */
         glGenRenderbuffers(1, &GL.RenderBufferMSAA);
@@ -194,10 +228,10 @@ OpenGL_Init()
         glBindVertexArray(GL.SplatVAO);
         glGenBuffers(1, &GL.SplatVBO);
         glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(sdf_splat) * 10000000, 0, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(sdf_splat), (GLvoid *)offsetof(sdf_splat, Position));
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(sdf_splat), (GLvoid *)offsetof(sdf_splat, Normal));
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(sdf_splat), (GLvoid *)offsetof(sdf_splat, Color));
+        glBufferData(GL_ARRAY_BUFFER, sizeof(glsdf_splat) * 10000000, 0, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Position));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Normal));
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Color));
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);

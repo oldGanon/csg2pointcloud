@@ -630,6 +630,29 @@ int SDL_main(int argc, char **argv)
 
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
 
+    {
+        vec4 Color = Vec4(1.0f,0.878f,0.741f,1);
+        vec4 Red = Vec4(1,0,0,1);
+        vec4 Green = Vec4(0,1,0,1);
+        vec4 Blue = Vec4(0,0,1,1);
+
+        glsdf SDF = { };
+        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.5f,0.1f,0.01f)));
+        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.1f,0.5f,0.01f)));
+
+        GLSDF_AddSmooth(&SDF, GLSDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), PI/3.0f), Red, Vec3(0.5f,0.1f,0.1f)), 0.02f);
+        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3(-0.5f,0.0f,0.0f), Blue, 0.25f), 0.05f);
+        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3( 0.5f,0.0f,0.0f), Green, 0.25f), 0.05f);
+        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3(-0.8f,0.0f,0.0f), Red, 0.1f), 0.05f);
+        GLSDF_SubSmooth(&SDF, GLSDF_Sphere(Vec3( 0.5f,0.0f,0.25), Red, 0.1f), 0.05f);
+        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3(-0.95f,0,0), Red, 0.025f), 0.05f);
+        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3( 0.95f,0,0), Red, 0.025f), 0.05f);
+        // GLSDF_AddSmooth(&SDF, GLSDF_Cylinder(Vec3( 0.75f,0,0), Quat(Vec3(1,0,0), PI/1.5f), Blue, 0.45f, 0.25f), 0.05f);
+
+        OpenGL_GPU(&SDF);
+        OpenGL_GPUSplats();
+    }
+
     sdf_splat_batch *Splats = (sdf_splat_batch *)SDL_malloc(sizeof(sdf_splat) * 10000000);
 
     sdf SDF;

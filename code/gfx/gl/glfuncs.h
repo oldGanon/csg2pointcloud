@@ -48,6 +48,7 @@ GL_FUNC(GLVERTEXATTRIB2F,           glVertexAttrib2f);
 GL_FUNC(GLVERTEXATTRIB3F,           glVertexAttrib3f);
 GL_FUNC(GLVERTEXATTRIB4F,           glVertexAttrib4f);
 GL_FUNC(GLVERTEXATTRIB3FV,          glVertexAttrib3fv);
+GL_FUNC(GLGETBUFFERSUBDATA,         glGetBufferSubData);
 
 /* 3.0 */
 GL_FUNC(GLGENFRAMEBUFFERS,                glGenFramebuffers);
@@ -143,6 +144,7 @@ GL_LoadFunctions()
     GL_LOAD_AND_CHECK(GLVERTEXATTRIB3F,           glVertexAttrib3f);
     GL_LOAD_AND_CHECK(GLVERTEXATTRIB4F,           glVertexAttrib4f);
     GL_LOAD_AND_CHECK(GLVERTEXATTRIB3FV,          glVertexAttrib3fv);
+    GL_LOAD_AND_CHECK(GLGETBUFFERSUBDATA,         glGetBufferSubData);
 
     /* 3.0 */
     GL_LOAD_AND_CHECK(GLGENFRAMEBUFFERS,                glGenFramebuffers);

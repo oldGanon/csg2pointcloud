@@ -1,42 +1,46 @@
+const char *GLSL_Version = "#version 460\n";
 
-string VoxelComputeShaderSource = R"shader(
-#version 460
-
+const char *SDFShaderLib = R"lib(
 const float infinity = intBitsToFloat(2139095039);
 
 struct sdf_edit
 {
     vec4 params;
-    vec3 position;
+    vec4 position;
+    vec4 rotation;
+    vec4 color;
     float smoothing;
     uint shapeop;
+    float rotationscale;
+    float influence;
 };
 
-layout(std430, binding = 1) buffer SDF
+layout(std430, binding = 1) readonly buffer SDF
 {
     uint edit_count;
     sdf_edit edits[];
 };
 
-layout(std430, binding = 2) buffer BLOCKS
-{
-    uint read_index;
-    uint write_index;
-    vec4 blocks[];
-};
-
-layout(std430, binding = 3) buffer DISPATCH
-{
-    uint num_groups_x;
-    uint num_groups_y;
-    uint num_groups_z;
-} dispatch;
-
-layout(local_size_x = 4, local_size_y = 4, local_size_z = 4) in;
-
 float sum(vec3 v)
 {
     return v.x + v.y + v.z;
+}
+
+float hmax(vec3 v)
+{
+    return max(max(v.x, v.y), v.z);
+}
+
+vec3 rotate(vec4 q, vec3 v)
+{
+    vec3 t = cross(2.0*q.xyz,v);
+    return v + q.w*t + cross(q.xyz,t);
+}
+
+vec3 invrotate(vec4 q, vec3 v)
+{
+    vec3 t = cross(2.0*q.xyz,v);
+    return v - q.w*t + cross(q.xyz,t);
 }
 
 float sdf_add(float d0, float d1)
@@ -58,7 +62,7 @@ float sdf_smoothadd(float d0, float d1, float r)
 float sdf_smoothsub(float d0, float d1, float r)
 {
     float e = max(r-abs(d0+d1),0);
-    return min(d0,-d1)+e*e*0.25/r;
+    return max(d0,-d1)+e*e*0.25/r;
 }
 
 float quadratic(float a, float b, float c)
@@ -71,8 +75,9 @@ float quadratic(float a, float b, float c)
     return r;
 }
 
-float sdf_max_sphere(sdf_edit shape, vec3 position)
+float sdf_max_ellipsoid(sdf_edit shape, vec3 position)
 {
+    position = invrotate(shape.rotation, position - shape.position.xyz);
     vec3 c = abs(position);
     vec3 cc = c*c;
     vec3 r = shape.params.xyz;
@@ -95,25 +100,30 @@ float sdf_max_sphere(sdf_edit shape, vec3 position)
     d = min(d, max(max(c.x, abs(c.y - r.y)), c.z));
     d = min(d, max(max(abs(c.x - r.x), c.y), c.z));
 
-    return d;
+    return d * shape.rotationscale;
 }
 
 float sdf_max_cuboid(sdf_edit shape, vec3 position)
 {
-    position = abs(position) - shape.params.xyz;
-    return max(max(position.x, position.y), position.z);
+    position = invrotate(shape.rotation, position - shape.position.xyz);
+    vec3 d = abs(position) - shape.params.xyz;
+    return hmax(d) * shape.rotationscale;
 }
 
-float sdf_max(vec3 position)
+float sdf_max(vec3 position, float dim)
 {
     float d0 = infinity;
     for (uint i = 0; i < edit_count; i++)
     {
-        float d1 = infinity;
         sdf_edit edit = edits[i];
+        float diff = hmax(abs(position - edit.position.xyz));
+        float influence = (dim + edit.influence + edit.smoothing);
+        if (diff > influence) continue;
+
+        float d1 = infinity;
         switch(edit.shapeop / 4)
         {
-            case 0: d1 = min(d1, sdf_max_sphere(edit, position)); break;
+            case 0: d1 = min(d1, sdf_max_ellipsoid(edit, position)); break;
             case 1: d1 = min(d1, sdf_max_cuboid(edit, position)); break;
             default: break;
         }
@@ -129,10 +139,103 @@ float sdf_max(vec3 position)
     return d0;
 }
 
+float sdf_eval_ellipsoid(sdf_edit shape, vec3 position)
+{
+    position = abs(invrotate(shape.rotation, position - shape.position.xyz));
+    vec3 r = shape.params.xyz;
+    float k0 = length(position/r);
+    float k1 = length(position/(r*r));
+    return k0*(k0-1.0f)/k1;
+}
+
+float sdf_eval_cuboid(sdf_edit shape, vec3 position)
+{
+    position = abs(invrotate(shape.rotation, position - shape.position.xyz));
+    vec3 d = abs(position) - shape.params.xyz;
+    return length(max(d,0.0)) + min(hmax(d),0.0);
+}
+
+float sdf_eval_edit(vec3 position, sdf_edit edit, float d0)
+{
+    float d1 = infinity;
+    switch(edit.shapeop / 4)
+    {
+        case 0: d1 = min(d1, sdf_eval_ellipsoid(edit, position)); break;
+        case 1: d1 = min(d1, sdf_eval_cuboid(edit, position)); break;
+        default: break;
+    }
+    switch(edit.shapeop % 4)
+    {
+        case 0: d0 = sdf_add(d0, d1); break;
+        case 1: d0 = sdf_sub(d0, d1); break;
+        case 2: d0 = sdf_smoothadd(d0, d1, edit.smoothing); break;
+        case 3: d0 = sdf_smoothsub(d0, d1, edit.smoothing); break;
+        default: break;
+    }
+    return d0;
+}
+
+float sdf_eval(vec3 position)
+{
+    float d0 = infinity;
+    for (uint i = 0; i < edit_count; i++)
+    {
+        sdf_edit edit = edits[i];
+        d0 = sdf_eval_edit(position, edit, d0);
+    }
+    return d0;
+}
+
+vec3 sdf_normal(vec3 position)
+{
+    const float h = 0.0001;
+    const vec2 k = vec2(1,-1);
+    return normalize(k.xyy*sdf_eval(position+k.xyy*h) +
+                     k.yyx*sdf_eval(position+k.yyx*h) +
+                     k.yxy*sdf_eval(position+k.yxy*h) +
+                     k.xxx*sdf_eval(position+k.xxx*h));
+}
+
+vec4 sdf_color(vec3 position)
+{
+    float d0 = infinity;
+    sdf_edit edit = edits[0];
+    vec4 c0 = edit.color;    
+    for (uint i = 0; i < edit_count; i++)
+    {
+        sdf_edit edit = edits[i];
+        float d1 = sdf_eval_edit(position, edit, d0);
+        float c1 = clamp((d0-d1)/edit.smoothing,0,1);
+        c0 = mix(c0, edit.color, c1);
+        d0 = d1;
+    }
+    return c0;
+}
+
+)lib";
+
+const char *VoxelComputeShaderSource = R"shader(
+
+layout(std430, binding = 2) buffer BLOCKS
+{
+    uint read_index;
+    uint write_index;
+    vec4 blocks[];
+};
+
+layout(std430, binding = 3) buffer DISPATCH
+{
+    uint num_groups_x;
+    uint num_groups_y;
+    uint num_groups_z;
+} dispatch;
+
+layout(local_size_x = 4, local_size_y = 4, local_size_z = 4) in;
+
 shared vec4 block;
 
 void main(){
-    if (gl_LocalInvocationID == 0)
+    if (gl_LocalInvocationIndex == 0)
     {
         atomicAdd(dispatch.num_groups_x, -1);
         block = blocks[atomicAdd(read_index, 1)];
@@ -143,22 +246,17 @@ void main(){
 
     float dimension = 0.25 * block.w;
     vec3 position = block.xyz + dimension * (vec3(gl_LocalInvocationID*2) - vec3(gl_WorkGroupSize-1));
-    if (abs(sdf_max(position)) < dimension)
+    if (abs(sdf_max(position, dimension)) < dimension)
     {
         atomicAdd(dispatch.num_groups_x, 1);
         uint bockIndex = atomicAdd(write_index, 1);
         blocks[bockIndex].xyz = position;
         blocks[bockIndex].w = dimension;
     }
-
-    memoryBarrierShared();
-    barrier();
 }
 )shader";
 
-string SplatComputeShaderSource = R"shader(
-#version 460
-
+const char *SplatComputeShaderSource = R"shader(
 layout(std430, binding = 2) buffer BLOCKS
 {
     uint read_index;
@@ -166,26 +264,28 @@ layout(std430, binding = 2) buffer BLOCKS
     vec4 blocks[];
 };
 
-struct vertex
+struct splat
 {
-    vec3 position;
-    vec3 normal;
-    vec3 color;
+    vec4 position;
+    vec4 normal;
+    vec4 color;
 };
 
-layout(std430, binding = 2) buffer VERTEX
+layout(std430, binding = 4) buffer SPLAT
 {
-    uint vertex_count;
-    vertex vertices[];
+    uint splat_count;
+    splat splats[];
 };
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
 
 void main(){
-    block = blocks[atomicAdd(read_index, 1)];
-    vertex = atomicAdd(vertex_count, 1);
-    vertices[vertex].position = block.xyz;
-    vertices[vertex].normal = block.xyz;
-    vertices[vertex].color = block.xyz;
+    vec4 block = blocks[atomicAdd(read_index, 1)];
+    uint splat = atomicAdd(splat_count, 1);
+    float dist = sdf_eval(block.xyz);
+    vec3 normal = sdf_normal(block.xyz);
+    splats[splat].position.xyz = block.xyz - normal * dist;
+    splats[splat].normal.xyz = normal;
+    splats[splat].color = sdf_color(block.xyz);
 }
 )shader";

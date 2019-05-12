@@ -11,7 +11,7 @@ string VertShader =
         "ScreenPos = " GLSL_VERT_POSITION " * 2 - 1;"
         "gl_Position.xy = ScreenPos;"
     "}\0";
-
+#if 0
 string SplatVertShader = 
     "#version 460\n"
     "in vec3 " GLSL_VERT_POSITION ";"
@@ -88,6 +88,53 @@ string SplatFragShader =
         "Out.xyz = fs_in.Color * max(Out.xyz,0.5);"
         "Out.a = 1.0-smoothstep(0.8, 1.0, length(fs_in.UV));"
     "}\0";
+#else
+string SplatVertShader = 
+    "#version 460\n"
+    "in vec3 " GLSL_VERT_POSITION ";"
+    "in vec3 " GLSL_VERT_NORMAL ";"
+    "in vec3 " GLSL_VERT_COLOR ";"
+    "out VS_OUT {"
+        "vec3 Color;"
+        "vec3 Normal;"
+    "} vs_out;"
+    "void main(){"
+        "gl_Position = vec4(P,1);"
+        "vs_out.Normal = " GLSL_VERT_NORMAL ";"
+        "vs_out.Color = " GLSL_VERT_COLOR ";"
+    "}\0";
+string SplatGeomShader = 
+    "#version 460\n"
+    "layout (points) in;"
+    "layout (points, max_vertices = 1) out;"
+    "uniform mat4 WorldToCamera;"
+    "in VS_OUT {"
+        "vec3 Color;"
+        "vec3 Normal;"
+    "} gs_in[];"
+    "out GS_OUT {"
+        "vec3 Color;"
+        "vec3 Normal;"
+    "} gs_out;"
+    "void main(){"
+        "gl_Position = WorldToCamera * vec4(gl_in[0].gl_Position.xyz,1);"
+        "gs_out.Color = gs_in[0].Color;"
+        "gs_out.Normal = gs_in[0].Normal;"
+        "EmitVertex();"
+        "EndPrimitive();"
+    "}\0";
+string SplatFragShader = 
+    "#version 460\n"
+    "out vec4 Out;"
+    "in GS_OUT {"
+        "vec3 Color;"
+        "vec3 Normal;"
+    "} fs_in;"
+    "void main(){"
+        "Out.xyz = vec3(dot(normalize(fs_in.Normal), normalize(vec3(0.5,1,1))));"
+        "Out.xyz = fs_in.Color * max(Out.xyz,0.5);"
+    "}\0";
+#endif
 
 static u32
 OpenGL_CompileShader(u32 Type, string Shader)
@@ -159,13 +206,34 @@ OpenGL_LoadProgram(string Vertex, string Geometry, string Fragment)
 }
 
 static u32
-OpenGL_LoadComputeProgram(string Compute)
+OpenGL_CompileShader(u32 Type, const char **ShaderParts, u32 PartCount)
+{
+    u32 ShaderID = glCreateShader(Type);
+    glShaderSource(ShaderID, PartCount, ShaderParts, 0);
+    glCompileShader(ShaderID);
+    i32 ShaderCompiled = GL_FALSE;
+    glGetShaderiv(ShaderID, GL_COMPILE_STATUS, &ShaderCompiled);
+    if (ShaderCompiled != GL_TRUE)
+    {
+        i32 LogLength;
+        glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &LogLength);
+        char *Error = (char *)Api_Talloc(LogLength);
+        glGetShaderInfoLog(ShaderID, LogLength, &LogLength, Error);
+        glDeleteShader(ShaderID);
+        Api_Error(String(Error, LogLength));
+        return 0;
+    }
+    return ShaderID;
+}
+
+static u32
+OpenGL_LoadComputeProgram(const char **ShaderParts, u32 PartCount)
 {
     /* CREATE PROGRAM */
     u32 ProgramID = glCreateProgram();
 
     /* COMPILE SHADERS */
-    u32 ComputeShader = OpenGL_CompileShader(GL_COMPUTE_SHADER, Compute);
+    u32 ComputeShader = OpenGL_CompileShader(GL_COMPUTE_SHADER, ShaderParts, PartCount);
     if (ComputeShader) glAttachShader(ProgramID, ComputeShader);
 
     /* LINK PROGRAM */
