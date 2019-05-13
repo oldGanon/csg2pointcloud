@@ -10,8 +10,7 @@ struct gl_state
     u32 SplatVBO;
     u32 SplatShader;
     u32 SplatShaderWorldToClipLoc;
-    u64 SplatCountHi;
-    u64 SplatCountLo;
+    u64 SplatCount;
 
     u32 RenderBufferMSAA;
     u32 DepthBufferMSAA;
@@ -54,29 +53,8 @@ OpenGL_DrawSplats(mat4 WorldToClip)
     glUseProgram(GL.SplatShader);
     glBindVertexArray(GL.SplatVAO);
     glUniformMatrix4fv(GL.SplatShaderWorldToClipLoc, 1, GL_FALSE, WorldToClip.E);
-    glDrawArrays(GL_POINTS, 0, (GLsizei)(GL.SplatCountLo + GL.SplatCountHi));
+    glDrawArrays(GL_POINTS, 0, (GLsizei)(GL.SplatCount));
     glBindVertexArray(0);
-}
-
-static void
-OpenGL_LoadSplatsHi(sdf_splat_batch *Batch)
-{
-    return;
-    GL.SplatCountLo = 0;
-    GL.SplatCountHi = Atomic_Get(&Batch->SplatCount);
-    glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, GL.SplatCountHi * sizeof(sdf_splat), Batch->Splats);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-static void
-OpenGL_LoadSplatsLo(sdf_splat_batch *Batch)
-{
-    return;
-    GL.SplatCountLo = Atomic_Get(&Batch->SplatCount);
-    glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
-    glBufferSubData(GL_ARRAY_BUFFER, GL.SplatCountHi * sizeof(sdf_splat), GL.SplatCountLo * sizeof(sdf_splat), Batch->Splats);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 #include "glsdf.cpp"
@@ -104,17 +82,16 @@ OpenGL_GPUSplats()
     u32 SplatCount;
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 4, &SplatCount);
-
+    
     glUseProgram(GL.SplatComputeShader);
     glDispatchCompute(SplatCount / 32 + 1, 1, 1);
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.SplatSSBO);
     glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.SplatSSBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glsdf_splat) * SplatCount, 0, GL_STATIC_DRAW);
-    glCopyBufferSubData(GL_SHADER_STORAGE_BUFFER, GL_ARRAY_BUFFER, 16, 0, sizeof(glsdf_splat) * SplatCount);
+    glCopyBufferSubData(GL_SHADER_STORAGE_BUFFER, GL_ARRAY_BUFFER, 0, 0, sizeof(glsdf_splat) * SplatCount);
 
-    GL.SplatCountLo = 0;
-    GL.SplatCountHi = SplatCount;
+    GL.SplatCount = SplatCount;
 
     glBindBuffer(GL_DISPATCH_INDIRECT_BUFFER, 0);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -228,10 +205,9 @@ OpenGL_Init()
         glBindVertexArray(GL.SplatVAO);
         glGenBuffers(1, &GL.SplatVBO);
         glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(glsdf_splat) * 10000000, 0, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Position));
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Normal));
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Color));
+        glVertexAttribPointer(1, 3, GL_BYTE, GL_TRUE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Normal));
+        glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Color));
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);

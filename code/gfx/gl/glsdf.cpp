@@ -37,8 +37,9 @@ struct glsdf
 struct glsdf_splat
 {
     vec4 Position;
-    vec4 Normal;
-    vec4 Color;
+    u32 Normal;
+    u32 Color;
+    u32 Padding[2];
 };
 
 static f32

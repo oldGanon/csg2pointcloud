@@ -257,7 +257,7 @@ void main(){
 )shader";
 
 const char *SplatComputeShaderSource = R"shader(
-layout(std430, binding = 2) buffer BLOCKS
+layout(std430, binding = 2) readonly buffer BLOCKS
 {
     uint read_index;
     uint write_index;
@@ -267,25 +267,42 @@ layout(std430, binding = 2) buffer BLOCKS
 struct splat
 {
     vec4 position;
-    vec4 normal;
-    vec4 color;
+    uint normal;
+    uint color;
 };
 
 layout(std430, binding = 4) buffer SPLAT
 {
-    uint splat_count;
     splat splats[];
 };
 
 layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
 
+uint normalpack(vec3 normal)
+{
+    uint x = (int(normal.x * 127.0) & 255);
+    uint y = (int(normal.y * 127.0) & 255) << 8;
+    uint z = (int(normal.z * 127.0) & 255) << 16;
+    return x|y|z;
+}
+
+uint colorpack(vec4 color)
+{
+    uint r = uint(color.r * 255.0);
+    uint g = uint(color.g * 255.0) << 8;
+    uint b = uint(color.b * 255.0) << 16;
+    uint a = uint(color.a * 255.0) << 24;
+    return r|g|b|a;
+}
+
 void main(){
-    vec4 block = blocks[atomicAdd(read_index, 1)];
-    uint splat = atomicAdd(splat_count, 1);
+    uint index = gl_GlobalInvocationID.x;
+    vec4 block = blocks[read_index + index];
     float dist = sdf_eval(block.xyz);
     vec3 normal = sdf_normal(block.xyz);
-    splats[splat].position.xyz = block.xyz - normal * dist;
-    splats[splat].normal.xyz = normal;
-    splats[splat].color = sdf_color(block.xyz);
+    vec3 position = block.xyz - normal * dist;
+    splats[index].position.xyz = position;
+    splats[index].normal = normalpack(normal);
+    splats[index].color = colorpack(sdf_color(block.xyz));
 }
 )shader";

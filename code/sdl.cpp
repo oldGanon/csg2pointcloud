@@ -1,8 +1,6 @@
 
 global atomic GlobalResetGame = { };
 
-#include "sdf.cpp"
-
 #if COMPILE_GFX_OPENGL
   #include <gl/gl.h>
   #include <SDL/SDL_opengl_glext.h>
@@ -630,13 +628,13 @@ int SDL_main(int argc, char **argv)
 
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
 
+    glsdf SDF = { };
     {
         vec4 Color = Vec4(1.0f,0.878f,0.741f,1);
         vec4 Red = Vec4(1,0,0,1);
         vec4 Green = Vec4(0,1,0,1);
         vec4 Blue = Vec4(0,0,1,1);
 
-        glsdf SDF = { };
         GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.5f,0.1f,0.01f)));
         GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.1f,0.5f,0.01f)));
 
@@ -653,40 +651,6 @@ int SDL_main(int argc, char **argv)
         OpenGL_GPUSplats();
     }
 
-    sdf_splat_batch *Splats = (sdf_splat_batch *)SDL_malloc(sizeof(sdf_splat) * 10000000);
-
-    sdf SDF;
-    SDF.EditCount = 0;
-
-    {
-        vec3 Color = Vec3(1.0f,0.878f,0.741f);
-        vec3 Red = Vec3(1,0,0);
-        vec3 Green = Vec3(0,1,0);
-        vec3 Blue = Vec3(0,0,1);
-
-        SDF_Add(&SDF,       SDF_Cuboid(Vec3( 0.0f,0.0f,0.0f), Quat(), Color, Vec3(0.5f,0.1f,0.01f)));
-        SDF_Add(&SDF,       SDF_Cuboid(Vec3( 0.0f,0.0f,0.0f), Quat(), Color, Vec3(0.1f,0.5f,0.01f)));
-
-        SDF_AddSmooth(&SDF, SDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), PI/3.0f), Red, Vec3(0.5f,0.1f,0.1f)), 0.02f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.5f,0.0f,0.0f), Blue, 0.25f), 0.05f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0.0f,0.0f), Green, 0.25f), 0.05f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.8f,0.0f,0.0f), Red, 0.1f), 0.05f);
-        SDF_SubSmooth(&SDF, SDF_Sphere(Vec3( 0.5f,0.0f,0.25), Red, 0.1f), 0.05f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3(-0.95f,0,0), Red, 0.025f), 0.05f);
-        SDF_AddSmooth(&SDF, SDF_Sphere(Vec3( 0.95f,0,0), Red, 0.025f), 0.05f);
-        SDF_AddSmooth(&SDF, SDF_Cylinder(Vec3( 0.75f,0,0), Quat(Vec3(1,0,0), PI/1.5f), Blue, 0.45f, 0.25f), 0.05f);
-
-        // SDF_Add(&SDF, SDF_Ellipsoid(Vec3_Set1(0), Quat(Vec3(0,0,1), PI/3.0f), Color, Vec3(0.5f, 0.75f, 0.5f)));
-        // SDF_Sub(&SDF, SDF_Cuboid(Vec3(0.0f,-0.5,0.0f), Quat(), Color, Vec3(0.6f, 0.5f, 0.6f)));
-        // SDF_AddSmooth(&SDF, SDF_Sphere(Vec3_Set1(0), Color, 0.5f), 0.1f);
-
-        SDF_Gen(&SDF, Vec3_Zero(), 1.0f, 7, Splats);
-
-        Api_PrintF("Splat Count: %llu!", Splats->SplatCount);
-
-        OpenGL_LoadSplatsHi(Splats);
-    }
-
     vec3 CameraPosition = Vec3(0,0,3);
     quat CameraRotation = Quat_Id();
 
@@ -700,10 +664,10 @@ int SDL_main(int argc, char **argv)
     mat4 InvPerspective = Mat4_Perspective(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
     mat4 ClipToWorld = InvPerspective * InvRotation * InvTranslation;
 
-    sdf_shape EditShape = SDF_Sphere(Vec3(0,0,0), Vec3(1,0,0), 0.1f);
+    glsdf_shape EditShape = GLSDF_Sphere(Vec3(0,0,0), Vec4(1,0,0,1), 0.1f);
     // EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.1f);
     // EditShape = SDF_Cylinder(Vec3(0,0,0), Quat(), Vec3(1,0,1), 0.1f, 0.1f);
-    sdf_op EditOp = { SDF_OP_ADD_SMOOTH, 0.05f };
+    f32 Smoothing = 0.05f;
     f32 EditDim = 0.15f;
 
     /* GAME INIT */
@@ -722,18 +686,19 @@ int SDL_main(int argc, char **argv)
         if (MainState.RightMouseDown)
         {
             MainState.RightMouseDown = false;
-            if (EditOp.Type == SDF_OP_ADD_SMOOTH)
-                EditOp.Type = SDF_OP_SUB_SMOOTH;
-            else
-                EditOp.Type = SDF_OP_ADD_SMOOTH;
+            // if (EditOp.Type == SDF_OP_ADD_SMOOTH)
+            //     EditOp.Type = SDF_OP_SUB_SMOOTH;
+            // else
+            //     EditOp.Type = SDF_OP_ADD_SMOOTH;
         }
 
         if (MainState.LeftMouseDown)
         {
             MainState.LeftMouseDown = false;
-            SDF_AddEdit(&SDF, EditShape, EditOp);
-            SDF_Gen(&SDF, Vec3_Zero(), 1.0f, 7, Splats);
-            OpenGL_LoadSplatsHi(Splats);
+            GLSDF_AddSmooth(&SDF, EditShape, 0.05f);
+
+            OpenGL_GPU(&SDF);
+            OpenGL_GPUSplats();
         }
 
         if (MainState.MouseMoved)
@@ -743,7 +708,8 @@ int SDL_main(int argc, char **argv)
             MousePos3D = ClipToWorld * MousePos3D;
             MousePos3D = MousePos3D / MousePos3D.w;
             vec3 MouseDir = Vec3_Normalize(MousePos3D-CameraPosition);
-            f32 Depth = SDF_Dist(&SDF, CameraPosition, MouseDir);
+            // f32 Depth = SDF_Dist(&SDF, CameraPosition, MouseDir);
+            f32 Depth = 1000.0f;
 
             vec3 EditPos;
             if (Depth < 100.0f)
@@ -751,11 +717,11 @@ int SDL_main(int argc, char **argv)
             else
                 EditPos = CameraPosition + MouseDir * 3.0f;
 
-            EditShape.Position = EditPos;
-            SDF_AddEdit(&SDF, EditShape, EditOp);
-            SDF_Gen(&SDF, EditPos, EditDim, 5, Splats);
-            OpenGL_LoadSplatsLo(Splats);
-            SDF_Undo(&SDF);
+            EditShape.Position = Vec4(EditPos,1);
+            // GLSDF_AddSmooth(&SDF, EditShape, Smoothing);
+
+            // OpenGL_GPU(&SDF);
+            // OpenGL_GPUSplats();
         }
 
         Gfx.Clear();
