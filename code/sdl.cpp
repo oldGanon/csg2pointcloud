@@ -635,16 +635,16 @@ int SDL_main(int argc, char **argv)
         vec4 Green = Vec4(0,1,0,1);
         vec4 Blue = Vec4(0,0,1,1);
 
-        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.5f,0.1f,0.01f)));
-        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.1f,0.5f,0.01f)));
+        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.5f,0.1f,0.01f), 0.0f));
+        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.1f,0.5f,0.01f), 0.0f));
 
-        GLSDF_AddSmooth(&SDF, GLSDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), PI/3.0f), Red, Vec3(0.5f,0.1f,0.1f)), 0.02f);
-        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3(-0.5f,0.0f,0.0f), Blue, 0.25f), 0.05f);
-        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3( 0.5f,0.0f,0.0f), Green, 0.25f), 0.05f);
-        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3(-0.8f,0.0f,0.0f), Red, 0.1f), 0.05f);
-        GLSDF_SubSmooth(&SDF, GLSDF_Sphere(Vec3( 0.5f,0.0f,0.25), Red, 0.1f), 0.05f);
-        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3(-0.95f,0,0), Red, 0.025f), 0.05f);
-        GLSDF_AddSmooth(&SDF, GLSDF_Sphere(Vec3( 0.95f,0,0), Red, 0.025f), 0.05f);
+        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), PI/3.0f), Red, Vec3(0.5f,0.1f,0.1f), 0.02f));
+        GLSDF_Add(&SDF, GLSDF_Sphere(Vec3(-0.5f,0.0f,0.0f), Blue, 0.25f, 0.05f));
+        GLSDF_Add(&SDF, GLSDF_Sphere(Vec3( 0.5f,0.0f,0.0f), Green, 0.25f, 0.05f));
+        GLSDF_Add(&SDF, GLSDF_Sphere(Vec3(-0.8f,0.0f,0.0f), Red, 0.1f, 0.05f));
+        GLSDF_Sub(&SDF, GLSDF_Sphere(Vec3( 0.5f,0.0f,0.25), Red, 0.1f, 0.05f));
+        GLSDF_Add(&SDF, GLSDF_Sphere(Vec3(-0.95f,0,0), Red, 0.025f, 0.05f));
+        GLSDF_Add(&SDF, GLSDF_Sphere(Vec3( 0.95f,0,0), Red, 0.025f, 0.05f));
         // GLSDF_AddSmooth(&SDF, GLSDF_Cylinder(Vec3( 0.75f,0,0), Quat(Vec3(1,0,0), PI/1.5f), Blue, 0.45f, 0.25f), 0.05f);
 
         OpenGL_GPU(&SDF);
@@ -664,11 +664,11 @@ int SDL_main(int argc, char **argv)
     mat4 InvPerspective = Mat4_Perspective(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
     mat4 ClipToWorld = InvPerspective * InvRotation * InvTranslation;
 
-    glsdf_shape EditShape = GLSDF_Sphere(Vec3(0,0,0), Vec4(1,0,0,1), 0.1f);
+    glsdf_shape EditShape = GLSDF_Sphere(Vec3(0,0,0), Vec4(1,0,0,1), 0.1f, 0.05f);
     // EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.1f);
     // EditShape = SDF_Cylinder(Vec3(0,0,0), Quat(), Vec3(1,0,1), 0.1f, 0.1f);
-    f32 Smoothing = 0.05f;
     f32 EditDim = 0.15f;
+    b32 EditSub = false;
 
     /* GAME INIT */
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
@@ -686,19 +686,18 @@ int SDL_main(int argc, char **argv)
         if (MainState.RightMouseDown)
         {
             MainState.RightMouseDown = false;
-            // if (EditOp.Type == SDF_OP_ADD_SMOOTH)
-            //     EditOp.Type = SDF_OP_SUB_SMOOTH;
-            // else
-            //     EditOp.Type = SDF_OP_ADD_SMOOTH;
+            MainState.MouseMoved = true;
+            EditSub = !EditSub;
         }
 
         if (MainState.LeftMouseDown)
         {
             MainState.LeftMouseDown = false;
-            GLSDF_AddSmooth(&SDF, EditShape, 0.05f);
-
-            OpenGL_GPU(&SDF);
-            OpenGL_GPUSplats();
+            MainState.MouseMoved = true;
+            if (EditSub)
+                GLSDF_Sub(&SDF, EditShape);
+            else
+                GLSDF_Add(&SDF, EditShape);
         }
 
         if (MainState.MouseMoved)
@@ -708,8 +707,7 @@ int SDL_main(int argc, char **argv)
             MousePos3D = ClipToWorld * MousePos3D;
             MousePos3D = MousePos3D / MousePos3D.w;
             vec3 MouseDir = Vec3_Normalize(MousePos3D-CameraPosition);
-            // f32 Depth = SDF_Dist(&SDF, CameraPosition, MouseDir);
-            f32 Depth = 1000.0f;
+            f32 Depth = GLSDF_Dist(&SDF, CameraPosition, MouseDir);
 
             vec3 EditPos;
             if (Depth < 100.0f)
@@ -718,10 +716,15 @@ int SDL_main(int argc, char **argv)
                 EditPos = CameraPosition + MouseDir * 3.0f;
 
             EditShape.Position = Vec4(EditPos,1);
-            // GLSDF_AddSmooth(&SDF, EditShape, Smoothing);
+            if (EditSub)
+                GLSDF_Sub(&SDF, EditShape);
+            else
+                GLSDF_Add(&SDF, EditShape);
 
-            // OpenGL_GPU(&SDF);
-            // OpenGL_GPUSplats();
+            OpenGL_GPU(&SDF);
+            OpenGL_GPUSplats();
+
+            GLSDF_Undo(&SDF);
         }
 
         Gfx.Clear();

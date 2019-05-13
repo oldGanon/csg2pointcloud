@@ -43,6 +43,11 @@ vec3 invrotate(vec4 q, vec3 v)
     return v - q.w*t + cross(q.xyz,t);
 }
 
+float sdf_range(sdf_edit edit, vec3 position)
+{
+    return hmax(abs(position - edit.position.xyz)) - edit.influence;
+}
+
 float sdf_add(float d0, float d1)
 {
     return min(d0, d1);
@@ -116,9 +121,7 @@ float sdf_max(vec3 position, float dim)
     for (uint i = 0; i < edit_count; i++)
     {
         sdf_edit edit = edits[i];
-        float diff = hmax(abs(position - edit.position.xyz));
-        float influence = (dim + edit.influence + edit.smoothing);
-        if (diff > influence) continue;
+        if (sdf_range(edit, position) > dim) continue;
 
         float d1 = infinity;
         switch(edit.shapeop / 4)
@@ -181,6 +184,7 @@ float sdf_eval(vec3 position)
     for (uint i = 0; i < edit_count; i++)
     {
         sdf_edit edit = edits[i];
+        if (sdf_range(edit, position) > 0.001) continue;
         d0 = sdf_eval_edit(position, edit, d0);
     }
     return d0;
@@ -204,6 +208,7 @@ vec4 sdf_color(vec3 position)
     for (uint i = 0; i < edit_count; i++)
     {
         sdf_edit edit = edits[i];
+        if (sdf_range(edit, position) > 0.001) continue;
         float d1 = sdf_eval_edit(position, edit, d0);
         float c1 = clamp((d0-d1)/edit.smoothing,0,1);
         c0 = mix(c0, edit.color, c1);
@@ -266,7 +271,9 @@ layout(std430, binding = 2) readonly buffer BLOCKS
 
 struct splat
 {
-    vec4 position;
+    uint positionx;
+    uint positiony;
+    uint positionz;
     uint normal;
     uint color;
 };
@@ -301,7 +308,9 @@ void main(){
     float dist = sdf_eval(block.xyz);
     vec3 normal = sdf_normal(block.xyz);
     vec3 position = block.xyz - normal * dist;
-    splats[index].position.xyz = position;
+    splats[index].positionx = floatBitsToInt(position.x);
+    splats[index].positiony = floatBitsToInt(position.y);
+    splats[index].positionz = floatBitsToInt(position.z);
     splats[index].normal = normalpack(normal);
     splats[index].color = colorpack(sdf_color(block.xyz));
 }

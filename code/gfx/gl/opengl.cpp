@@ -59,12 +59,20 @@ OpenGL_DrawSplats(mat4 WorldToClip)
 
 #include "glsdf.cpp"
 
+struct glsdf_block
+{
+    u32 ReadIndex;
+    u32 WriteIndex;
+    u32 Padding[2];
+    vec4 Blocks[1];
+};
+
 static void
 OpenGL_GPUSplats()
 {
-    u32 Blocks[8] = { 0,1,0,0,0,0,0,0x3F800000 };
+    glsdf_block Blocks = { 0,1,0,0,Vec4(0,0,0,1) };
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.BlocksSSBO);
-    glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 32, Blocks);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 32, &Blocks);
     
     u32 Dispatches[3] = { 1, 1, 1 };
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL.DispatchSSBO);
@@ -168,7 +176,7 @@ OpenGL_Init()
         glGenRenderbuffers(1, &GL.RenderBufferMSAA);
         glGenRenderbuffers(1, &GL.DepthBufferMSAA);
 
-        u32 Samples = 16;
+        u32 Samples = 4;
         glGetIntegerv(GL_MAX_SAMPLES, (GLint*)&Samples);
         Samples = MIN(Samples, 16);
         
@@ -226,6 +234,8 @@ OpenGL_Clear()
     glViewport(0, 0, 1280, 720);
     glBindFramebuffer(GL_FRAMEBUFFER, GL.FramebufferMSAA);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 static void
@@ -234,6 +244,7 @@ OpenGL_Frame(mat4 WorldToClip)
     glScissor(0, 0, 1280, 720);
     glViewport(0, 0, 1280, 720);
     glBindFramebuffer(GL_FRAMEBUFFER, GL.FramebufferMSAA);
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     OpenGL_DrawSplats(WorldToClip);
 
