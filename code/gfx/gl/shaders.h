@@ -11,7 +11,7 @@ string VertShader =
         "ScreenPos = " GLSL_VERT_POSITION " * 2 - 1;"
         "gl_Position.xy = ScreenPos;"
     "}\0";
-#if 0
+#if 1
 string SplatVertShader = 
     "#version 460\n"
     "in vec3 " GLSL_VERT_POSITION ";"
@@ -45,8 +45,8 @@ string SplatGeomShader =
         "vec3 UpVector = abs(gs_in[0].Normal.y) < 0.7 ? vec3(0,1,0) : vec3(1,0,0);"
         "vec3 Right = cross(UpVector, gs_in[0].Normal);"
         "vec3 Up = cross(gs_in[0].Normal, Right);"
-        "Right *= 0.005;"
-        "Up *= 0.005;"
+        "Right *= 0.0025;"
+        "Up *= 0.0025;"
 
         "gl_Position = WorldToCamera * vec4(gl_in[0].gl_Position.xyz - Right - Up,1);"
         "gs_out.Color = gs_in[0].Color;"
@@ -148,7 +148,7 @@ OpenGL_CompileShader(u32 Type, string Shader)
     {
         i32 LogLength;
         glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &LogLength);
-        char *Error = (char *)Api_Talloc(LogLength);
+        char *Error = (char *)Stack_Alloc(0, LogLength, 1);
         glGetShaderInfoLog(ShaderID, LogLength, &LogLength, Error);
         glDeleteShader(ShaderID);
         Api_Error(String(Error, LogLength));
@@ -179,7 +179,7 @@ OpenGL_LoadProgram(string Vertex, string Geometry, string Fragment)
     {
         i32 LogLength;
         glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &LogLength);
-        char *Error = (char *)Api_Talloc(LogLength);
+        char *Error = (char *)Stack_Alloc(0, LogLength, 1);
         glGetProgramInfoLog(ProgramID, LogLength, &LogLength, Error);
         glDeleteProgram(ProgramID);
         Api_Error(String(Error, LogLength));
@@ -217,7 +217,7 @@ OpenGL_CompileShader(u32 Type, const char **ShaderParts, u32 PartCount)
     {
         i32 LogLength;
         glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &LogLength);
-        char *Error = (char *)Api_Talloc(LogLength);
+        char *Error = (char *)Stack_Alloc(0, LogLength, 1);
         glGetShaderInfoLog(ShaderID, LogLength, &LogLength, Error);
         glDeleteShader(ShaderID);
         Api_Error(String(Error, LogLength));
@@ -244,7 +244,7 @@ OpenGL_LoadComputeProgram(const char **ShaderParts, u32 PartCount)
     {
         i32 LogLength;
         glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &LogLength);
-        char *Error = (char *)Api_Talloc(LogLength);
+        char *Error = (char *)Stack_Alloc(0, LogLength, 1);
         glGetProgramInfoLog(ProgramID, LogLength, &LogLength, Error);
         glDeleteProgram(ProgramID);
         Api_Error(String(Error, LogLength));

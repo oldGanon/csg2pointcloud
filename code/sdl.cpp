@@ -1,6 +1,26 @@
 
 global atomic GlobalResetGame = { };
 
+inline void Api_PrintString(u32 Target, struct string String);
+#define Api_Print(S)      Api_PrintString(0, S)
+#define Api_Error(S)      Api_PrintString(1, S)
+#define Api_Warning(S)    Api_PrintString(2, S)
+#define Api_PrintF(...)   Api_Print(TSPrint(__VA_ARGS__))
+#define Api_ErrorF(...)   Api_Error(TSPrint(__VA_ARGS__))
+#define Api_WarningF(...) Api_Warning(TSPrint(__VA_ARGS__))
+
+#ifdef Assert
+  #undef Assert
+#endif
+#define Assert(x) SDL_assert(x);
+#if COMPILE_DEV
+  #define SDL_ASSERT_LEVEL 3
+#else
+  #define SDL_ASSERT_LEVEL 0
+#endif
+
+#include <SDL/SDL.h>
+
 #if COMPILE_GFX_OPENGL
   #include <gl/gl.h>
   #include <SDL/SDL_opengl_glext.h>
@@ -11,8 +31,6 @@ global atomic GlobalResetGame = { };
   global SDL_vulkanInstance GlobalVKInstance;
 #endif
 #include "gfx/gfx.cpp"
-
-global memory_zone *GlobalZone = 0;
 
 global b32 GlobalRunning = true;
 global u64 GlobalPerfCountFrequency = 0;
@@ -44,62 +62,15 @@ struct main_state
 /*     API     */
 /*-------------*/
 
-inline size
-Api_Tsize()
-{
-    memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
-    return Arena->Used - sizeof(memory_arena);
-}
-
-inline void
-Api_Treset(size Size)
-{
-    memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
-    Arena->Used = Size + sizeof(memory_arena);
-    Arena->MarkerCount = 0;
-}
-
-inline void*
-Api_Ualloc(size Size)
-{
-    memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
-    return Arena_PushSize(Arena, Size, 1);
-}
-
-inline void*
-Api_Talloc(size Size)
-{
-    memory_arena *Arena = (memory_arena *)SDL_TLSGet(MemoryArenaTLS);
-    return Arena_PushSize(Arena, Size, 16);
-}
-
-inline void*
-Api_Malloc(size Size)
-{
-    return Zone_Malloc(GlobalZone, Size);
-}
-
-inline void*
-Api_Realloc(void *Ptr, size Size)
-{
-    return Zone_Realloc(GlobalZone, Ptr, Size);
-}
-
-inline void
-Api_Free(const void *Ptr)
-{
-    Zone_Free(GlobalZone, Ptr);
-}
-
 inline void
 Api_PrintString(u32 Target, string String)
 {
     // Console_Print(&GlobalConsole, String);
     switch (Target)
     {
-        case 0: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, CString(String)); break;
-        case 1: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, CString(String)); break;
-        case 2: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_WARN, CString(String)); break;
+        case 0: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, cString(String)); break;
+        case 1: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, cString(String)); break;
+        case 2: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_WARN, cString(String)); break;
     }
 }
 
@@ -126,12 +97,12 @@ Main_SDLCleanUp()
 static i32
 Main_Error(string Error)
 {
-    string SDL_Error = TString(SDL_GetError());
+    string SDL_Error = tString(SDL_GetError());
     if (SDL_Error.Length)
         Api_Error(SDL_Error);
 
     Api_Error(Error);
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Platform Error!", CString(Error), 0);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Platform Error!", cString(Error), 0);
     
     Main_SDLCleanUp();
     GlobalRunning = false;
@@ -229,7 +200,7 @@ Main_GetClipboardText()
         return String();
 
     char *Clipboard = SDL_GetClipboardText();
-    string Result = TString(Clipboard);
+    string Result = tString(Clipboard);
     SDL_free(Clipboard);
     return Result;
 }
@@ -237,7 +208,7 @@ Main_GetClipboardText()
 static void
 Main_SetClipboardText(string Text)
 {
-    SDL_SetClipboardText(CString(Text));
+    SDL_SetClipboardText(cString(Text));
 }
 
 static void 
@@ -518,43 +489,13 @@ Main_CollectEvents(SDL_Window *Window, main_state *MainState)
         SDL_StartTextInput();
 }
 
-#define CHECK_CPU_FEATURE(F) \
-    if (!CPU.Has##F) { \
-        Api_Error(#F " is not supported on this CPU!"); \
-        AllFeatures = false; } \
-
-static b32
-Main_CheckCPUFeatures()
-{
-    b32 AllFeatures = true;
-
-#if COMPILE_DEV
-    CHECK_CPU_FEATURE(RDTSC);
-#endif
-    
-#if COMPILE_X64
-    CHECK_CPU_FEATURE(SSE);
-    CHECK_CPU_FEATURE(SSE2);
-    CHECK_CPU_FEATURE(SSE3);
-
-    #if COMPILE_SSE
-        CHECK_CPU_FEATURE(SSSE3);
-        CHECK_CPU_FEATURE(SSE41);
-        CHECK_CPU_FEATURE(SSE42);
-        CHECK_CPU_FEATURE(FMA);
-    #endif
-#endif
-
-#if COMPILE_NEON
-    CHECK_CPU_FEATURE(NEON);
-#endif
-    
-    return AllFeatures;
-}
-
 int SDL_main(int argc, char **argv)
 {
-    InitCPU();
+    CPU_Init();
+    
+    /* CHECK CPU FEATURES */
+    if (!CPU_CheckFeatures())
+        return Main_Error("Missing CPU features!");
 
     main_state MainState = { };
 
@@ -564,19 +505,12 @@ int SDL_main(int argc, char **argv)
 
     /* GLOBALS */
     GlobalPerfCountFrequency = SDL_GetPerformanceFrequency();
-    GlobalZone = Zone_Init((memory_zone *)SDL_malloc(Megabytes(256)), Megabytes(256));
+    Heap_Init(0, Megabytes(256));
 
     /* THREAD LOCALS */
-    MemoryArenaTLS = SDL_TLSCreate();
+    Stack_Init(0, Gigabytes(1));
+    memory_stack_marker InitMarker = Stack_PlaceMarker(0);
 
-    memory_arena *Arena = Arena_Clear((memory_arena *)SDL_malloc(Megabytes(1)), Megabytes(1));
-    SDL_TLSSet(MemoryArenaTLS, Arena, SDL_free);
-    memory_arena_marker InitMarker = Arena_PlaceArenaMarker(Arena);
-
-    /* CHECK CPU FEATURES */
-    if (!Main_CheckCPUFeatures())
-        return Main_Error("Missing CPU features!");
-    
     /* START TIMING */
     u64 StartTime = Main_GetWallClock();
 
@@ -665,21 +599,21 @@ int SDL_main(int argc, char **argv)
     mat4 ClipToWorld = InvPerspective * InvRotation * InvTranslation;
 
     glsdf_shape EditShape = GLSDF_Sphere(Vec3(0,0,0), Vec4(1,0,0,1), 0.1f, 0.05f);
-    // EditShape = SDF_Cube(Vec3(0,0,0), Quat(), Vec3(1,0,0), 0.1f);
+    // EditShape = GLSDF_Cuboid(Vec3(0,0,0), Quat(), Vec4(1,0,0,1), 0.1f, 0.05f);
     // EditShape = SDF_Cylinder(Vec3(0,0,0), Quat(), Vec3(1,0,1), 0.1f, 0.1f);
     f32 EditDim = 0.15f;
     b32 EditSub = false;
 
     /* GAME INIT */
     Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
-    Arena_RevertToArenaMarker(InitMarker);
+    Stack_RevertToMarker(InitMarker);
 
     /* GAME LOOP */
     u64 LastLastTime = Main_GetWallClock();
     u64 LastTime = Main_GetWallClock();
     while (GlobalRunning)
     {
-        ARENA_STACK_MARKER((memory_arena *)SDL_TLSGet(MemoryArenaTLS));
+        STACK_SCOPE_MARKER(0);
 
         Main_CollectEvents(Window, &MainState);
         
@@ -706,7 +640,7 @@ int SDL_main(int argc, char **argv)
             vec4 MousePos3D = Vec4(MainState.MousePos, Vec2(0,1));
             MousePos3D = ClipToWorld * MousePos3D;
             MousePos3D = MousePos3D / MousePos3D.w;
-            vec3 MouseDir = Vec3_Normalize(MousePos3D-CameraPosition);
+            vec3 MouseDir = Vec3_Normalize(MousePos3D.xyz - CameraPosition);
             f32 Depth = GLSDF_Dist(&SDF, CameraPosition, MouseDir);
 
             vec3 EditPos;

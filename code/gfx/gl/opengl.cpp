@@ -1,6 +1,9 @@
 
 #include "glfuncs.h"
 
+#define SCREEN_WIDTH 2560
+#define SCREEN_HEIGHT 1440
+
 struct gl_state
 {
     u32 SquareVBO;
@@ -101,6 +104,8 @@ OpenGL_GPUSplats()
 
     GL.SplatCount = SplatCount;
 
+    Api_Print(TSPrint("Splatcount: %d!", SplatCount));
+
     glBindBuffer(GL_DISPATCH_INDIRECT_BUFFER, 0);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -176,16 +181,16 @@ OpenGL_Init()
         glGenRenderbuffers(1, &GL.RenderBufferMSAA);
         glGenRenderbuffers(1, &GL.DepthBufferMSAA);
 
-        u32 Samples = 4;
+        u32 Samples = 16;
         glGetIntegerv(GL_MAX_SAMPLES, (GLint*)&Samples);
         Samples = MIN(Samples, 16);
         
         glBindRenderbuffer(GL_RENDERBUFFER, GL.RenderBufferMSAA);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, Samples, GL_RGB, 1280, 720);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, Samples, GL_RGB, SCREEN_WIDTH, SCREEN_HEIGHT);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         glBindRenderbuffer(GL_RENDERBUFFER, GL.DepthBufferMSAA);
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, Samples, GL_DEPTH_COMPONENT, 1280, 720);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, Samples, GL_DEPTH_COMPONENT, SCREEN_WIDTH, SCREEN_HEIGHT);
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         glGenFramebuffers(1, &GL.FramebufferMSAA);
@@ -214,7 +219,7 @@ OpenGL_Init()
         glGenBuffers(1, &GL.SplatVBO);
         glBindBuffer(GL_ARRAY_BUFFER, GL.SplatVBO);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Position));
-        glVertexAttribPointer(1, 3, GL_BYTE, GL_TRUE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Normal));
+        glVertexAttribPointer(1, 4, GL_INT_2_10_10_10_REV, GL_TRUE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Normal));
         glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(glsdf_splat), (GLvoid *)offsetof(glsdf_splat, Color));
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
@@ -230,8 +235,8 @@ static void
 OpenGL_Clear()
 {
     glClearColor(1,1,1,1);
-    glScissor(0, 0, 1280, 720);
-    glViewport(0, 0, 1280, 720);
+    glScissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, GL.FramebufferMSAA);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -241,8 +246,8 @@ OpenGL_Clear()
 static void
 OpenGL_Frame(mat4 WorldToClip)
 {
-    glScissor(0, 0, 1280, 720);
-    glViewport(0, 0, 1280, 720);
+    glScissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, GL.FramebufferMSAA);
     // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -250,6 +255,6 @@ OpenGL_Frame(mat4 WorldToClip)
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, GL.FramebufferMSAA);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glBlitFramebuffer(0, 0, 1280, 720, 0, 0, 1280, 720,
+    glBlitFramebuffer(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT,
                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }

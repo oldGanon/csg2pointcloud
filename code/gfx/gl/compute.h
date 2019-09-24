@@ -220,7 +220,6 @@ vec4 sdf_color(vec3 position)
 )lib";
 
 const char *VoxelComputeShaderSource = R"shader(
-
 layout(std430, binding = 2) buffer BLOCKS
 {
     uint read_index;
@@ -285,11 +284,21 @@ layout(std430, binding = 4) buffer SPLAT
 
 layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
 
+vec3 hash(vec3 x)
+{
+    uvec3 ux = uvec3(ivec3(floor(x)));
+    const uint k = 1103515245U;
+    ux = ((ux>>8U)^ux.yzx)*k;
+    ux = ((ux>>8U)^ux.yzx)*k;
+    ux = ((ux>>8U)^ux.yzx)*k;
+    return vec3(ux)*(1.0/float(0xffffffffU));
+}
+
 uint normalpack(vec3 normal)
 {
-    uint x = (int(normal.x * 127.0) & 255);
-    uint y = (int(normal.y * 127.0) & 255) << 8;
-    uint z = (int(normal.z * 127.0) & 255) << 16;
+    uint x = (int(normal.x * 511.0) & 1023);
+    uint y = (int(normal.y * 511.0) & 1023) << 10;
+    uint z = (int(normal.z * 511.0) & 1023) << 20;
     return x|y|z;
 }
 
@@ -308,6 +317,7 @@ void main(){
     float dist = sdf_eval(block.xyz);
     vec3 normal = sdf_normal(block.xyz);
     vec3 position = block.xyz - normal * dist;
+    normal = normalize(hash(block.xyz*0xfffffffU) * 0.25 + normal);
     splats[index].positionx = floatBitsToInt(position.x);
     splats[index].positiony = floatBitsToInt(position.y);
     splats[index].positionz = floatBitsToInt(position.z);
