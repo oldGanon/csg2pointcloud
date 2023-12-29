@@ -1,8 +1,8 @@
 
 #include "glfuncs.h"
 
-#define SCREEN_WIDTH 2560
-#define SCREEN_HEIGHT 1440
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
 
 struct gl_state
 {
@@ -37,7 +37,7 @@ OpenGL_CheckError()
 {
     GLenum Error = glGetError();
     if (!Error) return Error;
-    Api_Error(TSPrint("Opengl Error Code: 0x%X\n", Error));
+    Console_ErrorF("OpenGL Error Code: 0x%X\n", Error);
     Assert(!Error);
     return Error;
 }
@@ -104,7 +104,7 @@ OpenGL_GPUSplats()
 
     GL.SplatCount = SplatCount;
 
-    Api_Print(TSPrint("Splatcount: %d!", SplatCount));
+    Console_LogF("Splatcount: %d!", SplatCount);
 
     glBindBuffer(GL_DISPATCH_INDIRECT_BUFFER, 0);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -183,7 +183,7 @@ OpenGL_Init()
 
         u32 Samples = 16;
         glGetIntegerv(GL_MAX_SAMPLES, (GLint*)&Samples);
-        Samples = MIN(Samples, 16);
+        Samples = EZ_MIN(Samples, 16);
         
         glBindRenderbuffer(GL_RENDERBUFFER, GL.RenderBufferMSAA);
         glRenderbufferStorageMultisample(GL_RENDERBUFFER, Samples, GL_RGB, SCREEN_WIDTH, SCREEN_HEIGHT);

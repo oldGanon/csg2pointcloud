@@ -1,6 +1,5 @@
 #include "config.h"
-#define ESZETT_ALL 1
-#include <eszett/eszett.h>
+#include <eszett.h>
 
 #include "key.h"
 
@@ -16,7 +15,7 @@
   #error unsupported platform!
 #endif
 
-#if ESZETT_WINDOWS
+#if COMPILE_WINDOWS //ESZETT_WINDOWS
 void WinMainCRTStartup()
 {
     int Result = WinMain(GetModuleHandle(0), 0, 0, 0);
@@ -24,7 +23,7 @@ void WinMainCRTStartup()
 }
 #endif
 
-#if ESZETT_MSVC
+#if COMPILE_WINDOWS //ESZETT_MSVC
 
 extern "C" int _fltused = 0;
 extern "C"

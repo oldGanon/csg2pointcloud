@@ -1,13 +1,12 @@
 
 global atomic GlobalResetGame = { };
 
-inline void Api_PrintString(u32 Target, struct string String);
-#define Api_Print(S)      Api_PrintString(0, S)
-#define Api_Error(S)      Api_PrintString(1, S)
-#define Api_Warning(S)    Api_PrintString(2, S)
-#define Api_PrintF(...)   Api_Print(TSPrint(__VA_ARGS__))
-#define Api_ErrorF(...)   Api_Error(TSPrint(__VA_ARGS__))
-#define Api_WarningF(...) Api_Warning(TSPrint(__VA_ARGS__))
+#define Console_LogC(S)       ez_ConsoleLog    (EZ_UTF8(S))
+#define Console_ErrorC(S)     ez_ConsoleError  (EZ_UTF8(S))
+#define Console_WarningC(S)   ez_ConsoleWarning(EZ_UTF8(S))
+#define Console_LogF(...)     ez_ConsoleLog    (ez_tUTF8Print(__VA_ARGS__))
+#define Console_ErrorF(...)   ez_ConsoleError  (ez_tUTF8Print(__VA_ARGS__))
+#define Console_WarningF(...) ez_ConsoleWarning(ez_tUTF8Print(__VA_ARGS__))
 
 #ifdef Assert
   #undef Assert
@@ -63,14 +62,14 @@ struct main_state
 /*-------------*/
 
 inline void
-Api_PrintString(u32 Target, string String)
+Api_PrintString(u32 Target, ez_string String)
 {
     // Console_Print(&GlobalConsole, String);
     switch (Target)
     {
-        case 0: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, cString(String)); break;
-        case 1: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, cString(String)); break;
-        case 2: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_WARN, cString(String)); break;
+        case 0: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, ez_cString(String)); break;
+        case 1: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR, ez_cString(String)); break;
+        case 2: SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_WARN, ez_cString(String)); break;
     }
 }
 
@@ -95,14 +94,14 @@ Main_SDLCleanUp()
 }
 
 static i32
-Main_Error(string Error)
+Main_Error(ez_string Error)
 {
-    string SDL_Error = tString(SDL_GetError());
+    ez_string SDL_Error = ez_tStringFromC(SDL_GetError());
     if (SDL_Error.Length)
-        Api_Error(SDL_Error);
+        ez_ConsoleError(ez_UTF8FromString(SDL_Error));
 
-    Api_Error(Error);
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Platform Error!", cString(Error), 0);
+    ez_ConsoleError(ez_UTF8FromString(Error));
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Platform Error!", ez_cString(Error), 0);
     
     Main_SDLCleanUp();
     GlobalRunning = false;
@@ -193,22 +192,22 @@ Main_ToggleFullscreen(main_state *MainState, SDL_Window *Window)
     }
 }
 
-static string
+static ez_string
 Main_GetClipboardText()
 {
     if (!SDL_HasClipboardText())
-        return String();
+        return ez_String();
 
     char *Clipboard = SDL_GetClipboardText();
-    string Result = tString(Clipboard);
+    ez_string Result = ez_tStringFromC(Clipboard);
     SDL_free(Clipboard);
     return Result;
 }
 
 static void
-Main_SetClipboardText(string Text)
+Main_SetClipboardText(ez_string Text)
 {
-    SDL_SetClipboardText(cString(Text));
+    SDL_SetClipboardText(ez_cString(Text));
 }
 
 static void 
@@ -371,7 +370,7 @@ Main_CollectEvents(SDL_Window *Window, main_state *MainState)
                 if (IsDown)
                 {
                     if (ScanCode == SDL_SCANCODE_F1)
-                        Atomic_Set(&GlobalResetGame,1);
+                        ez_AtomicSet(&GlobalResetGame,1);
 
                     if (Event.key.repeat)
                         break;
@@ -491,10 +490,10 @@ Main_CollectEvents(SDL_Window *Window, main_state *MainState)
 
 int SDL_main(int argc, char **argv)
 {
-    CPU_Init();
+    ez_CPUInit();
     
     /* CHECK CPU FEATURES */
-    if (!CPU_CheckFeatures())
+    if (!ez_CPUCheckFeatures())
         return Main_Error("Missing CPU features!");
 
     main_state MainState = { };
@@ -505,21 +504,21 @@ int SDL_main(int argc, char **argv)
 
     /* GLOBALS */
     GlobalPerfCountFrequency = SDL_GetPerformanceFrequency();
-    Heap_Init(0, Megabytes(256));
+    ez_HeapInit(0);
 
     /* THREAD LOCALS */
-    Stack_Init(0, Gigabytes(1));
-    memory_stack_marker InitMarker = Stack_PlaceMarker(0);
+    ez_StackInit(0);
+    ez_memory_stack_marker InitMarker = ez_StackPlaceMarker(0);
 
     /* START TIMING */
     u64 StartTime = Main_GetWallClock();
 
     /* RNG */
-    RNG_Init(0xDEAD);
+    ez_RngInit(0xDEAD);
 
     /* ASYNC */
     SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
-    Async_Init(8);
+    ez_AsyncInit(8);
 
     /* AUDIO */
     {
@@ -538,7 +537,7 @@ int SDL_main(int argc, char **argv)
 
         GlobalAudioDevice = SDL_OpenAudioDevice(0, 0, &DesiredSpec, &OpenedSpec, 0);
         if (!GlobalAudioDevice)
-            Api_Error("Couldn't open audio device!");
+            Console_ErrorF("Couldn't open audio device!");
         SDL_PauseAudioDevice(GlobalAudioDevice, 0);
     }
 
@@ -560,7 +559,7 @@ int SDL_main(int argc, char **argv)
     /* PERF */
     // SDL_GL_SetSwapInterval(0);
 
-    Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
+    Console_LogF("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime));
 
     glsdf SDF = { };
     {
@@ -572,7 +571,7 @@ int SDL_main(int argc, char **argv)
         GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.5f,0.1f,0.01f), 0.0f));
         GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3(0,0,0), Quat(), Color, Vec3(0.1f,0.5f,0.01f), 0.0f));
 
-        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), PI/3.0f), Red, Vec3(0.5f,0.1f,0.1f), 0.02f));
+        GLSDF_Add(&SDF, GLSDF_Cuboid(Vec3( 0.0f,0.5f,0.0f), Quat(Vec3(1,0,0), ESZETT_PI/3.0f), Red, Vec3(0.5f,0.1f,0.1f), 0.02f));
         GLSDF_Add(&SDF, GLSDF_Sphere(Vec3(-0.5f,0.0f,0.0f), Blue, 0.25f, 0.05f));
         GLSDF_Add(&SDF, GLSDF_Sphere(Vec3( 0.5f,0.0f,0.0f), Green, 0.25f, 0.05f));
         GLSDF_Add(&SDF, GLSDF_Sphere(Vec3(-0.8f,0.0f,0.0f), Red, 0.1f, 0.05f));
@@ -605,15 +604,15 @@ int SDL_main(int argc, char **argv)
     b32 EditSub = false;
 
     /* GAME INIT */
-    Api_Print(TSPrint("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime)));
-    Stack_RevertToMarker(InitMarker);
+    Console_LogF("Startup Time: %.2fs!", Main_GetSecondsElapsed(StartTime));
+    ez_StackRevertToMarker(InitMarker);
 
     /* GAME LOOP */
     u64 LastLastTime = Main_GetWallClock();
     u64 LastTime = Main_GetWallClock();
     while (GlobalRunning)
     {
-        STACK_SCOPE_MARKER(0);
+        ez_StackScopeMarker(0);
 
         Main_CollectEvents(Window, &MainState);
         

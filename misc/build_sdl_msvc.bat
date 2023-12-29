@@ -20,7 +20,7 @@ robocopy "..\misc" "..\build" icon.res /njh /njs
 
 REM 64-bit build
 REM ml64 -nologo -c -Fomath.obj ..\code\math\math.asm
-cl %CompilerFlags% ..\code\main.cpp /I..\include /I..\..
+cl %CompilerFlags% ..\code\main.cpp /I..\include /I../../eszett/code
 link %LinkerFlags% main.obj
 
 robocopy "..\lib\x64" "..\build" SDL2.dll /njh /njs

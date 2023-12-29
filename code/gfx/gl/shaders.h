@@ -2,7 +2,7 @@
 #define GLSL_VERT_NORMAL "N"
 #define GLSL_VERT_COLOR "C"
 
-string VertShader = 
+ez_string VertShader = 
     "#version 460\n"
     "in vec2 " GLSL_VERT_POSITION ";"
     "out vec2 ScreenPos;"
@@ -12,7 +12,7 @@ string VertShader =
         "gl_Position.xy = ScreenPos;"
     "}\0";
 #if 1
-string SplatVertShader = 
+ez_string SplatVertShader = 
     "#version 460\n"
     "in vec3 " GLSL_VERT_POSITION ";"
     "in vec3 " GLSL_VERT_NORMAL ";"
@@ -27,7 +27,7 @@ string SplatVertShader =
         "vs_out.Color = " GLSL_VERT_COLOR ";"
     "}\0";
 
-string SplatGeomShader = 
+ez_string SplatGeomShader = 
     "#version 460\n"
     "layout (points) in;"
     "layout (triangle_strip, max_vertices = 4) out;"
@@ -75,7 +75,7 @@ string SplatGeomShader =
         "EndPrimitive();"
     "}\0";
 
-string SplatFragShader = 
+ez_string SplatFragShader = 
     "#version 460\n"
     "out vec4 Out;"
     "in GS_OUT {"
@@ -137,7 +137,7 @@ string SplatFragShader =
 #endif
 
 static u32
-OpenGL_CompileShader(u32 Type, string Shader)
+OpenGL_CompileShader(u32 Type, ez_string Shader)
 {
     u32 ShaderID = glCreateShader(Type);
     glShaderSource(ShaderID, 1, &Shader.Data, (i32 *)&Shader.Length);
@@ -148,17 +148,17 @@ OpenGL_CompileShader(u32 Type, string Shader)
     {
         i32 LogLength;
         glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &LogLength);
-        char *Error = (char *)Stack_Alloc(0, LogLength, 1);
+        char *Error = (char *)ez_StackAlloc(0, LogLength, 1);
         glGetShaderInfoLog(ShaderID, LogLength, &LogLength, Error);
         glDeleteShader(ShaderID);
-        Api_Error(String(Error, LogLength));
+        ez_ConsoleError(ez_UTF8FromString(ez_String(Error, LogLength)));
         return 0;
     }
     return ShaderID;
 }
 
 static u32
-OpenGL_LoadProgram(string Vertex, string Geometry, string Fragment)
+OpenGL_LoadProgram(ez_string Vertex, ez_string Geometry, ez_string Fragment)
 {
     /* CREATE PROGRAM */
     u32 ProgramID = glCreateProgram();
@@ -179,10 +179,10 @@ OpenGL_LoadProgram(string Vertex, string Geometry, string Fragment)
     {
         i32 LogLength;
         glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &LogLength);
-        char *Error = (char *)Stack_Alloc(0, LogLength, 1);
+        char *Error = (char *)ez_StackAlloc(0, LogLength, 1);
         glGetProgramInfoLog(ProgramID, LogLength, &LogLength, Error);
         glDeleteProgram(ProgramID);
-        Api_Error(String(Error, LogLength));
+        ez_ConsoleError(ez_UTF8FromString(ez_String(Error, LogLength)));
         return 0;
     }
 
@@ -217,10 +217,10 @@ OpenGL_CompileShader(u32 Type, const char **ShaderParts, u32 PartCount)
     {
         i32 LogLength;
         glGetShaderiv(ShaderID, GL_INFO_LOG_LENGTH, &LogLength);
-        char *Error = (char *)Stack_Alloc(0, LogLength, 1);
+        char *Error = (char *)ez_StackAlloc(0, LogLength, 1);
         glGetShaderInfoLog(ShaderID, LogLength, &LogLength, Error);
         glDeleteShader(ShaderID);
-        Api_Error(String(Error, LogLength));
+        ez_ConsoleError(ez_UTF8FromString(ez_String(Error, LogLength)));
         return 0;
     }
     return ShaderID;
@@ -244,10 +244,10 @@ OpenGL_LoadComputeProgram(const char **ShaderParts, u32 PartCount)
     {
         i32 LogLength;
         glGetProgramiv(ProgramID, GL_INFO_LOG_LENGTH, &LogLength);
-        char *Error = (char *)Stack_Alloc(0, LogLength, 1);
+        char *Error = (char *)ez_StackAlloc(0, LogLength, 1);
         glGetProgramInfoLog(ProgramID, LogLength, &LogLength, Error);
         glDeleteProgram(ProgramID);
-        Api_Error(String(Error, LogLength));
+        ez_ConsoleError(ez_UTF8FromString(ez_String(Error, LogLength)));
         return 0;
     }
 

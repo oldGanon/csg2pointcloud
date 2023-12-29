@@ -142,27 +142,27 @@ GLSDF_Range(glsdf_shape Edit, vec3 Position)
 static f32
 GLSDF_Add(f32 D0, f32 D1)
 {
-    return Min(D0, D1);
+    return ez_Min(D0, D1);
 }
 
 static f32
 GLSDF_Sub(f32 D0, f32 D1)
 {
-    return Max(D0,-D1);
+    return ez_Max(D0,-D1);
 }
 
 static f32
 GLSDF_SmoothAdd(f32 D0, f32 D1, f32 R)
 {
-    f32 E = Max(R-Abs(D0-D1),0);
-    return Min(D0,D1)-E*E*0.25f/R;
+    f32 E = ez_Max(R-ez_Abs(D0-D1),0);
+    return ez_Min(D0,D1)-E*E*0.25f/R;
 }
 
 static f32
 GLSDF_SmoothSub(f32 D0, f32 D1, f32 R)
 {
-    f32 E = Max(R-Abs(D0+D1),0);
-    return Max(D0,-D1)+E*E*0.25f/R;
+    f32 E = ez_Max(R-ez_Abs(D0+D1),0);
+    return ez_Max(D0,-D1)+E*E*0.25f/R;
 }
 
 static f32
@@ -180,7 +180,7 @@ GLSDF_EvalCuboid(glsdf_shape Shape, vec3 Position)
 {
     Position = Abs(-Shape.Rotation * (Position - Shape.Position.xyz));
     vec3 D = Abs(Position) - Shape.Params.xyz;
-    return Length(Max(D,0.0)) + Min(HMax(D),0.0);
+    return Length(Max(D,0.0)) + ez_Min(HMax(D),0.0);
 }
 
 static f32
