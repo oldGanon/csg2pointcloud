@@ -589,12 +589,12 @@ int SDL_main(int argc, char **argv)
 
     mat4 Translation = Mat4_Translation(Vec3_Negate(CameraPosition));
     mat4 Rotation = Mat4_Rotation(Quat_Negate(CameraRotation));
-    mat4 Perspective = Mat4_Perspective(45.0f, 9.0f/16.0f, 0.1f, 1000.0f);
+    mat4 Perspective = Mat4_Perspective(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
     mat4 WorldToClip = Perspective * Rotation * Translation;
 
     mat4 InvTranslation = Mat4_Translation(CameraPosition);
     mat4 InvRotation = Mat4_Rotation(CameraRotation);
-    mat4 InvPerspective = Mat4_Perspective(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
+    mat4 InvPerspective = Mat4_Perspective(45.0f, 9.0f/16.0f, 0.1f, 1000.0f);
     mat4 ClipToWorld = InvPerspective * InvRotation * InvTranslation;
 
     glsdf_shape EditShape = GLSDF_Sphere(Vec3(0,0,0), Vec4(1,0,0,1), 0.1f, 0.05f);
